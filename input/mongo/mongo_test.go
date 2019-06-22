@@ -15,5 +15,8 @@ func TestMongoBackup(t *testing.T) {
 	names, err := d.getDatabases()
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"admin", "local", "test"}, names)
+	collections, err := d.getCollections("test")
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"link", "test"}, collections)
 
 }
