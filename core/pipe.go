@@ -5,7 +5,7 @@ import (
 )
 
 type PipeComponent interface {
-	Init(w io.Writer, r io.Reader) error
+	InitPipe(w io.Writer, r io.Reader) error
 	Run() error
 	Close() error
 }
