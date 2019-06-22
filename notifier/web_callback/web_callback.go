@@ -7,8 +7,18 @@ import (
 	"time"
 )
 
+const MODULE_NAME = "web_callback"
+
 type callback struct{
 	targetUrl string
+}
+
+func (e *callback) GetName() string {
+	return MODULE_NAME
+}
+
+func (e *callback) GetConfig() interface{} {
+	return nil
 }
 
 func (c *callback) sendNotification (targetUrl string) error{
