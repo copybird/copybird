@@ -19,7 +19,7 @@ type SlackMessage struct {
 	Text string `json:"text"`
 }
 
-func (c *Config) GetName() string {
+func (l *Local) GetName() string {
 	return MODULE_NAME
 }
 
@@ -29,21 +29,21 @@ func (local *Local) InitPipe(w io.Writer, r io.Reader) error {
 	return nil
 }
 
-func (c *Config) InitModule(_cfg interface{}) error {
+func (l *Local) InitModule(_cfg interface{}) error {
 	return nil
 }
-func (c *Config) Run() error {
-	if err := c.NotifySlackChannel(); err != nil {
+func (l *Local) Run() error {
+	if err := l.config.NotifySlackChannel(); err != nil {
 		return err
 	}
 
 	return nil
 }
-func GetConfig() interface{} {
+func (l *Local) GetConfig() interface{} {
 	return Config{}
 }
 
-func (c *Config) Close() error {
+func (l *Local) Close() error {
 	return nil
 }
 

@@ -13,18 +13,19 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var conf Config
-	name := conf.GetName()
+	var local Local
+	name := local.GetName()
 	require.Equal(t, MODULE_NAME, name)
 }
 
 func TestGetConfig(t *testing.T) {
-	config := GetConfig()
+	var local Local
+	config := local.GetConfig()
 	require.Equal(t, Config{}, config)
 }
 func TestClose(t *testing.T) {
-	var conf Config
-	assert.Equal(t, nil, conf.Close())
+	var local Local
+	assert.Equal(t, nil, local.Close())
 }
 
 func TestInitPipe(t *testing.T) {
@@ -78,8 +79,8 @@ func TestRun(t *testing.T) {
 	for _, tt := range testCase {
 		urls := fmt.Sprintf("%s/%s", SlackHookSite, tt.Hook)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
-		conf := Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}
-		err := conf.Run()
+		local := Local{config: &Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}}
+		err := local.Run()
 		assert.Equal(t, tt.Error, err)
 	}
 }
