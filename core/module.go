@@ -6,4 +6,5 @@ type Module interface {
 	InitModule(cfg interface{}) error
 	Run() error
 	Close() error
+	InitPipe(w io.Writer, r io.Reader) error
 }

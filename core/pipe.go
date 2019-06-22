@@ -5,5 +5,5 @@ import (
 )
 
 type PipeComponent interface {
-	InitPipe(w io.Writer, r io.Reader) error
+	
 }
