@@ -3,7 +3,6 @@ package local
 import (
 	"io"
 	"os"
-	"fmt"
 	"github.com/copybird/copybird/output"
 )
 
@@ -46,22 +45,8 @@ func (loc *Local) Run() error {
 	
     defer f.Close()
 
-	buf := make([]byte, 12)
-	for {
-		_, err = loc.reader.Read(buf)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return fmt.Errorf("read err: %s", err)
-		}
-		_, err = loc.writer.Write(buf)
-		if err != nil {
-			return fmt.Errorf("write err: %s", err)
-		}
-	}
-	
-	return nil
+	_, err = io.Copy(f, loc.reader)
+	return err
 } 
 
 func (loc *Local) Close() error {
