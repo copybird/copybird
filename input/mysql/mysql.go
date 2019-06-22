@@ -22,3 +22,19 @@ func New(dsn string) (*MySQLDumper, error) {
 	}
 	return &MySQLDumper{conn: conn}, nil
 }
+func (d *MySQLDumper) getTables() ([]string, error) {
+	tables := []string{}
+	rows, err := d.conn.Query("SHOW TABLES")
+	if err != nil {
+		return tables, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var table string
+		if err := rows.Scan(&table); err != nil {
+			return tables, err
+		}
+		tables = append(tables, table)
+	}
+	return tables, rows.Err()
+}
