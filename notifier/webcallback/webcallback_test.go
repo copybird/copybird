@@ -1,9 +1,9 @@
 package webcallback
 
 import (
+	"errors"
 	"fmt"
 	"testing"
-	"errors"
 
 	"github.com/stretchr/testify/assert"
 
@@ -27,11 +27,11 @@ func TestSendNotification(t *testing.T) {
 		{httpmock.NewStringResponder(400, "{}"), "google.com", "Succces", "Fail", false, errors.New("StatusCode: 400")},
 	}
 
-	for _, tt := range testCase {
-		urls := fmt.Sprintf("%s", tt.TargetUrl)
-		httpmock.RegisterResponder("GET", urls, tt.Responder)
-		conf := Callback{Config: &Config{TargetUrl: tt.TargetUrl, SuccessMsg: tt.SuccessMsg, FailMsg: tt.FailMsg}}
+	for _, tc := range testCase {
+		urls := fmt.Sprintf("%s", tc.TargetUrl)
+		httpmock.RegisterResponder("GET", urls, tc.Responder)
+		conf := Callback{Config: &Config{TargetUrl: tc.TargetUrl, SuccessMsg: tc.SuccessMsg, FailMsg: tc.FailMsg}}
 		err := conf.SendNotification()
-		assert.Equal(t, tt.Error, err)
+		assert.Equal(t, tc.Error, err)
 	}
 }
