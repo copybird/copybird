@@ -22,11 +22,12 @@ require (
 	github.com/pkg/sftp v1.10.0
 	github.com/sfreiberg/gotwilio v0.0.0-20190522212351-14c666f1d505
 	github.com/spf13/cobra v0.0.5
-	github.com/stretchr/testify v1.2.2
+	github.com/stretchr/testify v1.3.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	go.mongodb.org/mongo-driver v1.0.3
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	google.golang.org/api v0.6.0
 	gotest.tools v2.2.0+incompatible
+	k8s.io/apimachinery v0.0.0-20190620073744-d16981aedf33
 )

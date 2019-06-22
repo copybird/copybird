@@ -1,0 +1,8 @@
+apiVersion: copybird.org/v1
+kind: CopyBird
+metadata:
+  name: sample-copybird
+spec:
+  stream: triggermesh-test
+  aws-region: us-east-1
+  aws-creds: aws
