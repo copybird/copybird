@@ -14,7 +14,7 @@ const (
 
 type AwsSes struct {
 	config  *Config
-	simem   *ses.SES //simple email service
+	simem   *ses.SES // simple email service
 	seInput *ses.SendEmailInput
 	reader  io.Reader
 	writer  io.Writer
@@ -60,16 +60,16 @@ func (c *AwsSes) InitModule(_cfg interface{}) error {
 		Message: &ses.Message{
 			Body: &ses.Body{
 				Html: &ses.Content{
-					Charset: aws.String(c.config.CharSet),
-					Data:    aws.String(c.config.HTMLBody),
+					Charset: aws.String(c.config.Charset),
+					Data:    aws.String(c.config.HTMLbody),
 				},
 				Text: &ses.Content{
-					Charset: aws.String(c.config.CharSet),
-					Data:    aws.String(c.config.TextBody),
+					Charset: aws.String(c.config.Charset),
+					Data:    aws.String(c.config.Textbody),
 				},
 			},
 			Subject: &ses.Content{
-				Charset: aws.String(c.config.CharSet),
+				Charset: aws.String(c.config.Charset),
 				Data:    aws.String(c.config.Subject),
 			},
 		},

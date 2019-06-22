@@ -28,9 +28,9 @@ func TestAwsSes_WithCredential(t *testing.T) {
 		Sender:    "sender@example.com",
 		Recipient: "recipient@example.com",
 		Subject:   "Amazon SES Test (AWS SDK for Go)",
-		HTMLBody:  "Test",
-		TextBody:  "This email was sent with Amazon SES using the AWS SDK for Go.",
-		CharSet:   "UTF-8",
+		HTMLbody:  "Test",
+		Textbody:  "This email was sent with Amazon SES using the AWS SDK for Go.",
+		Charset:   "UTF-8",
 	}
 
 	as := AwsSes{}
