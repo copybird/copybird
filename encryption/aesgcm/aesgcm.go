@@ -28,7 +28,7 @@ func (e *EncryptionAESGCM) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (e *EncryptionAESGCM) InitPipe(w io.Writer, r io.Reader, _cfg interface{}) error {
+func (e *EncryptionAESGCM) InitPipe(w io.Writer, r io.Reader) error {
 	e.reader = r
 	e.writer = w
 	return nil
