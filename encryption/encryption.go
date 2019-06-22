@@ -5,6 +5,6 @@ import (
 )
 
 type Encryption interface {
+	core.Module
 	core.PipeComponent
-	InitEncryption(key []byte) error
 }
