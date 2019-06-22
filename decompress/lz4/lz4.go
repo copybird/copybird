@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
 	// "os"
 
 	"github.com/copybird/copybird/compress"
@@ -44,8 +45,9 @@ func (c *DecompressLZ4) InitModule(_cfg interface{}) error {
 
 func (c *DecompressLZ4) Run() error {
 	// make a buffer to keep chunks that are read
-	gr := lz4.NewReader(c.reader)
-	_, err := io.Copy(c.writer, gr)
+	lr := lz4.NewReader(c.reader)
+
+	_, err := io.Copy(c.writer, lr)
 	if err != nil {
 		return fmt.Errorf("copy error: %s", err)
 	}

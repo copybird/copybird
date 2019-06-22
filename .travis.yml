@@ -4,12 +4,11 @@ sudo: false
 
 os:
 - linux
-- osx
 
 env:
-  - GO111MODULE=on
-  - PRODUCT=copybird
-  - ARCH=amd64
+  global:
+    - GO111MODULE=on
+    - PRODUCT=copybird
 
 go:
 - 1.12.x
@@ -21,7 +20,6 @@ script:
 - go build -o bin/$PRODUCT main.go
 
 before_deploy:
-- mkdir -p build
 - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
 
 deploy:
