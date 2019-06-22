@@ -16,11 +16,9 @@ services:
       - ./samples/mysql.sql:/docker-entrypoint-initdb.d/init.sql
 
   mongo:
-    image: mongo:3.4
+    build:
+      context: docker/mongo
     environment:
-      MONGO_INIT_ROOT_USERNAME: root
-      MONGO_INIT_ROOT_PASSWORD: root
+      MONGO_INITDB_DATABASE: test
     ports:
       - '27017:27017'
-    volumes:
-      - ./mongo:/data/db

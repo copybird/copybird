@@ -3,13 +3,15 @@ package lz4
 import (
 	"errors"
 	"io"
+	"fmt"
 
 	"github.com/copybird/copybird/compress"
 	"github.com/pierrec/lz4"
 )
 
 var (
-	errCompLevel = errors.New("compression level must be between -1 and 9")
+	errCompLevel       = errors.New("compression level must be between -1 and 9")
+	errNotCompressible = errors.New("is not compressible")
 )
 
 const MODULE_NAME = "lz4"
@@ -19,7 +21,7 @@ type CompressLZ4 struct {
 	compress.Output
 	reader io.Reader
 	writer io.Writer
-	lz4    *lz4.Writer
+	level  int
 }
 
 func (c *CompressLZ4) GetName() string {
@@ -27,10 +29,10 @@ func (c *CompressLZ4) GetName() string {
 }
 
 func (c *CompressLZ4) GetConfig() interface{} {
-	return &Config{}
+	return &Config{Level: 2}
 }
 
-func (c *CompressLZ4) InitPipe(w io.Writer, r io.Reader, _cfg interface{}) error {
+func (c *CompressLZ4) InitPipe(w io.Writer, r io.Reader) error {
 	c.reader = r
 	c.writer = w
 	return nil
@@ -38,33 +40,35 @@ func (c *CompressLZ4) InitPipe(w io.Writer, r io.Reader, _cfg interface{}) error
 
 func (c *CompressLZ4) InitModule(_cfg interface{}) error {
 	cfg := _cfg.(*Config)
-	c.lz4 = lz4.NewWriter(c.writer)
-	c.lz4.Header = lz4.Header{CompressionLevel: cfg.level}
+	if cfg.Level < -1 || cfg.Level > 9 {
+		return errCompLevel
+	}
+	c.level = cfg.Level
 	return nil
 }
 
 func (c *CompressLZ4) Run() error {
+	lw := lz4.NewWriter(c.writer)
+	lw.Header = lz4.Header{CompressionLevel: c.level}
+	defer lw.Close()
+
+	_, err := io.Copy(lw, c.reader)
+	if err != nil {
+		return fmt.Errorf("copy error: %s", err)
+	}
+	return nil
+}
+
+func (c *CompressLZ4) Uncompress() error {
 
 	// make a buffer to keep chunks that are read
-	buf := make([]byte, 12)
-
-	for {
-		// read a chunk
-		n, err := c.reader.Read(buf)
-		if err != nil && err != io.EOF {
-			return err
-		}
-		if n == 0 {
-			break
-		}
-
-		// write a chunk
-		if _, err := c.lz4.Write(buf[:n]); err != nil {
-			return err
-		}
+	gr := lz4.NewReader(c.reader)
+	_, err := io.Copy(c.writer, gr)
+	if err != nil {
+		return fmt.Errorf("copy error: %s", err)
 	}
-
 	return nil
+
 }
 
 // Close closes compressor
