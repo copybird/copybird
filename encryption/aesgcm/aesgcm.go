@@ -25,7 +25,7 @@ func (e *EncryptionAESGCM) GetName() string {
 }
 
 func (e *EncryptionAESGCM) GetConfig() interface{} {
-	return nil
+	return &Config{}
 }
 
 func (e *EncryptionAESGCM) InitPipe(w io.Writer, r io.Reader, _cfg interface{}) error {
