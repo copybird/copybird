@@ -2,7 +2,6 @@ package common
 
 import (
 	"io"
-	"log"
 	"sync"
 	"testing"
 
@@ -56,7 +55,7 @@ func TestAppRun(t *testing.T) {
 	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modMysql.Run(); err != nil {
-			log.Printf("%s err: %s", modMysql.GetName(), err)
+			t.Logf("%s err: %s", modMysql.GetName(), err)
 			chErr <- err
 		}
 	}(&wg, chErr)
@@ -64,7 +63,7 @@ func TestAppRun(t *testing.T) {
 	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modGzip.Run(); err != nil {
-			log.Printf("%s err: %s", modGzip.GetName(), err)
+			t.Logf("%s err: %s", modGzip.GetName(), err)
 			chErr <- err
 		}
 	}(&wg, chErr)
@@ -72,7 +71,7 @@ func TestAppRun(t *testing.T) {
 	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modAesgcm.Run(); err != nil {
-			log.Printf("%s err: %s", modAesgcm.GetName(), err)
+			t.Logf("%s err: %s", modAesgcm.GetName(), err)
 			chErr <- err
 		}
 	}(&wg, chErr)
@@ -80,16 +79,21 @@ func TestAppRun(t *testing.T) {
 	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modOutput.Run(); err != nil {
-			log.Printf("%s err: %s", modOutput.GetName(), err)
+			t.Logf("%s err: %s", modOutput.GetName(), err)
 			chErr <- err
 		}
 	}(&wg, chErr)
 
 	wg.Wait()
 
-	err, ok := <-chErr
-	if ok && err != nil {
-		log.Printf("pipe err: %s", err)
+	for {
+		err, ok := <-chErr
+		if !ok {
+			break
+		}
+		if ok && err != nil {
+			t.Logf("pipe err: %s", err)
+		}
 	}
 
 }
