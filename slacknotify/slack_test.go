@@ -2,6 +2,7 @@ package slacknotify
 
 import (
 	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,20 +15,21 @@ func TestNotifySlackChannel(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	const urls = "https://hooks.slack.com/services/TKBM/BKFLY1L/tL3RAwn9EYWMaMX"
-
 	testCase := []struct {
 		Responder httpmock.Responder
+		Hook      string
 		Message   string
 		Error     error
 	}{
-		{httpmock.NewStringResponder(200, "{}"), "Hello", nil},
-		{httpmock.NewStringResponder(400, "{}"), "Hello", errors.New("StatusCode: 400")},
+		{httpmock.NewStringResponder(200, "{}"), "TKBM/BKFLY1L/tL3RAwn9EYWMaMX", "Hello", nil},
+		{httpmock.NewStringResponder(400, "{}"), "TKBM/YWMaMX", "Hello", errors.New("StatusCode: 400")},
 	}
 
 	for _, tt := range testCase {
+		urls := fmt.Sprintf("%s/%s", SlackHookSite, tt.Hook)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
-		err := NotifySlackChannel(tt.Message, urls)
+		conf := Config{Hook: tt.Hook, Message: tt.Message}
+		err := conf.NotifySlackChannel()
 		assert.Equal(t, tt.Error, err)
 	}
 }
