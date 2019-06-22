@@ -33,4 +33,10 @@ func TestGetTables(t *testing.T) {
 	data, err := d.getTableData(tables[0])
 	assert.NoError(t, err)
 	assert.Equal(t, authorsData, data)
+	err = d.dumpDatabase()
+	assert.NoError(t, err)
+	assert.Equal(t, authorsData, d.data.Tables[0].Data)
+	assert.Equal(t, authorsSchema, d.data.Tables[0].Schema)
+	err = d.Run()
+	assert.NoError(t, err)
 }
