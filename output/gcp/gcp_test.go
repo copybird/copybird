@@ -25,8 +25,8 @@ func TestInitPipe(t *testing.T){
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, gcp.InitPipe(bufOutput, bufInput))
 }
-//InitOutput initializes S3 with session
-func TestInitOutput(t *testing.T) {
+//InitModule initializes S3 with session
+func TestInitModule(t *testing.T) {
 
 	var gcp GCP
 
