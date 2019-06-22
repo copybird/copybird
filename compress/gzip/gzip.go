@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 )
 
 type Compress struct {
@@ -21,7 +20,6 @@ func (c *Compress) Init(w io.Writer, r io.Reader) error {
 }
 
 func (c *Compress) InitCompress(level int) error {
-	log.Printf("Initialize compress")
 	if level < -1 || level > 9 {
 		return errors.New("compression level must be between -1 and 9")
 	}
