@@ -2,6 +2,8 @@ package gcp
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 //InitOutput initializes S3 with session
@@ -9,12 +11,12 @@ func TestInitOutput(t *testing.T) {
 
 	var gcp GCP
 
-	config := map[string]string{
-		"AWS_REGION": "us-east-1",
-	}
+	err := gcp.InitOutput(map[string]string{"AWS_REGION": "us-east-1"})
+	require.Error(t, err, "Should fail to find credentials")
 
-	err := gcp.InitOutput(config)
-	if err == nil {
-		t.Error("Should fail to find credentials")
-	}
+	err = gcp.InitOutput(map[string]string{"TOKEN_SOURCE": "some token source"})
+	require.Error(t, err, "token source is not supported")
+
+	err = gcp.InitOutput(map[string]string{"CREDENTIALS_FILE": "creds.json"})
+	require.Error(t, err, "credentials file is missing")
 }
