@@ -1,7 +1,6 @@
 package notifier
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -12,15 +11,15 @@ type callback struct{
 	targetUrl string
 }
 
-func (c *callback) sendNotification () (){
+func (c *callback) sendNotification () error{
 
 	//Set request body params
 	data := url.Values{}
 	data.Set("success", "true")
 
-	req, err := http.NewRequest("POST", c.targetUrl, strings.NewReader(data.Encode()))
+	req, err := http.NewRequest("GET", c.targetUrl, strings.NewReader(data.Encode()))
 	if err != nil {
-		log.Print("Error reading request. ", err)
+		return err
 	}
 
 	// Set headers
@@ -32,6 +31,10 @@ func (c *callback) sendNotification () (){
 	// Send request
 	resp , err := client.Do(req)
 	if err != nil {
-		log.Print("Error reading response. ", err)
+		return err
 	}
+
+	defer resp.Body.Close()
+
+	return nil
 }
