@@ -1,4 +1,4 @@
-package input
+package mysql
 
 // MySQLConfig stores configuration for MySQL backups
 type MySQLConfig struct {
