@@ -7,6 +7,8 @@ require (
 	github.com/aws/aws-sdk-go v1.20.6
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/go-stack/stack v1.8.0 // indirect
+	github.com/golang/snappy v0.0.1 // indirect
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/pierrec/lz4 v2.0.5+incompatible
@@ -14,6 +16,9 @@ require (
 	github.com/pkg/sftp v1.10.0
 	github.com/spf13/cobra v0.0.5
 	github.com/stretchr/testify v1.2.2
+	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
+	github.com/xdg/stringprep v1.0.0 // indirect
+	go.mongodb.org/mongo-driver v1.0.3
 	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	google.golang.org/api v0.6.0
 	gotest.tools v2.2.0+incompatible
