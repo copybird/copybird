@@ -1,4 +1,4 @@
-package web_callback
+package webcallback
 
 type Config struct {
 	targetUrl  string
