@@ -2,10 +2,12 @@ package gcp
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	"cloud.google.com/go/storage"
 	"github.com/copybird/copybird/output"
+	"google.golang.org/api/option"
 )
 
 type GCP struct {
@@ -29,12 +31,24 @@ func (gcp *GCP) InitOutput(config map[string]string) error {
 
 	gcp.ctx = context.Background()
 
-	client, err := storage.NewClient(gcp.ctx)
-	if err != nil {
-		return err
+	switch {
+	case config["CREDENTIALS_FILE"] != "":
+		client, err := storage.NewClient(gcp.ctx, option.WithCredentialsFile(config["CREDENTIALS_FILE"]))
+		if err != nil {
+			return err
+		}
+		gcp.client = client
+	case config["TOKEN_SOURCE"] != "":
+		return fmt.Errorf("Auth with token source is not available at the moment")
+	default:
+		client, err := storage.NewClient(gcp.ctx)
+		if err != nil {
+			return err
+		}
+		gcp.client = client
 	}
 
-	gcp.bucket = client.Bucket(gcp.bucketName)
+	gcp.bucket = gcp.client.Bucket(gcp.bucketName)
 	// check if the bucket exists
 	if _, err := gcp.bucket.Attrs(gcp.ctx); err != nil {
 		return err
