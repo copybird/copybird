@@ -21,7 +21,7 @@ type GCP struct {
 	config     map[string]string
 }
 
-func (gcp *GCP) Init(w io.Writer, r io.Reader) error {
+func (gcp *GCP) InitPipe(w io.Writer, r io.Reader) error {
 	gcp.reader = r
 	gcp.writer = w
 	return nil

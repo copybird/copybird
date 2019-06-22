@@ -10,6 +10,8 @@ import (
 	"github.com/copybird/copybird/output"
 )
 
+const MODULE_NAME = "s3"
+
 type S3 struct {
 	output.Output
 	reader  io.Reader
@@ -18,15 +20,23 @@ type S3 struct {
 	config  map[string]string
 }
 
-func (s *S3) Init(w io.Writer, r io.Reader) error {
+func (s *S3) GetName() string {
+	return MODULE_NAME
+}
+
+func (s *S3) GetConfig() interface{} {
+	return nil
+}
+
+func (s *S3) InitPipe(w io.Writer, r io.Reader) error {
 	s.reader = r
 	s.writer = w
 	return nil
 }
 
 //InitOutput initializes S3 with session
-func (s *S3) InitOutput(config map[string]string) error {
-
+func (s *S3) InitModule(_config interface{}) error {
+	config := _config.(map[string]string)
 	session, err := session.NewSession(&aws.Config{
 		Region:      aws.String(config["AWS_REGION"]),
 		Credentials: credentials.NewStaticCredentials(config["AWS_ACCESS_KEY_ID"], config["AWS_SECRET_ACCESS_KEY"], ""),
@@ -55,7 +65,7 @@ func (s *S3) Run() error {
 		return err
 	}
 	return nil
-}
+} 
 
 func (s *S3) Close() error {
 	return nil
