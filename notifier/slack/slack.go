@@ -39,7 +39,7 @@ func (c *Config) Run() error {
 
 	return nil
 }
-func GetCongif() interface{} {
+func GetConfig() interface{} {
 	return Config{}
 }
 
