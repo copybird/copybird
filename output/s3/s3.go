@@ -42,18 +42,15 @@ func (s *S3) InitOutput(config map[string]string) error {
 
 func (s *S3) Run() error {
 
-	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-east-1")})
-	if err != nil {
-		return err
-	}
-	svc := s3manager.NewUploader(sess)
+	svc := s3manager.NewUploader(s.session)
+
 	input := &s3manager.UploadInput{
-		Bucket: aws.String("bucket"),
-		Key:    aws.String("whatever"),
+		Bucket: aws.String(s.config["AWS_BUCKET"]),
+		Key:    aws.String(s.config["AWS_FILE_NAME"]),
 		Body:   s.reader,
 	}
 
-	_, err = svc.Upload(input)
+	_, err := svc.Upload(input)
 	if err != nil {
 		return err
 	}
