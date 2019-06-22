@@ -2,14 +2,13 @@ package email
 
 import (
 	"fmt"
-	"log"
 	"net/smtp"
 )
 
 const MODULE_NAME = "email"
 
-type Email struct{
-	Config     *Config
+type Email struct {
+	Config *Config
 }
 
 func (e *Email) GetName() string {
@@ -21,6 +20,7 @@ func (e *Email) GetConfig() interface{} {
 }
 
 func (e *Email) InitModule(_cfg interface{}) error {
+	e.Config = _cfg.(*Config)
 	return nil
 }
 
@@ -36,7 +36,7 @@ func (e *Email) Close() error {
 	return nil
 }
 
-func (e *Email) SendEmail () error{
+func (e *Email) SendEmail() error {
 
 	from := e.Config.MailerUser
 	pass := e.Config.MailerPassword
@@ -52,13 +52,11 @@ func (e *Email) SendEmail () error{
 	header += fmt.Sprintf("Subject: %s\r\n", subject)
 	header += "\r\n" + body + "\r\n"
 
-
 	err := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
 		from, []string{to}, []byte(header))
 
 	if err != nil {
-		log.Printf("smtp error: %s", err)
 		return err
 	}
 
