@@ -1,4 +1,4 @@
-package lz4
+package gzip
 
 type Config struct {
 	Level int

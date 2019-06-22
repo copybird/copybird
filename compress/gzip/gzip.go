@@ -9,7 +9,7 @@ import (
 	"github.com/copybird/copybird/compress"
 )
 
-const MODULE_NAME = "GZIP"
+const MODULE_NAME = "gzip_compress"
 
 type Compress struct {
 	compress.Output
@@ -43,55 +43,19 @@ func (c *Compress) InitModule(_cfg interface{}) error {
 }
 
 func (c *Compress) Run() error {
-	buff := make([]byte, 4096)
 	gw, err := gzip.NewWriterLevel(c.writer, c.level)
 	if err != nil {
 		return fmt.Errorf("cant start gzip writer with error: %s", err)
 	}
 	defer gw.Close()
 
-	for {
-		_, err := c.reader.Read(buff)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return fmt.Errorf("read error: %s", err)
-		}
-		_, err = gw.Write(buff)
-		if err != nil {
-			return fmt.Errorf("write error: %s", err)
-		}
+	_, err = io.Copy(gw, c.reader)
+	if err != nil {
+		return fmt.Errorf("copy error: %s", err)
 	}
 	return nil
 }
 
 func (c *Compress) Close() error {
-	return nil
-}
-
-func (c *Compress) Unzip() error {
-
-	gr, err := gzip.NewReader(c.reader)
-	if err != nil {
-		return fmt.Errorf("cant start gzip reader with error: %s", err)
-	}
-	defer gr.Close()
-
-	for {
-		buff := make([]byte, 4096)
-
-		_, err := gr.Read(buff)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return fmt.Errorf("read error: %s", err)
-		}
-		_, err = c.writer.Write(buff)
-		if err != nil {
-			return fmt.Errorf("write error: %s", err)
-		}
-	}
 	return nil
 }

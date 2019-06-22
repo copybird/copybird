@@ -1,4 +1,4 @@
-package s3
+package scp
 
 import (
 	"bytes"
@@ -8,26 +8,26 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var s S3
-	name := s.GetName()
-	require.Equal(t, "s3", name)
+	var scp SCP
+	name := scp.GetName()
+	require.Equal(t, "scp", name)
 }
 
 func TestGetConfig(t *testing.T) {
-	var s S3
-	conf := s.GetConfig()
+	var scp SCP
+	conf := scp.GetConfig()
 	require.Equal(t, Config{}, conf)
 }
 
 func TestInitPipe(t *testing.T) {
-	var s S3
+	var scp SCP
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, s.InitPipe(bufOutput, bufInput))
+	require.NoError(t, scp.InitPipe(bufOutput, bufInput))
 }
 
 func TestInitModule(t *testing.T) {
-	var s S3
-	err := s.InitModule(Config{Region: "us-east-1"})
+	var scp SCP
+	err := scp.InitModule(Config{})
 	require.NoError(t, err, "should not be any error here")
 }

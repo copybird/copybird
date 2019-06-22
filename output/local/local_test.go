@@ -1,13 +1,13 @@
 package local
 
 import (
-	"testing"
 	"bytes"
 	"os"
+	"testing"
+
 	"github.com/stretchr/testify/require"
 )
 
-//InitOutput initializes S3 with session
 func TestGetName(t *testing.T) {
 	var loc Local
 	name := loc.GetName()
@@ -18,27 +18,26 @@ func TestGetConfig(t *testing.T) {
 	var loc Local
 	conf := loc.GetConfig()
 	require.Equal(t, Config{
-		DefaultMask:os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		FileName: "test.txt",
-		}, conf)
+		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
+		FileName:    "test.txt",
+	}, conf)
 }
 
-
-func TestInitPipe(t *testing.T){
+func TestInitPipe(t *testing.T) {
 	var loc Local
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, loc.InitPipe(bufOutput, bufInput))
 }
 
-func TestRun(t *testing.T){
+func TestRun(t *testing.T) {
 	var loc Local
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, loc.InitPipe(bufOutput, bufInput))
 	conf := Config{
-		DefaultMask: os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		FileName: "test.txt",
+		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
+		FileName:    "test.txt",
 	}
 	err := loc.InitModule(conf)
 	require.NoError(t, err)

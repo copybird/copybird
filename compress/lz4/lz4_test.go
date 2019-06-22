@@ -3,35 +3,64 @@ package lz4
 import (
 	"bytes"
 	"testing"
+	"io"
 
 	"gotest.tools/assert"
+	"github.com/pierrec/lz4"
 )
 
-func TestCompressLZ4(t *testing.T) {
-
-	confLevel := 1
-	comp := CompressLZ4{}
-
-	rb := new(bytes.Buffer)
-	rb.WriteString("hello, world.")
-
-	wb := new(bytes.Buffer)
-	lenBC := rb.Len()
-
-	assert.Assert(t, comp.GetConfig() != nil)
-	assert.NilError(t, comp.InitPipe(rb, wb, nil))
-	assert.NilError(t, comp.InitModule(&Config{level: confLevel}))
-
-	err := comp.Run()
-	if err != nil {
-		t.Fatalf("Error: %s", err)
+func TestCompressLZ4_Table(t *testing.T) {
+	type args struct {
+		level int
+		input string
 	}
 
-	lenAC := wb.Len() // Length after compress
-
-	if lenBC == lenAC {
-		t.Fatalf("Bad compress!")
+	tests := []struct {
+		name    string
+		args    args
+		want    int32
+		wantErr bool
+	}{
+		// TODO: Add more test cases.
+		{
+			name:    "invalid-level",
+			args:    args{level: -2, input: "hello, world."},
+			wantErr: true,
+		},
+		{
+			name:    "valid-level",
+			args:    args{level: 0, input: "hello, world."},
+			wantErr: false,
+		},
 	}
 
-	assert.NilError(t, comp.Close())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			comp := CompressLZ4{}
+
+			rb := bytes.NewReader([]byte("hello, world."))
+			wb := new(bytes.Buffer)
+
+			assert.Assert(t, comp.GetConfig() != nil)
+			assert.NilError(t, comp.InitPipe(wb, rb))
+			err := comp.InitModule(&Config{Level: tt.args.level})
+			if !tt.wantErr && err != nil {
+				t.Errorf("Compress.CompressLZ4() result = %v, want result %v", err, tt.wantErr)
+				return
+			}
+
+			err = comp.Run()
+			if err != nil {
+				panic(err)
+			}
+
+			var buff2 = new(bytes.Buffer)
+			gr := lz4.NewReader(wb)
+			_, err = io.Copy(buff2, gr)
+			assert.Equal(t, err, nil)
+			assert.Equal(t, buff2.String(), "hello, world.")
+			
+			assert.NilError(t, comp.Close())
+		})
+	}
 }
