@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"os"
 
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/crypto/ssh/agent"
 )
 
 type Endpoint struct {
@@ -65,11 +63,4 @@ func (tunnel *SSHtunnel) forward(localConn net.Conn) {
 
 	go copyConn(localConn, remoteConn)
 	go copyConn(remoteConn, localConn)
-}
-
-func Agent() ssh.AuthMethod {
-	if sshAgent, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK")); err == nil {
-		return ssh.PublicKeysCallback(agent.NewClient(sshAgent).Signers)
-	}
-	return nil
 }
