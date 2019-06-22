@@ -2,5 +2,5 @@ package local
 
 type Config struct {
 	FileName string
-	DefaultUMask int
+	DefaultMask int
 }

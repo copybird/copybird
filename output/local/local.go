@@ -38,9 +38,10 @@ func (loc *Local) InitModule(_config interface{}) error {
 
 func (loc *Local) Run() error {
 
-	f, err := os.Create(loc.config.FileName)
-    if err != nil {
-        return err
+	// If the file doesn't exist, create it, or append to the file
+	f, err := os.OpenFile(loc.config.FileName, loc.config.DefaultMask, 0644)
+	if err != nil {
+		return err
 	}
 	
     defer f.Close()
