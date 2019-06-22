@@ -39,8 +39,7 @@ require (
 	google.golang.org/api v0.6.0
 	google.golang.org/appengine v1.6.1 // indirect
 	gotest.tools v2.2.0+incompatible
-	k8s.io/api v0.0.0-20190620073856-dcce3486da33 // indirect
 	k8s.io/apimachinery v0.0.0-20190620073744-d16981aedf33
-	k8s.io/client-go v11.0.0+incompatible
+	k8s.io/client-go v0.0.0-20190620074045-585a16d2e773
 	k8s.io/utils v0.0.0-20190607212802-c55fbcfc754a // indirect
 )
