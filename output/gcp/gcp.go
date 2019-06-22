@@ -1,4 +1,4 @@
-package s3
+package gcp
 
 import (
 	"context"
