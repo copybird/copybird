@@ -6,21 +6,38 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 type SlackMessage struct {
 	Text string `json:"text"`
 }
 
+type Config struct {
+	Hook    string
+	Message string
+}
+
+func GetCongifForSlack() Config {
+	conf := Config{}
+	conf.Message = os.Getenv("SLACK_NOTIFY_MESSAGE")
+	conf.Message = os.Getenv("SLACK_HOOK")
+	return conf
+}
+
 const (
+	SlackHookSite       = "https://hooks.slack.com/services"
 	HeaderContentType   = "Content-Type"
 	MIMEApplicationJSON = "application/json"
 )
 
-func NotifySlackChannel(message, urls string) error {
+func (c Config) NotifySlackChannel() error {
+
+	urls := fmt.Sprintf("%s/%s", SlackHookSite, c.Hook)
+
 	client := &http.Client{}
 
-	slackMessage, err := json.Marshal(SlackMessage{Text: "@channel " + message})
+	slackMessage, err := json.Marshal(SlackMessage{Text: "<!channel> " + c.Message})
 	if err != nil {
 		return err
 	}
