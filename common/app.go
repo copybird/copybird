@@ -1,11 +1,12 @@
 package common
 
 import (
-	"github.com/copybird/copybird/core"
-	"github.com/spf13/cobra"
 	"io"
 	"log"
 	"sync"
+
+	"github.com/copybird/copybird/core"
+	"github.com/spf13/cobra"
 
 	//"log"
 
