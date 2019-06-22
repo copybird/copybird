@@ -2,9 +2,11 @@ package mongo
 
 import (
 	"context"
+	"fmt"
 	"io"
 
 	"github.com/copybird/copybird/input"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -65,5 +67,22 @@ func (d *MongoDumper) Close() error {
 }
 func (d *MongoDumper) getDatabases() ([]string, error) {
 	return d.conn.ListDatabaseNames(context.TODO(), bsonx.Doc{})
+
+}
+func (d *MongoDumper) getCollections(dbName string) ([]string, error) {
+	var colls []string
+	collections, err := d.conn.Database(dbName).ListCollections(nil, bson.M{})
+	if err != nil {
+		return colls, err
+	}
+	for collections.Next(nil) {
+		colNameRaw := collections.Current.Lookup("name")
+		colName, ok := colNameRaw.StringValueOK()
+		if !ok {
+			return colls, fmt.Errorf("invalid collection name: %v", colNameRaw)
+		}
+		colls = append(colls, colName)
+	}
+	return colls, nil
 
 }

@@ -2,12 +2,12 @@ package ssh
 
 import (
 	"fmt"
-	"golang.org/x/crypto/ssh/agent"
 	"io"
 	"net"
 	"os"
 
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/crypto/ssh/agent"
 )
 
 type Endpoint struct {
@@ -56,8 +56,8 @@ func (tunnel *SSHtunnel) forward(localConn net.Conn) {
 		return
 	}
 
-	copyConn:=func(writer, reader net.Conn) {
-		_, err:= io.Copy(writer, reader)
+	copyConn := func(writer, reader net.Conn) {
+		_, err := io.Copy(writer, reader)
 		if err != nil {
 			fmt.Printf("io.Copy error: %s", err)
 		}

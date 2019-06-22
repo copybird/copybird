@@ -5,6 +5,7 @@ go 1.12
 require (
 	cloud.google.com/go v0.40.0
 	github.com/aws/aws-sdk-go v1.20.6
+	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
 	github.com/go-sql-driver/mysql v1.4.1

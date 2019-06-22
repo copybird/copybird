@@ -1,16 +1,14 @@
 package ssh
 
 import (
-	"golang.org/x/crypto/ssh"
 	"io"
 
-	"github.com/copybird/copybird/compress"
+	"golang.org/x/crypto/ssh"
 )
 
 const MODULE_NAME = "connector"
 
 type Ssh struct {
-	compress.Output
 	reader io.Reader
 	writer io.Writer
 	config  *Config
@@ -52,7 +50,7 @@ func (c *Ssh) Run() error {
 	}
 
 	sshConfig := &ssh.ClientConfig{
-		User: "vcap",
+		User: "root",
 		Auth: []ssh.AuthMethod{
 			Agent(),
 		},
@@ -65,7 +63,10 @@ func (c *Ssh) Run() error {
 		Remote: remoteEndpoint,
 	}
 
-	tunnel.Start()
+	err := tunnel.Start()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
