@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"log"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -46,14 +46,31 @@ func (scp *SCP) InitModule(_config interface{}) error {
 	scp.config = &conf
 
 	// get host public key
-	hostKey := getHostKey(conf.Addr)
+	hostKey, err := getHostKey(conf.Addr)
+	if err != nil {
+		return err
+	}
+
+	//TODO maybe also check for nil hostkey
 
 	if conf.PathToKey != "" {
-		// TODO need to get private key!
-		signer, err := ssh.ParsePrivateKey([]byte("privateKey"))
+		priv, err := ioutil.ReadFile(conf.PathToKey)
 		if err != nil {
 			return err
 		}
+
+		signer, err := ssh.ParsePrivateKey([]byte(priv))
+		if err != nil && err.Error() != "ssh: cannot decode encrypted private keys" {
+			return err
+		}
+
+		if err.Error() == "ssh: cannot decode encrypted private keys" {
+			signer, err = ssh.ParsePrivateKeyWithPassphrase(priv, []byte(conf.PrivateKeyPassword))
+			if err != nil {
+				return err
+			}
+		}
+
 		clientConfig = &ssh.ClientConfig{
 			User: scp.config.User,
 			Auth: []ssh.AuthMethod{
@@ -106,12 +123,12 @@ func (scp *SCP) Close() error {
 	return nil
 }
 
-func getHostKey(host string) ssh.PublicKey {
+func getHostKey(host string) (ssh.PublicKey, error) {
 	// parse OpenSSH known_hosts file
 	// ssh or use ssh-keyscan to get initial key
 	file, err := os.Open(filepath.Join(os.Getenv("HOME"), ".ssh", "known_hosts"))
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer file.Close()
 
@@ -126,15 +143,11 @@ func getHostKey(host string) ssh.PublicKey {
 			var err error
 			hostKey, _, _, _, err = ssh.ParseAuthorizedKey(scanner.Bytes())
 			if err != nil {
-				log.Fatalf("error parsing %q: %v", fields[2], err)
+				return nil, fmt.Errorf("error parsing %q: %v", fields[2], err)
 			}
 			break
 		}
 	}
 
-	if hostKey == nil {
-		log.Fatalf("no hostkey found for %s", host)
-	}
-
-	return hostKey
+	return hostKey, nil
 }
