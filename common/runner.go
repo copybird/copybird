@@ -6,4 +6,7 @@ import (
 
 type Runner struct {
 	moduleInput core.Module
+	moduleCompress core.Module
+	moduleEncrypt core.Module
+	moduleOutputs []core.Module
 }
