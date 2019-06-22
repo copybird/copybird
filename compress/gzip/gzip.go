@@ -9,7 +9,7 @@ import (
 	"github.com/copybird/copybird/compress"
 )
 
-const MODULE_NAME = "gzip_compress"
+const MODULE_NAME = "gzip"
 
 type Compress struct {
 	compress.Output
