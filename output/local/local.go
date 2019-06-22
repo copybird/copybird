@@ -20,7 +20,10 @@ func (loc *Local) GetName() string {
 }
 
 func (loc *Local) GetConfig() interface{} {
-	return Config{}
+	return Config{
+		DefaultMask: os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		FileName: "test.txt",
+	}
 }
 
 func (loc *Local) InitPipe(w io.Writer, r io.Reader) error {
