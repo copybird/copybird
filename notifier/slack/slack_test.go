@@ -29,8 +29,8 @@ func TestNotifySlackChannel(t *testing.T) {
 	for _, tt := range testCase {
 		urls := fmt.Sprintf("%s/%s", SlackHookSite, tt.Hook)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
-		conf := Config{Hook: tt.Hook, MessageSuccess: tt.Message}
-		err := conf.NotifySlackChannel(tt.Success)
+		conf := Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}
+		err := conf.NotifySlackChannel()
 		assert.Equal(t, tt.Error, err)
 	}
 }
