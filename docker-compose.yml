@@ -22,3 +22,10 @@ services:
       MONGO_INITDB_DATABASE: test
     ports:
       - '27017:27017'
+
+  nats:
+    image: nats:latest
+    restart: always
+    container_name: nats
+    ports:
+      - '4222:4222'
