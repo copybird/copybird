@@ -1,5 +1,5 @@
 package gzip
 
 type Config struct {
-	level int
+	Level int
 }

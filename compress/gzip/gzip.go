@@ -4,9 +4,8 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
-	"io"
-
 	"github.com/copybird/copybird/compress"
+	"io"
 )
 
 const MODULE_NAME = "GZIP"
@@ -23,7 +22,7 @@ func (c *Compress) GetName() string {
 }
 
 func (c *Compress) GetConfig() interface{} {
-	return nil
+	return &Config{}
 }
 
 func (c *Compress) InitPipe(w io.Writer, r io.Reader) error {
@@ -34,7 +33,7 @@ func (c *Compress) InitPipe(w io.Writer, r io.Reader) error {
 
 func (c *Compress) InitModule(_cfg interface{}) error {
 	cfg := _cfg.(Config)
-	level := cfg.level
+	level := cfg.Level
 	if level < -1 || level > 9 {
 		return errors.New("compression level must be between -1 and 9")
 	}
@@ -46,7 +45,7 @@ func (c *Compress) Run() error {
 	buff := make([]byte, 4096)
 	gw, err := gzip.NewWriterLevel(c.writer, c.level)
 	if err != nil {
-		return fmt.Errorf("cant start writer with error: %s", err)
+		return fmt.Errorf("cant start gzip writer with error: %s", err)
 	}
 	defer gw.Close()
 
@@ -67,5 +66,31 @@ func (c *Compress) Run() error {
 }
 
 func (c *Compress) Close() error {
+	return nil
+}
+
+func (c *Compress) Unzip() error  {
+
+	gr, err := gzip.NewReader(c.reader)
+	if err != nil {
+		return fmt.Errorf("cant start gzip reader with error: %s", err)
+	}
+	defer gr.Close()
+
+	for {
+		buff := make([]byte, 1)
+
+		_, err := gr.Read(buff)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return fmt.Errorf("read error: %s", err)
+		}
+		_, err = c.writer.Write(buff)
+		if err != nil {
+			return fmt.Errorf("write error: %s", err)
+		}
+	}
 	return nil
 }
