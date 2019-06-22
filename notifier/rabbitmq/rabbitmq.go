@@ -53,13 +53,12 @@ func (c *RabbitMQ) InitModule(_cfg interface{}) error {
 	c.channel = ch
 
 	// declare queue
-	qConf := c.config.QueueConfig
 	q, err := c.channel.QueueDeclare(
-		qConf.Name,       // name
-		qConf.Durable,    // durable
-		qConf.AutoDelete, // delete when unused
-		qConf.Exclusive,  // exclusive
-		qConf.NoWait,     // no-wait
+		c.config.QueueName,       // name
+		c.config.QueueDurable,    // durable
+		c.config.QueueAutoDelete, // delete when unused
+		c.config.QueueExclusive,  // exclusive
+		c.config.QueueNoWait,     // no-wait
 		nil,              // arguments
 	)
 	if err != nil {
@@ -68,10 +67,9 @@ func (c *RabbitMQ) InitModule(_cfg interface{}) error {
 	c.queue = &q
 
 	// init message to be published
-	mConf := c.config.MsgConfig
 	p := amqp.Publishing{
-		ContentType: mConf.ContentType,
-		Body:        mConf.Body,
+		ContentType: c.config.MsgContentType,
+		Body:        []byte(c.config.MsgBody),
 	}
 	c.publ = p
 
@@ -79,13 +77,11 @@ func (c *RabbitMQ) InitModule(_cfg interface{}) error {
 }
 
 func (c *RabbitMQ) Run() error {
-
-	pConf := c.config.PublishConfig
 	err := c.channel.Publish(
-		pConf.Exchange,  // exchange
-		pConf.Key,       // routing key
-		pConf.Mandatory, // mandatory
-		pConf.Immediate, // immediate
+		c.config.PublishExchange,  // exchange
+		c.config.PublishKey,       // routing key
+		c.config.PublishMandatory, // mandatory
+		c.config.PublishImmediate, // immediate
 		c.publ,
 	)
 	if err != nil {
