@@ -2,8 +2,9 @@ package lz4
 
 import (
 	"errors"
-	"io"
 	"fmt"
+	"io"
+	// "os"
 
 	"github.com/copybird/copybird/compress"
 	"github.com/pierrec/lz4"
@@ -48,7 +49,7 @@ func (c *DecompressLZ4) Run() error {
 	if err != nil {
 		return fmt.Errorf("copy error: %s", err)
 	}
-	
+
 	return nil
 }
 
