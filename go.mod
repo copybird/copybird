@@ -15,6 +15,7 @@ require (
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/lib/pq v1.1.1 // indirect
 	github.com/pierrec/lz4 v2.0.5+incompatible
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pkg/sftp v1.10.0
