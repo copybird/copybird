@@ -59,18 +59,6 @@ func (c *CompressLZ4) Run() error {
 	return nil
 }
 
-func (c *CompressLZ4) Uncompress() error {
-
-	// make a buffer to keep chunks that are read
-	gr := lz4.NewReader(c.reader)
-	_, err := io.Copy(c.writer, gr)
-	if err != nil {
-		return fmt.Errorf("copy error: %s", err)
-	}
-	return nil
-
-}
-
 // Close closes compressor
 func (c *CompressLZ4) Close() error {
 	return nil

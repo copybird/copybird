@@ -1,20 +1,31 @@
 package common
 
 import (
+	"github.com/copybird/copybird/core"
+	"github.com/spf13/cobra"
 	"log"
 
-	"github.com/spf13/cobra"
+	//"log"
+
+	//"github.com/spf13/cobra"
 )
 
 type App struct {
+	registeredModules map[string]core.Module
+	cmmRoot           *cobra.Command
+	cmdBackup         *cobra.Command
 }
 
 func NewApp() *App {
-	return &App{}
+	return &App{
+		registeredModules: make(map[string]core.Module),
+	}
 }
 
 func (a *App) Run() error {
-	var cmdBackup = &cobra.Command{
+
+	var rootCmd = &cobra.Command{Use: "copybird"}
+	a.cmdBackup = &cobra.Command{
 		Use:   "backup",
 		Short: "Start new backup",
 		Long:  ``,
@@ -24,9 +35,8 @@ func (a *App) Run() error {
 			a.DoBackup()
 		},
 	}
-
-	var rootCmd = &cobra.Command{Use: "copybird"}
-	rootCmd.AddCommand(cmdBackup)
+	rootCmd.AddCommand(a.cmdBackup)
+	a.Setup()
 	return rootCmd.Execute()
 }
 

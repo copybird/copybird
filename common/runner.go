@@ -1,6 +1,10 @@
 package common
 
 import (
+	"sync"
+	"io"
+	"log"
+
 	"github.com/copybird/copybird/core"
 )
 
@@ -17,35 +21,34 @@ func (r *Runner) Run() {
 	// for input and output
 	wg.Add(2) 
 	// for compress
-	if moduleCompress != nil {
+	if r.moduleCompress != nil {
 		wg.Add(1) 
 	}
 	// for encryption
-	if moduleEncrypt != nil {
+	if r.moduleEncrypt != nil {
 		wg.Add(1) 
 	}
 	chanError := make(chan error, 1000)
 	nextReader, nextWriter := io.Pipe()
-	go runModule(r.moduleInput, nextWriter, nil, &wg, chanError)
+	go r.runModule(r.moduleInput, nextWriter, nil, &wg, chanError)
 	if r.moduleCompress != nil {
 		_nextReader, _nextWriter := io.Pipe()
-		go runModule(r.moduleCompress, _nextWriter, nextReader, &wg, chanError)
+		go r.runModule(r.moduleCompress, _nextWriter, nextReader, &wg, chanError)
 		nextReader = _nextReader
 	}
 	if r.moduleEncrypt != nil {
 		_nextReader, _nextWriter := io.Pipe()
-		go runModule(r.moduleEncrypt, _nextWriter, nextReader, &wg, chanError)
+		go r.runModule(r.moduleEncrypt, _nextWriter, nextReader, &wg, chanError)
 		nextReader = _nextReader
 	}
-	_nextReader, _nextWriter := io.Pipe()
-	go runModule(r.moduleOutput, nil, nextReader, &wg, chanError)
+	go r.runModule(r.moduleOutput, nil, nextReader, &wg, chanError)
 	wg.Wait()
 	for {
 		err, ok := <- chanError
 		if !ok {
 			break
 		}
-		log.Printf("")
+		log.Printf("err: %s", err)
 	}
 }
 
@@ -53,11 +56,11 @@ func (r *Runner) runModule(module core.Module, writer io.Writer, reader io.Reade
 	defer wg.Done()
 	err := module.InitPipe(writer, reader)
 	if err != nil {
-		chanError <- &ModuleError{Module: module, Err: err}
+		chanError <- &core.ModuleError{Module: module, Err: err}
 		return
 	}
 	err = module.Run()
 	if err != nil {
-		chanError <- &ModuleError{Module: module, Err: err}
+		chanError <- &core.ModuleError{Module: module, Err: err}
 	}
 }

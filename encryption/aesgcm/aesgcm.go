@@ -25,7 +25,9 @@ func (e *EncryptionAESGCM) GetName() string {
 }
 
 func (e *EncryptionAESGCM) GetConfig() interface{} {
-	return &Config{}
+	return &Config{
+		Key: []byte("HELLOWORLD123"),
+	}
 }
 
 func (e *EncryptionAESGCM) InitPipe(w io.Writer, r io.Reader) error {
