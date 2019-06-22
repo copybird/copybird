@@ -25,6 +25,17 @@ func (c *Callback) InitModule(_cfg interface{}) error {
 	return nil
 }
 
+func (c *Callback) Run() error {
+	if err := c.sendNotification(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Callback) Close() error {
+	return nil
+}
 
 func (c *Callback) sendNotification () error{
 
