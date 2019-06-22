@@ -15,7 +15,7 @@ const authorsData = "(1,'test','test','te@asd.ru','2019-06-22T13:26:37.078767Z')
 
 func TestGetTables(t *testing.T) {
 	d := &PostgresDumper{}
-	c := d.GetConfig().(*config)
+	c := d.GetConfig().(*Config)
 	c.DSN = "host=127.0.0.1 port=5432 user=kbereza password=1qazXSW@ dbname=copybird sslmode=disable"
 
 	require.NoError(t, d.InitModule(c))

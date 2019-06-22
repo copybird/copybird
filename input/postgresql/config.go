@@ -2,9 +2,9 @@ package postgres
 
 var defaultSchemaName = "public"
 
-// config stores configuration for PostgreSQL backups
+// Config stores configuration for PostgreSQL backups
 type (
-	config struct {
+	Config struct {
 		DSN string
 	}
 

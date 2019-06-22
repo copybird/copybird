@@ -23,7 +23,7 @@ type (
 		conn     *sql.DB
 		data     dbDump
 		template *template.Template
-		config   *config
+		config   *Config
 		reader   io.Reader
 		writer   io.Writer
 	}
@@ -47,9 +47,9 @@ func (d *PostgresDumper) GetName() string {
 	return moduleName
 }
 
-// GetConfig returns config of module
+// GetConfig returns Config of module
 func (d *PostgresDumper) GetConfig() interface{} {
-	return &config{}
+	return &Config{}
 }
 
 // InitPipe initializes pipe
@@ -61,7 +61,7 @@ func (d *PostgresDumper) InitPipe(w io.Writer, r io.Reader, cfg interface{}) err
 
 // InitModule initializes module
 func (d *PostgresDumper) InitModule(cfg interface{}) error {
-	d.config = cfg.(*config)
+	d.config = cfg.(*Config)
 	conn, err := sql.Open("postgres", d.config.DSN)
 	if err != nil {
 		return err
