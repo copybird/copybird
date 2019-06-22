@@ -2,14 +2,14 @@ package lz4
 
 import (
 	"bytes"
-	"testing"
 	"io"
+	"testing"
 
-	"gotest.tools/assert"
 	"github.com/pierrec/lz4"
+	"gotest.tools/assert"
 )
 
-func TestCompressLZ4_Table(t *testing.T) {
+func TestCompressLZ4(t *testing.T) {
 	type args struct {
 		level int
 		input string
@@ -59,7 +59,7 @@ func TestCompressLZ4_Table(t *testing.T) {
 			_, err = io.Copy(buff2, gr)
 			assert.Equal(t, err, nil)
 			assert.Equal(t, buff2.String(), "hello, world.")
-			
+
 			assert.NilError(t, comp.Close())
 		})
 	}
