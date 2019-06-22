@@ -1,4 +1,4 @@
-package input
+package mysql
 
 import (
 	"database/sql"
@@ -53,7 +53,7 @@ func (d *MySQLDumper) GetConfig() interface{} {
 }
 
 // InitPipe initializes pipe
-func (d *MySQLDumper) InitPipe(w io.Writer, r io.Reader, cfg interface{}) error {
+func (d *MySQLDumper) InitPipe(w io.Writer, r io.Reader) error {
 	d.reader = r
 	d.writer = w
 	return nil
