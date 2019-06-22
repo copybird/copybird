@@ -127,6 +127,8 @@ func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
 			a.addFlagString(a.cmdBackup, argName, cfgValue.Field(i).String())
 		case reflect.Bool:
 			a.addFlagBool(a.cmdBackup, argName, cfgValue.Field(i).Bool())
+		case reflect.Struct:
+			panic(fmt.Errorf("module %s config contains struct field %s", moduleGlobalName, field.Name))
 		}
 	}
 	return nil
