@@ -39,22 +39,22 @@ func (c *Ssh) InitModule(_cfg interface{}) error {
 	c.config = _cfg.(*Config)
 
 	localEndpoint := &Endpoint{
-		Host: c.config.LocalEndpoint.Host,
-		Port: c.config.LocalEndpoint.Port,
+		Host: c.config.LocalEndpointHost,
+		Port: c.config.LocalEndpointPort,
 	}
 
 	serverEndpoint := &Endpoint{
-		Host: c.config.ServerEndpoint.Host,
-		Port: c.config.ServerEndpoint.Port,
+		Host: c.config.ServerEndpointHost,
+		Port: c.config.ServerEndpointPort,
 	}
 
 	remoteEndpoint := &Endpoint{
-		Host: c.config.RemoteEndpoint.Host,
-		Port: c.config.RemoteEndpoint.Port,
+		Host: c.config.RemoteEndpointHost,
+		Port: c.config.RemoteEndpointPort,
 	}
 
 	// get host public key
-	hostKey, err := getHostKey(c.config.ServerEndpoint.Host)
+	hostKey, err := getHostKey(c.config.ServerEndpointHost)
 	if err != nil {
 		return err
 	}
