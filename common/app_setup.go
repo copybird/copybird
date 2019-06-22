@@ -1,13 +1,14 @@
 package common
 
 import (
-	"log"
-
+	"fmt"
 	compress_gzip "github.com/copybird/copybird/compress/gzip"
 	"github.com/copybird/copybird/core"
 	"github.com/copybird/copybird/encryption/aesgcm"
 	"github.com/copybird/copybird/input/mysql"
 	"github.com/copybird/copybird/output/local"
+	"log"
+
 	// lz4_compress "github.com/copybird/copybird/compress/lz4"
 	// lz4_decompress "github.com/copybird/copybird/decompress/lz4"
 )
@@ -47,6 +48,8 @@ func (a *App) RegisterModules() {
 }
 
 func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
-	log.Printf("register module: %s::%s", moduleType.String(), module.GetName())
+	globalName := fmt.Sprintf("%s_%s", moduleType.String(), module.GetName())
+	a.registeredModules[globalName] = module
+	log.Printf("register module: %s", globalName)
 	return nil
 }

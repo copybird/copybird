@@ -7,6 +7,6 @@ import (
 )
 
 func TestAppSetup(t *testing.T) {
-	app := App{}
+	app := NewApp()
 	assert.NilError(t, app.Setup())
 }
