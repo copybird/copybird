@@ -2,7 +2,6 @@
 /.vagrant
 *.iml
 *.sw[p,o]
-pkg
 bin
 *.out
 /mysql

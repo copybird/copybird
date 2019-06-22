@@ -2,16 +2,19 @@ package ssh
 
 import (
 	"io"
+	"io/ioutil"
+	"net"
 
 	"golang.org/x/crypto/ssh"
 )
 
-const MODULE_NAME = "connector"
+const MODULE_NAME = "connect"
 
 type Ssh struct {
 	reader io.Reader
 	writer io.Writer
-	config  *Config
+	config *Config
+	tunnel *SSHtunnel
 }
 
 func (c *Ssh) GetName() string {
@@ -49,10 +52,24 @@ func (c *Ssh) Run() error {
 		Port: c.config.RemoteEndpoint.Port,
 	}
 
+	key, err := ioutil.ReadFile(c.config.KeyPath)
+	if err != nil {
+		panic(err)
+	}
+
+
+	signer, err := ssh.ParsePrivateKey(key)
+	if err != nil {
+		panic(err)
+	}
+
 	sshConfig := &ssh.ClientConfig{
-		User: "root",
+		User: c.config.RemoteUser,
 		Auth: []ssh.AuthMethod{
-			Agent(),
+			ssh.PublicKeys(signer),
+		},
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
 		},
 	}
 
@@ -62,14 +79,11 @@ func (c *Ssh) Run() error {
 		Server: serverEndpoint,
 		Remote: remoteEndpoint,
 	}
+	c.tunnel = tunnel
 
-	err := tunnel.Start()
-	if err != nil {
-		return err
-	}
-	return nil
+	return c.tunnel.Start()
 }
 
 func (c *Ssh) Close() error {
-	return nil
+	return c.tunnel.Stop()
 }

@@ -23,3 +23,16 @@ func TestInitModule(t *testing.T) {
 	err := pd.InitModule(Config{})
 	require.NoError(t, err, "should not be any error here")
 }
+
+func TestRun(t *testing.T) {
+	t.Skip("Skip this test: proper config not provided")
+	var pd PagerDuty
+	err := pd.InitModule(Config{
+		AuthToken: "insert auth token here",
+		From:      "example@example.com",
+	})
+	require.NoError(t, err, "should not be any error here")
+	err = pd.Run()
+	require.NoError(t, err, "should not be any error here")
+
+}

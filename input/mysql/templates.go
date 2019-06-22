@@ -1,6 +1,7 @@
 package mysql
 
-const dumpTemplate = `
+const (
+	headerTemplate = `
 --
 -- ------------------------------------------------------
 -- Server version   {{ .Version }}
@@ -14,7 +15,8 @@ const dumpTemplate = `
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-{{range .Tables}}
+`
+	tableTemplate = `
 --
 -- Table structure for table {{ .Name }}
 --
@@ -33,6 +35,6 @@ INSERT INTO {{ .Name }} VALUES {{ .Data }};
 {{ end }}
 /*!40000 ALTER TABLE {{ .Name }} ENABLE KEYS */;
 UNLOCK TABLES;
-{{ end }}
--- Dump completed on {{ .EndTime }}
 `
+	footerTemplate = "-- Dump completed on {{ .EndTime }}"
+)
