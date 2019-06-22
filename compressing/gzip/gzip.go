@@ -2,6 +2,7 @@ package gzip
 
 import (
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -10,6 +11,7 @@ import (
 type Compress struct {
 	reader io.Reader
 	writer io.Writer
+	level int
 }
 
 func (c *Compress) Init(w io.Writer, r io.Reader) error {
@@ -18,15 +20,21 @@ func (c *Compress) Init(w io.Writer, r io.Reader) error {
 	return nil
 }
 
-func (c *Compress) InitCompress(w io.Writer, r io.Reader) error {
+func (c *Compress) InitCompress(level int) error {
 	log.Printf("Initialize compress")
+	if level < -1 || level > 9 {
+		return errors.New("compression level must be between -1 and 9")
+	}
+	c.level = level
 	return nil
 }
 
 func (c *Compress) Run() error {
 	buff := make([]byte, 4096)
-	gw := gzip.NewWriter(c.writer)
-
+	gw, err := gzip.NewWriterLevel(c.writer, c.level)
+	if err != nil {
+		return fmt.Errorf("cant start writer with error: %s", err)
+	}
 	for {
 		_, err := c.reader.Read(buff)
 		if err != nil {
