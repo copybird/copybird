@@ -2,7 +2,6 @@ package gcp
 
 import (
 	"context"
-	"fmt"
 	"io"
 
 	"cloud.google.com/go/storage"
@@ -20,7 +19,7 @@ type GCP struct {
 	client     *storage.Client
 	bucketName string
 	bucket     *storage.BucketHandle
-	config     map[string]string
+	config     *Config
 }
 
 func (gcp *GCP) GetName() string {
@@ -28,7 +27,7 @@ func (gcp *GCP) GetName() string {
 }
 
 func (gcp *GCP) GetConfig() interface{} {
-	return gcp.config
+	return Config{}
 }
 
 func (gcp *GCP) InitPipe(w io.Writer, r io.Reader) error {
@@ -38,19 +37,17 @@ func (gcp *GCP) InitPipe(w io.Writer, r io.Reader) error {
 }
 
 func (gcp *GCP) InitModule(_config interface{}) error {
-	config := _config.(map[string]string)
-	
+	config := _config.(Config)
+	gcp.config = &config
 	gcp.ctx = context.Background()
 
 	switch {
-	case config["CREDENTIALS_FILE"] != "":
-		client, err := storage.NewClient(gcp.ctx, option.WithCredentialsFile(config["CREDENTIALS_FILE"]))
+	case config.CredentialsFilePath != "":
+		client, err := storage.NewClient(gcp.ctx, option.WithCredentialsFile(config.CredentialsFilePath))
 		if err != nil {
 			return err
 		}
 		gcp.client = client
-	case config["TOKEN_SOURCE"] != "":
-		return fmt.Errorf("Auth with token source is not available at the moment")
 	default:
 		client, err := storage.NewClient(gcp.ctx)
 		if err != nil {
@@ -70,7 +67,7 @@ func (gcp *GCP) InitModule(_config interface{}) error {
 
 func (gcp *GCP) Run() error {
 
-	obj := gcp.bucket.Object(gcp.config["AWS_FILE_NAME"])
+	obj := gcp.bucket.Object(gcp.config.AWSFileName)
 	w := obj.NewWriter(gcp.ctx)
 	if _, err := io.Copy(w, gcp.reader); err != nil {
 		return err
