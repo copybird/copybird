@@ -22,7 +22,7 @@ func TestNotifySlackChannel(t *testing.T) {
 		Error     error
 	}{
 		{httpmock.NewStringResponder(200, "{}"), "Hello", nil},
-		{httpmock.NewStringResponder(400, "{}"), "Hello", errors.New("Invalid request")},
+		{httpmock.NewStringResponder(400, "{}"), "Hello", errors.New("StatusCode: 400")},
 	}
 
 	for _, tt := range testCase {
