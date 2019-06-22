@@ -1,16 +1,18 @@
 package webcallback
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+	"errors"
 )
 
 const MODULE_NAME = "webcallback"
 
 type Callback struct{
-	config     *Config
+	Config     *Config
 }
 
 func (c *Callback) GetName() string {
@@ -26,7 +28,7 @@ func (c *Callback) InitModule(_cfg interface{}) error {
 }
 
 func (c *Callback) Run() error {
-	if err := c.sendNotification(); err != nil {
+	if err := c.SendNotification(); err != nil {
 		return err
 	}
 
@@ -37,13 +39,13 @@ func (c *Callback) Close() error {
 	return nil
 }
 
-func (c *Callback) sendNotification () error{
+func (c *Callback) SendNotification () error{
 
 	//Set request body params
 	data := url.Values{}
 	data.Set("success", "true")
 
-	req, err := http.NewRequest("GET", c.config.TargetUrl, strings.NewReader(data.Encode()))
+	req, err := http.NewRequest("GET", c.Config.TargetUrl, strings.NewReader(data.Encode()))
 	if err != nil {
 		return err
 	}
@@ -58,6 +60,11 @@ func (c *Callback) sendNotification () error{
 	resp , err := client.Do(req)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		statusCode := fmt.Sprintf("%v", resp.StatusCode)
+		return errors.New("StatusCode: " + statusCode)
 	}
 
 	defer resp.Body.Close()
