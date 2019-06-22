@@ -49,7 +49,7 @@ func (d *MySQLDumper) GetName() string {
 
 // GetConfig returns config of module
 func (d *MySQLDumper) GetConfig() interface{} {
-	return d.config
+	return &MySQLConfig{}
 }
 
 // InitPipe initializes pipe
