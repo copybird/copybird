@@ -21,6 +21,10 @@ func (c *Callback) GetConfig() interface{} {
 	return &Config{}
 }
 
+func (c *Callback) InitModule(_cfg interface{}) error {
+	return nil
+}
+
 
 func (c *Callback) sendNotification () error{
 
