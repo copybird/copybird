@@ -38,7 +38,7 @@ func (h *Http) InitModule(_config interface{}) error {
 }
 
 func (h *Http) Run() error {
-	resp, err := http.Post(h.config.targetUrl, "application/json", h.reader)
+	resp, err := http.Post(h.config.TargetUrl, "application/json", h.reader)
 	if err != nil {
 		return err
 	}
@@ -51,4 +51,4 @@ func (h *Http) Run() error {
 func (h *Http) Close() error {
 	return nil
 }
-	
+

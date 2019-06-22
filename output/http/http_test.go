@@ -17,3 +17,9 @@ func TestGetConfig(t *testing.T) {
 	conf := http.GetConfig()
 	require.Equal(t, Config{}, conf)
 }
+
+func TestInitModule(t *testing.T) {
+	var http Http
+	err := http.InitModule(Config{TargetUrl: "test.com"})
+	require.NoError(t, err, "should not be any error here")
+}
