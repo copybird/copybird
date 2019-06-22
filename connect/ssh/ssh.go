@@ -81,8 +81,7 @@ func (c *Ssh) Run() error {
 	}
 	c.tunnel = tunnel
 
-	go c.tunnel.Start()
-	return nil
+	return c.tunnel.Start()
 }
 
 func (c *Ssh) Close() error {
