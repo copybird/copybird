@@ -48,7 +48,9 @@ func (d *MySQLDumper) GetName() string {
 
 // GetConfig returns config of module
 func (d *MySQLDumper) GetConfig() interface{} {
-	return &MySQLConfig{}
+	return &MySQLConfig{
+		DSN: "root:root@tcp(localhost:3306)/test",
+	}
 }
 
 // InitPipe initializes pipe
