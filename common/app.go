@@ -82,7 +82,15 @@ func (a *App) DoBackup() error {
 	chanError := make(chan error, 1000)
 	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
+		defer log.Printf("input done")
 		if err := moduleInput.Run(); err != nil {
+			chanError <- err
+		}
+	}(&wg, chanError)
+	go func(wg *sync.WaitGroup, chErr chan error) {
+		defer wg.Done()
+		defer log.Printf("output done")
+		if err := moduleOutput.Run(); err != nil {
 			chanError <- err
 		}
 	}(&wg, chanError)
