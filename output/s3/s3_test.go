@@ -16,7 +16,7 @@ func TestGetName(t *testing.T) {
 func TestGetConfig(t *testing.T) {
 	var s S3
 	conf := s.GetConfig()
-	require.Equal(t, nil, conf)
+	require.Equal(t, Config{}, conf)
 }
 
 
