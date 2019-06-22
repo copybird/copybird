@@ -16,7 +16,7 @@ func TestGetName(t *testing.T) {
 func TestGetConfig(t *testing.T) {
 	var gcp GCP
 	conf := gcp.GetConfig()
-	require.Equal(t, nil, conf)
+	require.Equal(t, Config{}, conf)
 }
 
 func TestInitPipe(t *testing.T){

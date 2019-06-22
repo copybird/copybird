@@ -17,7 +17,7 @@ type S3 struct {
 	reader  io.Reader
 	writer  io.Writer
 	session *session.Session
-	config  map[string]string
+	config  *Config
 }
 
 func (s *S3) GetName() string {
@@ -25,7 +25,7 @@ func (s *S3) GetName() string {
 }
 
 func (s *S3) GetConfig() interface{} {
-	return s.config
+	return Config{}
 }
 
 func (s *S3) InitPipe(w io.Writer, r io.Reader) error {
@@ -36,17 +36,17 @@ func (s *S3) InitPipe(w io.Writer, r io.Reader) error {
 
 //InitOutput initializes S3 with session
 func (s *S3) InitModule(_config interface{}) error {
-	config := _config.(map[string]string)
+	config := _config.(Config)
 	session, err := session.NewSession(&aws.Config{
-		Region:      aws.String(config["AWS_REGION"]),
-		Credentials: credentials.NewStaticCredentials(config["AWS_ACCESS_KEY_ID"], config["AWS_SECRET_ACCESS_KEY"], ""),
+		Region:      aws.String(config.Region),
+		Credentials: credentials.NewStaticCredentials(config.AccessKeyID, config.SecretAccessKey, ""),
 	})
 	if err != nil {
 		return err
 	}
 
 	s.session = session
-	s.config = config
+	s.config = &config
 	return nil
 }
 
@@ -55,8 +55,8 @@ func (s *S3) Run() error {
 	svc := s3manager.NewUploader(s.session)
 
 	input := &s3manager.UploadInput{
-		Bucket: aws.String(s.config["AWS_BUCKET"]),
-		Key:    aws.String(s.config["AWS_FILE_NAME"]),
+		Bucket: aws.String(s.config.Bucket),
+		Key:    aws.String(s.config.FileName),
 		Body:   s.reader,
 	}
 
