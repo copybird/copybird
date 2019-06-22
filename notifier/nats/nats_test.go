@@ -15,7 +15,7 @@ func TestNats_InvalidConn(t *testing.T) {
 
 	nats := Nats{}
 	assert.Assert(t, nats.GetConfig() != nil)
-	err := nats.InitModule(conf)
+	err := nats.InitModule(&conf)
 	assert.Error(t, err, "nats: no servers available for connection")
 }
 
@@ -28,7 +28,7 @@ func TestNats_ValidConn(t *testing.T) {
 
 	nats := Nats{}
 	assert.Assert(t, nats.GetConfig() != nil)
-	err := nats.InitModule(conf)
+	err := nats.InitModule(&conf)
 	if err != nil {
 		t.Errorf("TestNats: %v", err)
 	}
