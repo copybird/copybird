@@ -25,7 +25,7 @@ func (s *S3) GetName() string {
 }
 
 func (s *S3) GetConfig() interface{} {
-	return Config{}
+	return &Config{}
 }
 
 func (s *S3) InitPipe(w io.Writer, r io.Reader) error {

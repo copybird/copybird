@@ -31,7 +31,7 @@ func (scp *SCP) GetName() string {
 }
 
 func (scp *SCP) GetConfig() interface{} {
-	return Config{}
+	return &Config{}
 }
 
 func (scp *SCP) InitPipe(w io.Writer, r io.Reader) error {

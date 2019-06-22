@@ -2,6 +2,7 @@ package webcallback
 
 import (
 	"fmt"
+	"github.com/copybird/copybird/core"
 	"net/http"
 	"net/url"
 	"strings"
@@ -12,6 +13,7 @@ import (
 const MODULE_NAME = "webcallback"
 
 type Callback struct{
+	core.Module
 	Config     *Config
 }
 
@@ -24,6 +26,7 @@ func (c *Callback) GetConfig() interface{} {
 }
 
 func (c *Callback) InitModule(_cfg interface{}) error {
+	c.Config = _cfg.(*Config)
 	return nil
 }
 

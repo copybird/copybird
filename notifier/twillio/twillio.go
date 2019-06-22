@@ -2,6 +2,7 @@ package twillio
 
 import (
 	"errors"
+	"github.com/copybird/copybird/core"
 
 	"github.com/sfreiberg/gotwilio"
 )
@@ -9,6 +10,7 @@ import (
 const MODULE_NAME = "twillio"
 
 type Twillio struct {
+	core.Module
 	Config *Config
 	client *gotwilio.Twilio
 }
@@ -18,11 +20,11 @@ func (t *Twillio) GetName() string {
 }
 
 func (t *Twillio) GetConfig() interface{} {
-	return Config{}
+	return &Config{}
 }
 
 func (t *Twillio) InitModule(_conf interface{}) error {
-	conf := _conf.(Config)
+	conf := _conf.(*Config)
 	t.client = gotwilio.NewTwilioClient(conf.AccountSid, conf.AuthToken)
 	return nil
 }

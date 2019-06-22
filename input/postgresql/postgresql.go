@@ -2,13 +2,13 @@ package postgres
 
 import (
 	"database/sql"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"io"
-	"strconv"
-	"strings"
+	//"strconv"
+	//"strings"
 	"text/template"
-	"time"
+	//"time"
 
 	"github.com/copybird/copybird/core"
 	_ "github.com/lib/pq"
@@ -75,13 +75,14 @@ func (d *PostgresDumper) InitModule(cfg interface{}) error {
 
 // Run dumps database
 func (d *PostgresDumper) Run() error {
+	/*
 	if err := d.dumpDatabase(); err != nil {
 		return err
 	}
 	if err := d.template.Execute(d.writer, d.data); err != nil {
 		return err
 	}
-
+	*/
 	return nil
 }
 
@@ -110,6 +111,7 @@ func (d *PostgresDumper) getTables() ([]string, error) {
 	return tables, rows.Err()
 }
 
+/*
 func (d *PostgresDumper) getTableSchema(tableName string) ([]tableScheme, []sequenceScheme, error) {
 
 	var (
@@ -304,3 +306,4 @@ func (d *PostgresDumper) getServerVersion() (string, error) {
 	}
 	return version.String, nil
 }
+*/

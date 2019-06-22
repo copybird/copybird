@@ -27,8 +27,10 @@ func (local *Local) InitPipe(w io.Writer, r io.Reader) error {
 }
 
 func (l *Local) InitModule(_cfg interface{}) error {
+	l.config = _cfg.(*Config)
 	return nil
 }
+
 func (l *Local) Run() error {
 	if err := l.config.NotifyPushbulletChannel(); err != nil {
 		return err
@@ -37,7 +39,7 @@ func (l *Local) Run() error {
 	return nil
 }
 func (l *Local) GetConfig() interface{} {
-	return Config{}
+	return &Config{}
 }
 
 func (l *Local) Close() error {

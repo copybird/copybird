@@ -2,11 +2,13 @@ package pagerduty
 
 import (
 	pagerduty "github.com/PagerDuty/go-pagerduty"
+	"github.com/copybird/copybird/core"
 )
 
 const MODULE_NAME = "pagerduty"
 
 type PagerDuty struct {
+	core.Module
 	Config *Config
 	client *pagerduty.Client
 }
@@ -16,7 +18,7 @@ func (pd *PagerDuty) GetName() string {
 }
 
 func (pd *PagerDuty) GetConfig() interface{} {
-	return Config{}
+	return &Config{}
 }
 
 func (pd *PagerDuty) InitModule(_conf interface{}) error {

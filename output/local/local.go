@@ -21,7 +21,7 @@ func (loc *Local) GetName() string {
 }
 
 func (loc *Local) GetConfig() interface{} {
-	return Config{
+	return &Config{
 		FileName: "output",
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
 	}
@@ -34,8 +34,8 @@ func (loc *Local) InitPipe(w io.Writer, r io.Reader) error {
 }
 
 func (loc *Local) InitModule(_config interface{}) error {
-	config := _config.(Config)
-	loc.config = &config
+	config := _config.(*Config)
+	loc.config = config
 
 	return nil
 }

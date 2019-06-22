@@ -29,6 +29,7 @@ require (
 	github.com/sfreiberg/gotwilio v0.0.0-20190522212351-14c666f1d505
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
+	github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94
 	github.com/stretchr/testify v1.3.0
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect

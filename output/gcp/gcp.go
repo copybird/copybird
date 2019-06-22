@@ -27,7 +27,7 @@ func (gcp *GCP) GetName() string {
 }
 
 func (gcp *GCP) GetConfig() interface{} {
-	return Config{}
+	return &Config{}
 }
 
 func (gcp *GCP) InitPipe(w io.Writer, r io.Reader) error {

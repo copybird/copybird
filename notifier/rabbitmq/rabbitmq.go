@@ -25,7 +25,7 @@ func (n *RabbitMQ) GetName() string {
 }
 
 func (n *RabbitMQ) GetConfig() interface{} {
-	return n.config
+	return &Config{}
 }
 
 func (c *RabbitMQ) InitPipe(w io.Writer, r io.Reader) error {

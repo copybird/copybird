@@ -21,7 +21,7 @@ func (h *Http) GetName() string {
 }
 
 func (h *Http) GetConfig() interface{} {
-	return Config{}
+	return &Config{}
 }
 
 func (h *Http) InitPipe(w io.Writer, r io.Reader) error {
