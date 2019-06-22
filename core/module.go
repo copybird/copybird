@@ -1,5 +1,9 @@
 package core
 
+import (
+	"io"
+)
+
 type Module interface {
 	GetName() string
 	GetConfig() interface{}
