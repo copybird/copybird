@@ -2,6 +2,8 @@ package local
 
 import (
 	"io"
+	"os"
+	"fmt"
 	"github.com/copybird/copybird/output"
 )
 
@@ -28,15 +30,37 @@ func (loc *Local) InitPipe(w io.Writer, r io.Reader) error {
 	return nil
 }
 
-//InitOutput initializes S3 with session
 func (loc *Local) InitModule(_config interface{}) error {
 	config := _config.(Config)
-
 	loc.config = &config
+
 	return nil
 }
 
 func (loc *Local) Run() error {
+
+	f, err := os.Create(loc.config.FileName)
+    if err != nil {
+        return err
+	}
+	
+    defer f.Close()
+
+	buf := make([]byte, 12)
+	for {
+		_, err = loc.reader.Read(buf)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return fmt.Errorf("read err: %s", err)
+		}
+		_, err = loc.writer.Write(buf)
+		if err != nil {
+			return fmt.Errorf("write err: %s", err)
+		}
+	}
+	
 	return nil
 } 
 
