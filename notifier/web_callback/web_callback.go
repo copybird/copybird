@@ -11,13 +11,13 @@ type callback struct{
 	targetUrl string
 }
 
-func (c *callback) sendNotification () error{
+func (c *callback) sendNotification (targetUrl string) error{
 
 	//Set request body params
 	data := url.Values{}
 	data.Set("success", "true")
 
-	req, err := http.NewRequest("GET", c.targetUrl, strings.NewReader(data.Encode()))
+	req, err := http.NewRequest("GET", targetUrl, strings.NewReader(data.Encode()))
 	if err != nil {
 		return err
 	}

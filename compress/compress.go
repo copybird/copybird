@@ -1,4 +1,4 @@
-package compressing
+package compress
 
 import "github.com/copybird/copybird/core"
 
