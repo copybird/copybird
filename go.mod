@@ -18,6 +18,7 @@ require (
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/kr/fs v0.1.0 // indirect
+	github.com/lib/pq v1.1.1
 	github.com/nats-io/gnatsd v1.4.1 // indirect
 	github.com/nats-io/go-nats v1.7.2
 	github.com/nats-io/nkeys v0.0.2 // indirect
