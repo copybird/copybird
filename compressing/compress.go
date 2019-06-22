@@ -4,5 +4,5 @@ import "github.com/copybird/copybird/core"
 
 type Output interface {
 	core.PipeComponent
-	InitCompress() error
+	InitCompress(i int) error
 }
