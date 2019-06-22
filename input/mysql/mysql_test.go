@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -25,6 +26,9 @@ func TestGetTables(t *testing.T) {
 	c.DSN = "root:root@tcp(localhost:3306)/test"
 
 	require.NoError(t, d.InitModule(c))
+	f, err := os.Create("dump.sql")
+	assert.NoError(t, err)
+	assert.NoError(t, d.InitPipe(f, nil))
 	tables, err := d.getTables()
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(tables))
@@ -38,8 +42,6 @@ func TestGetTables(t *testing.T) {
 	assert.Equal(t, authorsData, data)
 	err = d.dumpDatabase()
 	assert.NoError(t, err)
-	assert.Equal(t, authorsData, d.data.Tables[0].Data)
-	assert.Equal(t, authorsSchema, d.data.Tables[0].Schema)
 	err = d.Run()
 	assert.NoError(t, err)
 }
