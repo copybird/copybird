@@ -1,7 +1,6 @@
 package nats
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
 
@@ -12,11 +11,12 @@ const (
 	MODULE_NAME = "nats"
 )
 
-var errNats = errors.New("NATS not connected")
+var (
+	errNats           = errors.New("NATS not connected")
+	errNatsEmptyTopic = errors.New("NATS empty topic")
+)
 
 type Nats struct {
-	reqPtr interface{}
-	topic  string
 	config *Config
 	conn   *nats.Conn
 	reader io.Reader
@@ -41,11 +41,11 @@ func (c *Nats) InitModule(_cfg interface{}) error {
 	cfg := _cfg.(Config)
 	c.config = &cfg
 
-	natsConn, err := nats.Connect(
-		cfg.NATSURL,
-		nats.MaxReconnects(20),
-		nats.Timeout(cfg.ConnectTimeout),
-	)
+	if c.config.Topic == "" {
+		return errNatsEmptyTopic
+	}
+
+	natsConn, err := nats.Connect(cfg.NATSURL)
 	if err != nil {
 		return err
 	}
@@ -55,12 +55,7 @@ func (c *Nats) InitModule(_cfg interface{}) error {
 }
 
 func (c *Nats) Run() error {
-	b, err := json.Marshal(c.reqPtr)
-	if err != nil {
-		return err
-	}
-
-	c.conn.Publish(c.topic, b)
+	c.conn.Publish(c.config.Topic, []byte(c.config.Msg))
 	return nil
 }
 
