@@ -6,5 +6,5 @@ import (
 
 type Output interface {
 	core.PipeComponent
-	InitOutput() error
+	InitOutput(map[string]string) error
 }
