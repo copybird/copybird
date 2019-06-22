@@ -41,8 +41,8 @@ func (e *Email) SendEmail () error{
 	from := e.Config.MailerUser
 	pass := e.Config.MailerPassword
 	to := e.Config.MailTo
-	body := "Test message"
-	subject := "Test Subject"
+	body := "Dump created successfully"
+	subject := "Dump"
 
 	header := ""
 	header += fmt.Sprintf("From: %s\r\n", from)
