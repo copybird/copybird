@@ -1,7 +1,6 @@
 package common
 
 import (
-	"flag"
 	"fmt"
 	compress_gzip "github.com/copybird/copybird/compress/gzip"
 	"github.com/copybird/copybird/core"
@@ -71,11 +70,11 @@ func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
 		//log.Printf("argName: %s, envName: %s", argName, envName)
 		switch (field.Type.Kind()) {
 		case reflect.Int:
-			flag.Int64(argName, cfgValue.Field(i).Int(), argName)
+			a.cmdBackup.Flags().Int64(argName, cfgValue.Field(i).Int(), argName)
 		case reflect.String:
-			flag.String(argName, cfgValue.Field(i).String(), argName)
+			a.cmdBackup.Flags().String(argName, cfgValue.Field(i).String(), argName)
 		case reflect.Bool:
-			flag.Bool(argName, cfgValue.Field(i).Bool(), argName)
+			a.cmdBackup.Flags().Bool(argName, cfgValue.Field(i).Bool(), argName)
 		}
 	}
 	return nil
