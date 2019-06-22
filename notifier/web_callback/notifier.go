@@ -1,4 +1,4 @@
-package notifier
+package web_callback
 
 import (
 	"net/http"

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/copybird/copybird/core"
 	// We need this shit
@@ -56,23 +57,67 @@ func (d *MySQLDumper) getTables() ([]string, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var table string
+		var table sql.NullString
 		if err := rows.Scan(&table); err != nil {
 			return tables, err
 		}
-		tables = append(tables, table)
+		tables = append(tables, table.String)
 	}
 	return tables, rows.Err()
 }
 func (d *MySQLDumper) getTableSchema(name string) (string, error) {
 	q := fmt.Sprintf("SHOW CREATE TABLE %s", name)
-	var returnTable string
-	var sqlTable string
+	var returnTable sql.NullString
+	var sqlTable sql.NullString
 	if err := d.conn.QueryRow(q).Scan(&returnTable, &sqlTable); err != nil {
 		return "", err
 	}
-	if returnTable != name {
+	if returnTable.String != name {
 		return "", errors.New("wrong table returned")
 	}
-	return sqlTable, nil
+	return sqlTable.String, nil
+}
+
+func (d *MySQLDumper) getTableData(name string) (string, error) {
+	q := fmt.Sprintf("SELECT * FROM %s", name)
+	rows, err := d.conn.Query(q)
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+	columns, err := rows.Columns()
+	if err != nil {
+		return "", err
+	}
+	if len(columns) == 0 {
+		return "", fmt.Errorf("no columns in table %s", name)
+	}
+	var data []string
+	for rows.Next() {
+		scanData := make([]*sql.NullString, len(columns))
+		pointers := make([]interface{}, len(columns))
+		for i := range scanData {
+			pointers[i] = &scanData[i]
+		}
+		if err := rows.Scan(pointers...); err != nil {
+			return "", err
+		}
+		rowData := make([]string, len(columns))
+		for i, v := range scanData {
+			fmt.Printf("%T\n", pointers[i])
+			switch pointers[i].(type) {
+			case int:
+				fmt.Println("HEY")
+			}
+			if v != nil && v.Valid {
+				rowData[i] = fmt.Sprintf("'%s'", v.String)
+			} else {
+				rowData[i] = "NULL"
+			}
+		}
+		data = append(data, fmt.Sprintf("(%s)", strings.Join(rowData, ",")))
+
+	}
+	return strings.Join(data, ","), rows.Err()
+
 }
