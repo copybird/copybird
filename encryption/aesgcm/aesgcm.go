@@ -1,31 +1,43 @@
 package aesgcm
 
 import (
-	"io"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
+	"io"
 
 	"github.com/copybird/copybird/encryption"
 )
+
+const MODULE_NAME = "aesgcm"
 
 type EncryptionAESGCM struct {
 	encryption.Encryption
 	reader io.Reader
 	writer io.Writer
-	gcm cipher.AEAD
-	nonce []byte
+	gcm    cipher.AEAD
+	nonce  []byte
 }
 
-func (e *EncryptionAESGCM) Init(w io.Writer, r io.Reader) error {
+func (e *EncryptionAESGCM) GetName() string {
+	return MODULE_NAME
+}
+
+func (e *EncryptionAESGCM) GetConfig() interface{} {
+	return nil
+}
+
+func (e *EncryptionAESGCM) InitPipe(w io.Writer, r io.Reader, _cfg interface{}) error {
 	e.reader = r
 	e.writer = w
 	return nil
 }
 
-func (e *EncryptionAESGCM) InitEncryption(key []byte) error {
-	block, err := aes.NewCipher(key)
+func (e *EncryptionAESGCM) InitModule(_cfg interface{}) error {
+	cfg := _cfg.(*Config)
+
+	block, err := aes.NewCipher(cfg.Key)
 	if err != nil {
 		return fmt.Errorf("cipher init err: %s", err)
 	}
@@ -63,4 +75,3 @@ func (e *EncryptionAESGCM) Run() error {
 func (e *EncryptionAESGCM) Close() error {
 	return nil
 }
-
