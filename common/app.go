@@ -30,7 +30,6 @@ func NewApp() *App {
 }
 
 func (a *App) Run() error {
-
 	var rootCmd = &cobra.Command{Use: "copybird"}
 	a.cmdBackup = &cobra.Command{
 		Use:   "backup",
@@ -43,7 +42,7 @@ func (a *App) Run() error {
 		Use: "operator",
 		Short: "Start Kubernetes operator",
 		Run:   func(cmd *cobra.Command, args []string) {
-			operator.Run(),
+			operator.Run()
 		},
 	}
 	rootCmd.AddCommand(a.cmdBackup)

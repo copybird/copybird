@@ -3,11 +3,17 @@ package common
 import (
 	"fmt"
 	compress_gzip "github.com/copybird/copybird/compress/gzip"
+	connect_ssh "github.com/copybird/copybird/connect/ssh"
 	"github.com/copybird/copybird/core"
 	"github.com/copybird/copybird/encryption/aesgcm"
 	"github.com/copybird/copybird/input/mysql"
+	"github.com/copybird/copybird/notifier/awsses"
+	"github.com/copybird/copybird/notifier/email"
+	"github.com/copybird/copybird/output/gcp"
+	"github.com/copybird/copybird/output/http"
 	"github.com/copybird/copybird/output/local"
 	"github.com/copybird/copybird/output/s3"
+	"github.com/copybird/copybird/output/scp"
 	"github.com/spf13/cobra"
 	"strings"
 
@@ -67,11 +73,19 @@ func (a *App) addFlagBool(cmd *cobra.Command, name string, defaultValue bool) {
 }
 
 func (a *App) RegisterModules() {
+	a.RegisterModule(ModuleTypeConnect, &connect_ssh.Ssh{})
 	a.RegisterModule(ModuleTypeInput, &mysql.MySQLDumper{})
 	a.RegisterModule(ModuleTypeCompress, &compress_gzip.Compress{})
 	a.RegisterModule(ModuleTypeEncryption, &aesgcm.EncryptionAESGCM{})
 	a.RegisterModule(ModuleTypeOutput, &local.Local{})
 	a.RegisterModule(ModuleTypeOutput, &s3.S3{})
+	a.RegisterModule(ModuleTypeOutput, &gcp.GCP{})
+	a.RegisterModule(ModuleTypeOutput, &http.Http{})
+	a.RegisterModule(ModuleTypeOutput, &scp.SCP{})
+
+	a.RegisterModule(ModuleTypeNotify, &awsses.AwsSes{})
+	a.RegisterModule(ModuleTypeNotify, &email.Email{})
+	a.RegisterModule(ModuleTypeNotify, &awsses.AwsSes{})
 }
 
 func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
