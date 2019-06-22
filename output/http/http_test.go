@@ -20,6 +20,17 @@ func TestGetConfig(t *testing.T) {
 
 func TestInitModule(t *testing.T) {
 	var http Http
-	err := http.InitModule(Config{TargetUrl: "test.com"})
+	err := http.InitModule(Config{TargetUrl: "https://test.com"})
 	require.NoError(t, err, "should not be any error here")
+}
+
+func TestRun(t *testing.T) {
+	var http Http
+	conf := Config{
+		TargetUrl: "https://test.com",
+	}
+	err := http.InitModule(conf)
+	require.NoError(t, err)
+	err = http.Run()
+	require.NoError(t, err)
 }
