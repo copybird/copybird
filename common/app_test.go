@@ -14,7 +14,7 @@ import (
 	"gotest.tools/assert"
 )
 
-func AppRunTest(t *testing.T) {
+func TestAppRun(t *testing.T) {
 	modMysql := new(mysql.MySQLDumper)
 	modMysqlCfg := modMysql.GetConfig()
 	assert.Assert(t, modMysqlCfg != nil)
@@ -51,33 +51,45 @@ func AppRunTest(t *testing.T) {
 	wg := sync.WaitGroup{}
 	wg.Add(4)
 
-	go func(wg *sync.WaitGroup) {
+	chErr := make(chan error, 10)
+
+	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modMysql.Run(); err != nil {
 			log.Printf("%s err: %s", modMysql.GetName(), err)
+			chErr <- err
 		}
-	}(&wg)
+	}(&wg, chErr)
 
-	go func(wg *sync.WaitGroup) {
+	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modGzip.Run(); err != nil {
 			log.Printf("%s err: %s", modGzip.GetName(), err)
+			chErr <- err
 		}
-	}(&wg)
+	}(&wg, chErr)
 
-	go func(wg *sync.WaitGroup) {
+	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modAesgcm.Run(); err != nil {
 			log.Printf("%s err: %s", modAesgcm.GetName(), err)
+			chErr <- err
 		}
-	}(&wg)
+	}(&wg, chErr)
 
-	go func(wg *sync.WaitGroup) {
+	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		if err := modOutput.Run(); err != nil {
 			log.Printf("%s err: %s", modOutput.GetName(), err)
+			chErr <- err
 		}
-	}(&wg)
+	}(&wg, chErr)
 
 	wg.Wait()
+
+	err, ok := <-chErr
+	if ok && err != nil {
+		log.Printf("pipe err: %s", err)
+	}
+
 }
