@@ -37,10 +37,9 @@ func (c *CompressLZ4) InitPipe(w io.Writer, r io.Reader, _cfg interface{}) error
 }
 
 func (c *CompressLZ4) InitModule(_cfg interface{}) error {
-	// cfg := _cfg.(*Config)
-	// make an lz4 write buffer
+	cfg := _cfg.(*Config)
 	c.lz4 = lz4.NewWriter(c.writer)
-
+	c.lz4.Header = lz4.Header{CompressionLevel: cfg.level}
 	return nil
 }
 
