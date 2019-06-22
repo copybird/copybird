@@ -1,7 +1,9 @@
 package s3
 
 import (
+	"bytes"
 	"io"
+	"net/http"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -43,13 +45,12 @@ func (s *S3) InitOutput(config map[string]string) error {
 func (s *S3) Run() error {
 
 	_, err := s3.New(s.session).PutObject(&s3.PutObjectInput{
-		Bucket: aws.String(s.config["AWS_BUCKET"]),
-		Key:    aws.String(s.config["FILE_PATH"]),
-		ACL:    aws.String("private"),
-		// Body:               bytes.NewReader(buffer),
-		// ContentLength:      aws.Int64(size),
-		// ContentType:        aws.String(http.DetectContentType(buffer)),
-		// ContentDisposition: aws.String("attachment"),
+		Bucket:             aws.String(s.config["AWS_BUCKET"]),
+		Key:                aws.String(s.config["FILE_PATH"]),
+		ACL:                aws.String("private"),
+		Body:               bytes.NewReader(buffer),
+		ContentType:        aws.String(http.DetectContentType(buffer)),
+		ContentDisposition: aws.String("attachment"),
 	})
 	return err
 }
