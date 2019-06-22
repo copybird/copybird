@@ -2,8 +2,11 @@ package gzip
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
+	"compress/gzip"
+	"io/ioutil"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCompress_InitCompress_Default_Compress(t *testing.T) {
@@ -19,12 +22,11 @@ func TestCompress_InitCompress_Compress_Level_Out_Of_range(t *testing.T) {
 	assert.Equal(t, err, nil)
 }
 
-func TestCompress_Run_(t *testing.T) {
+func TestCompress_Run_Success_Compress(t *testing.T) {
 	var compressor Compress
 	rb := new(bytes.Buffer)
 	wb := new(bytes.Buffer)
 	rb.WriteString("hello, world.")
-	lenBC := rb.Len() // Length before compress
 
 	_ = compressor.InitCompress(-1)
 	_ = compressor.Init(wb, rb)
@@ -32,9 +34,11 @@ func TestCompress_Run_(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error: %s", err)
 	}
-	lenAC := wb.Len() // Length after compress
 
-	if lenBC == lenAC {
-		t.Fatalf("Bad compress!")
+	or, err := gzip.NewReader(bytes.NewReader(wb.Bytes()))
+	if err != nil {
+		panic(err)
 	}
+	s, _ := ioutil.ReadAll(or)
+	//assert.Equal(t, s, "hello, world.")
 }
