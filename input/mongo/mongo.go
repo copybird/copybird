@@ -1,12 +1,16 @@
 package mongo
 
 import (
+	"context"
 	"io"
 
 	"github.com/copybird/copybird/input"
-	"github.com/globalsign/mgo"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
+// MODULE_NAME is name of module
 const MODULE_NAME = "mongo"
 
 type (
@@ -16,7 +20,7 @@ type (
 		config *MongoConfig
 		reader io.Reader
 		writer io.Writer
-		conn   *mgo.Session
+		conn   *mongo.Client
 	}
 )
 
@@ -40,7 +44,8 @@ func (d *MongoDumper) InitPipe(w io.Writer, r io.Reader) error {
 // InitModule initializes module
 func (d *MongoDumper) InitModule(cfg interface{}) error {
 	d.config = cfg.(*MongoConfig)
-	conn, err := mgo.Dial(d.config.Host)
+	cO := options.Client().ApplyURI(d.config.DSN)
+	conn, err := mongo.Connect(context.TODO(), cO)
 	if err != nil {
 		return err
 	}
@@ -55,6 +60,10 @@ func (d *MongoDumper) Run() error {
 
 // Close closes
 func (d *MongoDumper) Close() error {
-	d.conn.Close()
+	d.conn.Disconnect(context.TODO())
 	return nil
+}
+func (d *MongoDumper) getDatabases() ([]string, error) {
+	return d.conn.ListDatabaseNames(context.TODO(), bsonx.Doc{})
+
 }
