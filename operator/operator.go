@@ -1,4 +1,4 @@
-package main
+package operator
 
 import (
 	"os"
@@ -45,7 +45,7 @@ func getKubernetesClient() (kubernetes.Interface, copybirdclientset.Interface) {
 }
 
 // main code path
-func main() {
+func Run() {
 	// get the Kubernetes client for connectivity
 	client, copybirdClient := getKubernetesClient()
 

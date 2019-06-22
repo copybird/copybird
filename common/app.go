@@ -7,6 +7,7 @@ import (
 
 	"github.com/copybird/copybird/core"
 	"github.com/spf13/cobra"
+	"github.com/copybird/copybird/operator"
 
 	//"log"
 
@@ -17,6 +18,7 @@ type App struct {
 	registeredModules map[string]core.Module
 	cmmRoot           *cobra.Command
 	cmdBackup         *cobra.Command
+	cmdOperator       *cobra.Command
 	vars              map[string]interface{}
 }
 
@@ -36,6 +38,13 @@ func (a *App) Run() error {
 		Long:  ``,
 		Args:  cobra.MinimumNArgs(0),
 		Run:   cmdCallback(a.DoBackup),
+	}
+	a.cmdOperator = &cobra.Command {
+		Use: "operator",
+		Short: "Start Kubernetes operator",
+		Run:   func(cmd *cobra.Command, args []string) {
+			operator.Run(),
+		},
 	}
 	rootCmd.AddCommand(a.cmdBackup)
 	a.Setup()
