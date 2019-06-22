@@ -2,12 +2,14 @@ package email
 
 import (
 	"fmt"
+	"github.com/copybird/copybird/core"
 	"net/smtp"
 )
 
 const MODULE_NAME = "email"
 
 type Email struct {
+	core.Module
 	Config *Config
 }
 
