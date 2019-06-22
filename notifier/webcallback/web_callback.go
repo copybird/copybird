@@ -1,4 +1,4 @@
-package web_callback
+package webcallback
 
 import (
 	"net/http"
@@ -7,22 +7,26 @@ import (
 	"time"
 )
 
-const MODULE_NAME = "web_callback"
+const MODULE_NAME = "webcallback"
 
-type callback struct{
+type Callback struct{
 	config     *Config
 }
 
-func (c *callback) GetName() string {
+func (c *Callback) GetName() string {
 	return MODULE_NAME
 }
 
-func (c *callback) GetConfig() interface{} {
+func (c *Callback) GetConfig() interface{} {
 	return &Config{}
 }
 
+func (c *Callback) InitModule(_cfg interface{}) error {
+	return nil
+}
 
-func (c *callback) sendNotification () error{
+
+func (c *Callback) sendNotification () error{
 
 	//Set request body params
 	data := url.Values{}

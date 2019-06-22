@@ -16,7 +16,7 @@ func TestGetName(t *testing.T) {
 func TestGetConfig(t *testing.T) {
 	var s S3
 	conf := s.GetConfig()
-	require.Equal(t, nil, conf)
+	require.Equal(t, Config{}, conf)
 }
 
 
@@ -29,6 +29,6 @@ func TestInitPipe(t *testing.T){
 
 func TestInitModule(t *testing.T) {
 	var s S3
-	err := s.InitModule(map[string]string{"AWS_REGION": "us-east-1"})
+	err := s.InitModule(Config{Region: "us-east-1"})
 	require.NoError(t, err, "should not be any error here")
 }

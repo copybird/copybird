@@ -10,13 +10,13 @@ import (
 func TestGetName(t *testing.T) {
 	var loc Local
 	name := loc.GetName()
-	require.Equal(t, "s3", name)
+	require.Equal(t, "local", name)
 }
 
 func TestGetConfig(t *testing.T) {
 	var loc Local
 	conf := loc.GetConfig()
-	require.Equal(t, nil, conf)
+	require.Equal(t, Config{}, conf)
 }
 
 
@@ -29,6 +29,6 @@ func TestInitPipe(t *testing.T){
 
 func TestInitModule(t *testing.T) {
 	var loc Local
-	err := loc.InitModule(Config{FileName: "test."})
+	err := loc.InitModule(Config{FileName: "test.sql"})
 	require.NoError(t, err, "should not be any error here")
 }
