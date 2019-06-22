@@ -33,6 +33,8 @@ func (c *Compress) Run() error {
 	if err != nil {
 		return fmt.Errorf("cant start writer with error: %s", err)
 	}
+	defer gw.Close()
+
 	for {
 		_, err := c.reader.Read(buff)
 		if err != nil {
