@@ -6,6 +6,5 @@ import (
 
 type notifier interface {
 	core.Module
-	sendNotification(string) error
 }
 

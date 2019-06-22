@@ -2,10 +2,29 @@ package gcp
 
 import (
 	"testing"
+	"bytes"
 
 	"github.com/stretchr/testify/require"
 )
 
+func TestGetName(t *testing.T) {
+	var gcp GCP
+	name := gcp.GetName()
+	require.Equal(t, "gcp", name)
+}
+
+func TestGetConfig(t *testing.T) {
+	var gcp GCP
+	conf := gcp.GetConfig()
+	require.Equal(t, nil, conf)
+}
+
+func TestInitPipe(t *testing.T){
+	var gcp GCP
+	bufInput := bytes.NewBuffer([]byte("hello world"))
+	bufOutput := &bytes.Buffer{}
+	require.NoError(t, gcp.InitPipe(bufOutput, bufInput))
+}
 //InitOutput initializes S3 with session
 func TestInitOutput(t *testing.T) {
 
