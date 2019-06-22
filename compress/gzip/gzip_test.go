@@ -35,10 +35,16 @@ func TestCompress_Run_Success_Compress(t *testing.T) {
 		t.Fatalf("Error: %s", err)
 	}
 
-	or, err := gzip.NewReader(bytes.NewReader(wb.Bytes()))
+	data := make([]byte, 13)
+	var buff2  = new(bytes.Buffer)
+	gr, err := gzip.NewReader(wb)
+	defer gr.Close()
+
+	data, err = ioutil.ReadAll(gr)
 	if err != nil {
-		panic(err)
+		print(err)
 	}
-	s, _ := ioutil.ReadAll(or)
-	//assert.Equal(t, s, "hello, world.")
+	buff2.Write(data)
+	out := bytes.Trim(buff2.Bytes(), "\x00")
+	assert.Equal(t, string(out), "hello, world.")
 }
