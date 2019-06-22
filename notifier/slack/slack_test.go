@@ -1,14 +1,34 @@
 package slack
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/jarcoal/httpmock"
 )
+
+func TestGetName(t *testing.T) {
+	var conf Config
+	name := conf.GetName()
+	require.Equal(t, MODULE_NAME, name)
+}
+
+func TestGetConfig(t *testing.T) {
+	config := GetConfig()
+	require.Equal(t, Config{}, config)
+}
+
+func TestInitPipe(t *testing.T) {
+	var local Local
+	bufInput := bytes.NewBuffer([]byte("hello world"))
+	bufOutput := &bytes.Buffer{}
+	require.NoError(t, local.InitPipe(bufOutput, bufInput))
+}
 
 func TestNotifySlackChannel(t *testing.T) {
 
