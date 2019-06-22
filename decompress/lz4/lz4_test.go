@@ -1,44 +1,40 @@
 package lz4
 
 import (
-	// "bytes"
-	// "fmt"
-	// "strings"
-	// "testing"
+	"bytes"
+	"io"
+	"strings"
+	"testing"
 
-	// "github.com/pierrec/lz4"
-	// "gotest.tools/assert"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/pierrec/lz4"
+	"github.com/stretchr/testify/assert"
 )
 
-// TODO: fix this test
-// func TestDecompress(t *testing.T) {
-// 	var wr bytes.Buffer
-// 	var decompressor DecompressLZ4
+func TestDecompress(t *testing.T) {
+	wr := &bytes.Buffer{}
+	var decompressor DecompressLZ4
 
-// 	s := "hello worldkkkkkk"
-// 	hw := helper(s)
-// 	rd := bytes.NewReader(hw)
+	s := "hello world"
+	hw, err := helper(s)
+	assert.NoError(t, err)
+	spew.Dump(string(hw))
+	rd := bytes.NewReader(hw)
 
-// 	_ = decompressor.InitPipe(&wr, rd)
-// 	_ = decompressor.Run()
+	assert.NoError(t, decompressor.InitPipe(wr, rd))
+	assert.NoError(t, decompressor.Run())
 
-// 	assert.Equal(t, wr.String(), "hello world")
-// }
+	assert.Equal(t, wr.String(), "hello world")
+}
 
-// func helper(s string) []byte {
-
-// 	data := []byte(strings.Repeat(s, 100))
-// 	buf := make([]byte, len(data))
-// 	ht := make([]int, 64<<10) // buffer for the compression table
-
-// 	n, err := lz4.CompressBlock(data, buf, ht)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-// 	if n >= len(data) {
-// 		fmt.Printf("`%s` is not compressible", s)
-// 	}
-// 	buf = buf[:n] // compressed data
-
-// 	return buf
-// }
+func helper(s string) ([]byte, error) {
+	wr := &bytes.Buffer{}
+	lw := lz4.NewWriter(wr)
+	lw.Header = lz4.Header{CompressionLevel: 2}
+	defer lw.Close()
+	r := strings.NewReader(s)
+	if _, err := io.Copy(lw, r); err != nil {
+		return nil, err
+	}
+	return wr.Bytes(), nil
+}

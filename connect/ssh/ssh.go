@@ -79,7 +79,7 @@ func (c *Ssh) Run() error {
 		Remote: remoteEndpoint,
 	}
 
-	err := tunnel.Start()
+	err = tunnel.Start()
 	if err != nil {
 		return err
 	}

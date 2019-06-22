@@ -22,16 +22,18 @@ type (
 	// MySQLDumper is struct storing inner properties for mysql backups
 	MySQLDumper struct {
 		input.Input
-		conn     *sql.DB
-		data     dbDump
-		template *template.Template
-		config   *MySQLConfig
-		reader   io.Reader
-		writer   io.Writer
+		conn           *sql.DB
+		headerTemplate *template.Template
+		footerTemplate *template.Template
+		tableTemplate  *template.Template
+		config         *MySQLConfig
+		reader         io.Reader
+		writer         io.Writer
 	}
-	dbDump struct {
+	dumpHeader struct {
 		Version string
-		Tables  []table
+	}
+	dumpFooter struct {
 		EndTime string
 	}
 	table struct {
@@ -71,19 +73,27 @@ func (d *MySQLDumper) InitModule(cfg interface{}) error {
 		return err
 	}
 	d.conn = conn
+	t, err := template.New("headerTemplate").Parse(headerTemplate)
+	if err != nil {
+		return err
+	}
+	d.headerTemplate = t
+	t, err = template.New("footerTemplate").Parse(footerTemplate)
+	if err != nil {
+		return err
+	}
+	d.footerTemplate = t
+	t, err = template.New("tableTemplate").Parse(tableTemplate)
+	if err != nil {
+		return err
+	}
+	d.tableTemplate = t
 	return nil
 }
 
 // Run dumps database
 func (d *MySQLDumper) Run() error {
-	if err := d.dumpDatabase(); err != nil {
-		return err
-	}
-	if err := d.template.Execute(d.writer, d.data); err != nil {
-		return err
-	}
-
-	return nil
+	return d.dumpDatabase()
 }
 
 // Close closes ...
@@ -163,16 +173,17 @@ func (d *MySQLDumper) getTableData(name string) (string, error) {
 
 }
 func (d *MySQLDumper) dumpDatabase() error {
-	var dump dbDump
 	version, err := d.getServerVersion()
 	if err != nil {
+		return err
+	}
+	if err := d.headerTemplate.Execute(d.writer, dumpHeader{Version: version}); err != nil {
 		return err
 	}
 	tables, err := d.getTables()
 	if err != nil {
 		return err
 	}
-	dump.Version = version
 	for _, tableName := range tables {
 		var table table
 		table.Name = tableName
@@ -186,17 +197,11 @@ func (d *MySQLDumper) dumpDatabase() error {
 			return err
 		}
 		table.Data = data
-		dump.Tables = append(dump.Tables, table)
+		if err := d.tableTemplate.Execute(d.writer, table); err != nil {
+			return err
+		}
 	}
-	dump.EndTime = time.Now().String()
-	t, err := template.New("mysqlbackup").Parse(dumpTemplate)
-	if err != nil {
-		return err
-	}
-	d.template = t
-	d.data = dump
-	return nil
-
+	return d.footerTemplate.Execute(d.writer, dumpFooter{EndTime: time.Now().String()})
 }
 func (d *MySQLDumper) getServerVersion() (string, error) {
 	var version sql.NullString
