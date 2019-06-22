@@ -12,6 +12,5 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/stretchr/testify v1.2.2
 	google.golang.org/api v0.6.0
-	google.golang.org/appengine v1.6.1 // indirect
 	gotest.tools v2.2.0+incompatible
 )
