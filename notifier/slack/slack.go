@@ -12,17 +12,36 @@ type SlackMessage struct {
 	Text string `json:"text"`
 }
 
+func (c *Config) GetName() string {
+	return MODULE_NAME
+}
+
+func (c *Config) InitModule(_cfg interface{}) error {
+	return nil
+}
+func (c *Config) Run() error {
+	if err := c.NotifySlackChannel(); err != nil {
+		return err
+	}
+
+	return nil
+}
 func GetCongif() interface{} {
 	return Config{}
 }
 
+func (c *Config) Close() error {
+	return nil
+}
+
 const (
+	MODULE_NAME         = "slack"
 	SlackHookSite       = "https://hooks.slack.com/services"
 	HeaderContentType   = "Content-Type"
 	MIMEApplicationJSON = "application/json"
 )
 
-func (c Config) NotifySlackChannel(Success bool) error {
+func (c *Config) NotifySlackChannel() error {
 
 	urls := fmt.Sprintf("%s/%s", SlackHookSite, c.Hook)
 
@@ -30,7 +49,7 @@ func (c Config) NotifySlackChannel(Success bool) error {
 	var err error
 
 	client := &http.Client{}
-	if Success {
+	if c.Success {
 		slackMessage, err = json.Marshal(SlackMessage{Text: "<!channel> " + c.MessageSuccess})
 	} else {
 		slackMessage, err = json.Marshal(SlackMessage{Text: "<!channel> " + c.MessageFail})
