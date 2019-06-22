@@ -8,9 +8,9 @@ import (
 
 func TestNats(t *testing.T) {
 	conf := Config{
-		ClientID:  "client",
-		NATSURL:   "0.0.0.0:4222",
-		ClusterID: "cluster",
+		NATSURL: "0.0.0.0:4222",
+		Topic:   "test.topic",
+		Msg:     "Test",
 	}
 
 	nats := Nats{}
