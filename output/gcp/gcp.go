@@ -10,6 +10,8 @@ import (
 	"google.golang.org/api/option"
 )
 
+const MODULE_NAME = "gcp"
+
 type GCP struct {
 	output.Output
 	ctx        context.Context
@@ -21,14 +23,23 @@ type GCP struct {
 	config     map[string]string
 }
 
+func (gcp *GCP) GetName() string {
+	return MODULE_NAME
+}
+
+func (gcp *GCP) GetConfig() interface{} {
+	return nil
+}
+
 func (gcp *GCP) InitPipe(w io.Writer, r io.Reader) error {
 	gcp.reader = r
 	gcp.writer = w
 	return nil
 }
 
-func (gcp *GCP) InitOutput(config map[string]string) error {
-
+func (gcp *GCP) InitModule(_config interface{}) error {
+	config := _config.(map[string]string)
+	
 	gcp.ctx = context.Background()
 
 	switch {
