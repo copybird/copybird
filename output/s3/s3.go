@@ -1,14 +1,12 @@
 package s3
 
 import (
-	"bytes"
 	"io"
-	"net/http"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/copybird/copybird/output"
 )
 
@@ -44,15 +42,22 @@ func (s *S3) InitOutput(config map[string]string) error {
 
 func (s *S3) Run() error {
 
-	_, err := s3.New(s.session).PutObject(&s3.PutObjectInput{
-		Bucket:             aws.String(s.config["AWS_BUCKET"]),
-		Key:                aws.String(s.config["FILE_PATH"]),
-		ACL:                aws.String("private"),
-		Body:               bytes.NewReader(buffer),
-		ContentType:        aws.String(http.DetectContentType(buffer)),
-		ContentDisposition: aws.String("attachment"),
-	})
-	return err
+	sess, err := session.NewSession(&aws.Config{Region: aws.String("us-east-1")})
+	if err != nil {
+		return err
+	}
+	svc := s3manager.NewUploader(sess)
+	input := &s3manager.UploadInput{
+		Bucket: aws.String("bucket"),
+		Key:    aws.String("whatever"),
+		Body:   s.reader,
+	}
+
+	_, err = svc.Upload(input)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *S3) Close() error {
