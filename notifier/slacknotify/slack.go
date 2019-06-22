@@ -6,19 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 )
 
 type SlackMessage struct {
 	Text string `json:"text"`
 }
 
-func GetCongif() Config {
-	conf := Config{}
-	conf.MessageSuccess = os.Getenv("SLACK_NOTIFY_MESSAGE_SUCCESS")
-	conf.MessageFail = os.Getenv("SLACK_NOTIFY_MESSAGE_FAIL")
-	conf.Hook = os.Getenv("SLACK_HOOK")
-	return conf
+func GetCongif() interface{} {
+	return Config{}
 }
 
 const (
