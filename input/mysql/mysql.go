@@ -6,19 +6,36 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strconv"
 	"strings"
+	"text/template"
+	"time"
 
 	"github.com/copybird/copybird/core"
 	// We need this shit
 	_ "github.com/go-sql-driver/mysql"
 )
 
-// MySQLDumper is struct storing inner properties for mysql backups
-type MySQLDumper struct {
-	core.PipeComponent
-	conn *sql.DB
-}
+type (
+	// MySQLDumper is struct storing inner properties for mysql backups
+	MySQLDumper struct {
+		core.PipeComponent
+		conn     *sql.DB
+		data     dbDump
+		template *template.Template
+	}
+	dbDump struct {
+		Version string
+		Tables  []table
+		EndTime string
+	}
+	table struct {
+		Name   string
+		Schema string
+		Data   string
+	}
+)
 
 // New inilializes new MySQLDumper instance
 func New(dsn string) (*MySQLDumper, error) {
@@ -39,11 +56,18 @@ func (d *MySQLDumper) Init(w io.Writer, r io.Reader) error {
 
 // Run dumps database
 func (d *MySQLDumper) Run() error {
-	tables, err := d.getTables()
+	if err := d.dumpDatabase(); err != nil {
+		return err
+	}
+	f, err := os.Create("dump.sql")
 	if err != nil {
 		return err
 	}
-	_ = tables
+	defer f.Close()
+	if err := d.template.Execute(f, d.data); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -122,4 +146,47 @@ func (d *MySQLDumper) getTableData(name string) (string, error) {
 	}
 	return strings.Join(data, ","), rows.Err()
 
+}
+func (d *MySQLDumper) dumpDatabase() error {
+	var dump dbDump
+	version, err := d.getServerVersion()
+	if err != nil {
+		return err
+	}
+	tables, err := d.getTables()
+	if err != nil {
+		return err
+	}
+	dump.Version = version
+	for _, tableName := range tables {
+		var table table
+		table.Name = tableName
+		schema, err := d.getTableSchema(tableName)
+		if err != nil {
+			return err
+		}
+		table.Schema = schema
+		data, err := d.getTableData(tableName)
+		if err != nil {
+			return err
+		}
+		table.Data = data
+		dump.Tables = append(dump.Tables, table)
+	}
+	dump.EndTime = time.Now().String()
+	t, err := template.New("mysqlbackup").Parse(dumpTemplate)
+	if err != nil {
+		return err
+	}
+	d.template = t
+	d.data = dump
+	return nil
+
+}
+func (d *MySQLDumper) getServerVersion() (string, error) {
+	var version sql.NullString
+	if err := d.conn.QueryRow("SELECT version()").Scan(&version); err != nil {
+		return version.String, nil
+	}
+	return version.String, nil
 }
