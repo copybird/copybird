@@ -17,6 +17,9 @@ services:
 
   mongo:
     image: mongo:3.4
+    environment:
+      MONGO_INIT_ROOT_USERNAME: root
+      MONGO_INIT_ROOT_PASSWORD: root
     ports:
       - '27017:27017'
     volumes:

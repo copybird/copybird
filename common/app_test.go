@@ -14,7 +14,7 @@ import (
 	"gotest.tools/assert"
 )
 
-func AppRunTest(t *testing.T) {
+func TestAppRun(t *testing.T) {
 	modMysql := new(mysql.MySQLDumper)
 	modMysqlCfg := modMysql.GetConfig()
 	assert.Assert(t, modMysqlCfg != nil)
