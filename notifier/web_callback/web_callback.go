@@ -11,7 +11,7 @@ type callback struct{
 	targetUrl string
 }
 
-func (c *callback) sendNotification () error{
+func (c *callback) sendNotification (targetUrl string) error{
 
 	//Set request body params
 	data := url.Values{}
