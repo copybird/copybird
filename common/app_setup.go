@@ -8,6 +8,8 @@ import (
 	"github.com/copybird/copybird/input/mysql"
 	"github.com/copybird/copybird/output/local"
 	"github.com/copybird/copybird/output/s3"
+	"github.com/spf13/cobra"
+	"strings"
 
 	//"log"
 	"reflect"
@@ -42,8 +44,26 @@ func (m ModuleType) String() string {
 }
 
 func (a *App) Setup() error {
+	a.addFlagString(a.cmdBackup, "input", "mysql")
+	a.addFlagString(a.cmdBackup, "compress", "")
+	a.addFlagString(a.cmdBackup, "encrypt", "")
+	a.addFlagString(a.cmdBackup, "output", "local")
+	a.addFlagString(a.cmdBackup, "notify", "slack")
 	a.RegisterModules()
 	return nil
+}
+
+func (a *App) addFlagString(cmd *cobra.Command, name string, defaultValue string) {
+	a.vars[name] = cmd.Flags().String(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+}
+
+func (a *App) addFlagInt64(cmd *cobra.Command, name string, defaultValue int64) {
+	a.vars[name] = cmd.Flags().Int64(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+
+}
+
+func (a *App) addFlagBool(cmd *cobra.Command, name string, defaultValue bool) {
+	a.vars[name] = cmd.Flags().Bool(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
 }
 
 func (a *App) RegisterModules() {
@@ -57,7 +77,6 @@ func (a *App) RegisterModules() {
 func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
 	moduleGlobalName := fmt.Sprintf("%s_%s", moduleType.String(), module.GetName())
 	a.registeredModules[moduleGlobalName] = module
-	//log.Printf("register module: %s", moduleGlobalName)
 	cfg := module.GetConfig()
 	cfgValue := reflect.Indirect(reflect.ValueOf(cfg))
 	cfgType := cfgValue.Type()
@@ -65,16 +84,13 @@ func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
 		field := cfgType.Field(i)
 		name := strcase.ToSnake(field.Name)
 		argName := fmt.Sprintf("%s_%s", moduleGlobalName, name)
-		//envName := strings.ToUpper(argName)
-
-		//log.Printf("argName: %s, envName: %s", argName, envName)
 		switch (field.Type.Kind()) {
 		case reflect.Int:
-			a.cmdBackup.Flags().Int64(argName, cfgValue.Field(i).Int(), argName)
+			a.addFlagInt64(a.cmdBackup, argName, cfgValue.Field(i).Int())
 		case reflect.String:
-			a.cmdBackup.Flags().String(argName, cfgValue.Field(i).String(), argName)
+			a.addFlagString(a.cmdBackup, argName, cfgValue.Field(i).String())
 		case reflect.Bool:
-			a.cmdBackup.Flags().Bool(argName, cfgValue.Field(i).Bool(), argName)
+			a.addFlagBool(a.cmdBackup, argName, cfgValue.Field(i).Bool())
 		}
 	}
 	return nil

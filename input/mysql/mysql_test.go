@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -42,4 +43,13 @@ func TestGetTables(t *testing.T) {
 	assert.Equal(t, authorsSchema, d.data.Tables[0].Schema)
 	err = d.Run()
 	assert.NoError(t, err)
+}
+
+func TestMysqlDump(t *testing.T) {
+	m := &MySQLDumper{}
+	m.InitModule(m.GetConfig())
+	buf := bytes.Buffer{}
+	m.InitPipe(&buf, nil)
+	assert.NoError(t, m.Run())
+	t.Log(buf.String())
 }
