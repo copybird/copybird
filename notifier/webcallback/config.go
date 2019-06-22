@@ -1,7 +1,7 @@
 package webcallback
 
 type Config struct {
-	targetUrl  string
-	successMsg string
-	failMsg    string
+	TargetUrl  string
+	SuccessMsg string
+	FailMsg    string
 }
