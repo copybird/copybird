@@ -5,8 +5,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 )
+
+type Local struct {
+	config *Config
+	reader io.Reader
+	writer io.Writer
+}
 
 type SlackMessage struct {
 	Text string `json:"text"`
@@ -14,6 +21,12 @@ type SlackMessage struct {
 
 func (c *Config) GetName() string {
 	return MODULE_NAME
+}
+
+func (local *Local) InitPipe(w io.Writer, r io.Reader) error {
+	local.reader = r
+	local.writer = w
+	return nil
 }
 
 func (c *Config) InitModule(_cfg interface{}) error {
