@@ -34,7 +34,6 @@ func (s *S3) InitPipe(w io.Writer, r io.Reader) error {
 	return nil
 }
 
-//InitOutput initializes S3 with session
 func (s *S3) InitModule(_config interface{}) error {
 	config := _config.(Config)
 	session, err := session.NewSession(&aws.Config{
@@ -65,7 +64,7 @@ func (s *S3) Run() error {
 		return err
 	}
 	return nil
-} 
+}
 
 func (s *S3) Close() error {
 	return nil

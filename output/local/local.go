@@ -3,6 +3,7 @@ package local
 import (
 	"io"
 	"os"
+
 	"github.com/copybird/copybird/output"
 )
 
@@ -10,9 +11,9 @@ const MODULE_NAME = "local"
 
 type Local struct {
 	output.Output
-	reader  io.Reader
-	writer  io.Writer
-	config  *Config
+	reader io.Reader
+	writer io.Writer
+	config *Config
 }
 
 func (loc *Local) GetName() string {
@@ -21,8 +22,7 @@ func (loc *Local) GetName() string {
 
 func (loc *Local) GetConfig() interface{} {
 	return Config{
-		DefaultMask: os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		FileName: "test.txt",
+		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
 	}
 }
 
@@ -46,12 +46,12 @@ func (loc *Local) Run() error {
 	if err != nil {
 		return err
 	}
-	
-    defer f.Close()
+
+	defer f.Close()
 
 	_, err = io.Copy(f, loc.reader)
 	return err
-} 
+}
 
 func (loc *Local) Close() error {
 	return nil

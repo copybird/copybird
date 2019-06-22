@@ -1,8 +1,8 @@
 package gcp
 
 import (
-	"testing"
 	"bytes"
+	"testing"
 
 	"github.com/stretchr/testify/require"
 )
@@ -19,20 +19,19 @@ func TestGetConfig(t *testing.T) {
 	require.Equal(t, Config{}, conf)
 }
 
-func TestInitPipe(t *testing.T){
+func TestInitPipe(t *testing.T) {
 	var gcp GCP
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, gcp.InitPipe(bufOutput, bufInput))
 }
-//InitModule initializes S3 with session
 func TestInitModule(t *testing.T) {
 
 	var gcp GCP
 
 	err := gcp.InitModule(Config{CredentialsFilePath: ""})
 	require.Error(t, err, "Should fail to find credentials")
- 
+
 	err = gcp.InitModule(Config{CredentialsFilePath: "creds.json"})
 	require.Error(t, err, "credentials file is missing")
 }
