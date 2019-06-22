@@ -28,15 +28,17 @@ type (
 		writer   io.Writer
 	}
 	dbDump struct {
-		Version string
-		Tables  []table
-		EndTime string
+		Version  string
+		Tables   []table
+		EndTime  string
+		DBScheme string
 	}
 	table struct {
-		Name     string
-		Schema   string
-		Data     string
-		DBScheme string
+		Name           string
+		Schema         string
+		SequenceScheme string
+		Data           string
+		DBScheme       string
 	}
 )
 
@@ -108,12 +110,11 @@ func (d *PostgresDumper) getTables() ([]string, error) {
 	return tables, rows.Err()
 }
 
-func (d *PostgresDumper) getTableSchema(tableName string) (string, error) {
+func (d *PostgresDumper) getTableSchema(tableName string) ([]tableScheme, []sequenceScheme, error) {
 
 	var (
-		columns     []tableColumn
-		sequence    []string
-		tableSchema = fmt.Sprintf("CREATE TABLE %s", tableName)
+		columns  []tableScheme
+		sequence []sequenceScheme
 	)
 	rows, err := d.conn.Query(`
 	select cln.table_name,
@@ -135,16 +136,16 @@ func (d *PostgresDumper) getTableSchema(tableName string) (string, error) {
 	where cln.table_schema = $1
 	  and cln.table_name = $2`, defaultSchemaName, tableName)
 	if err != nil {
-		return "", err
+		return columns, sequence, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		var tableName, columnName, columnDefault, dataType, characterMaximumLength, isNullable, constraintName, constraintType, sequence sql.NullString
-		if err := rows.Scan(&tableName, &columnName, &columnDefault, &dataType, &characterMaximumLength, &isNullable, &constraintName, &constraintType, &sequence); err != nil {
-			return tableSchema, err
+		var tableName, columnName, columnDefault, dataType, characterMaximumLength, isNullable, constraintName, constraintType, sequenceName sql.NullString
+		if err := rows.Scan(&tableName, &columnName, &columnDefault, &dataType, &characterMaximumLength, &isNullable, &constraintName, &constraintType, &sequenceName); err != nil {
+			return columns, sequence, err
 		}
-		columns = append(columns, tableColumn{
+		columns = append(columns, tableScheme{
 			columnName:             columnName.String,
 			columnDefault:          columnDefault.String,
 			dataType:               dataType.String,
@@ -152,66 +153,83 @@ func (d *PostgresDumper) getTableSchema(tableName string) (string, error) {
 			isNullable:             isNullable.String,
 			constraintName:         constraintName.String,
 			constraintType:         constraintType.String,
-			sequence:               sequence.String,
+			sequence:               sequenceName.String,
 		})
+		sequence = append(sequence, sequenceScheme{name: sequenceName.String})
 	}
 
+	return columns, sequence, nil
+}
+
+func (d *PostgresDumper) tableSequenceDump(tableName string, schemas []sequenceScheme) string {
+	var sequence []string
+	for _, schema := range schemas {
+		if schema.name != "" {
+			sequence = append(sequence, fmt.Sprintf("drop sequence IF EXISTS %s;\ncreate sequence %s;", schema.name, schema.name))
+		}
+	}
+	return fmt.Sprintf(strings.Join(sequence, ";"))
+}
+
+func (d *PostgresDumper) tableSchemeDump(tableName string, schemas []tableScheme) string {
+
 	var tableColumns []string
-	for _, column := range columns {
-		var (
-			defaultValue, isNull, constraint string
-			columnType                       = column.dataType
-		)
-		if column.columnDefault != "" {
-			defaultValue = fmt.Sprintf("default %s", column.columnDefault)
+	for _, schema := range schemas {
+		var defaultValue, isNull, constraint string
+		var columnType = schema.dataType
+		if schema.columnDefault != "" {
+			defaultValue = fmt.Sprintf("default %s", schema.columnDefault)
 		}
 
-		if column.characterMaximumLength != "" {
-			columnType = fmt.Sprintf("%s(%s)", column.dataType, column.characterMaximumLength)
+		if schema.characterMaximumLength != "" {
+			columnType = fmt.Sprintf("%s(%s)", schema.dataType, schema.characterMaximumLength)
 		}
 
-		if column.isNullable == "NO" {
+		if schema.isNullable == "NO" {
 			isNull = "not null"
 		}
 
-		if column.constraintName != "" {
-			constraint = fmt.Sprintf("constraint %s %s", column.constraintName, column.constraintType)
+		if schema.constraintName != "" {
+			constraint = fmt.Sprintf("constraint %s %s", schema.constraintName, schema.constraintType)
 		}
-
-		tableColumns = append(tableColumns, fmt.Sprintf("%s %s %s %s %s", column.columnName, columnType, defaultValue, isNull, constraint))
-		if column.sequence != "" {
-			sequence = append(sequence, fmt.Sprintf("create sequence %s", column.sequence))
-		}
+		tableColumns = append(tableColumns, fmt.Sprintf("%s %s %s %s %s", schema.columnName, columnType, defaultValue, isNull, constraint))
 	}
 
-	tableSchema += fmt.Sprintf("(%s);\n%s;", strings.Join(tableColumns, ","), strings.Join(sequence, ";"))
-	return tableSchema, nil
+	return fmt.Sprintf("CREATE TABLE %s (%s);", tableName, strings.Join(tableColumns, ","))
 }
 
 func (d *PostgresDumper) getTableData(name string) (string, error) {
-	q := fmt.Sprintf("SELECT * FROM %s", name)
-	rows, err := d.conn.Query(q)
+
+	rows, err := d.conn.Query(fmt.Sprintf(`SELECT * FROM %s`, name))
 	if err != nil {
 		return "", err
 	}
 	defer rows.Close()
+
 	columns, err := rows.Columns()
 	if err != nil {
 		return "", err
 	}
+
 	if len(columns) == 0 {
 		return "", fmt.Errorf("no columns in table %s", name)
 	}
+
 	var data []string
 	for rows.Next() {
-		scanData := make([]sql.RawBytes, len(columns))
-		pointers := make([]interface{}, len(columns))
+		var (
+			scanData = make([]sql.RawBytes, len(columns))
+			pointers = make([]interface{}, len(columns))
+		)
+
 		for i := range scanData {
 			pointers[i] = &scanData[i]
 		}
+
 		if err := rows.Scan(pointers...); err != nil {
 			return "", err
 		}
+
 		rowData := make([]string, len(columns))
 		for i, v := range scanData {
 			if v != nil {
@@ -237,32 +255,43 @@ func (d *PostgresDumper) dumpDatabase() error {
 	if err != nil {
 		return err
 	}
+
 	tables, err := d.getTables()
 	if err != nil {
 		return err
 	}
+
 	dump.Version = version
+	dump.DBScheme = defaultSchemaName
+	dump.EndTime = time.Now().String()
+
 	for _, tableName := range tables {
-		var table table
-		table.Name = tableName
-		table.DBScheme = defaultSchemaName
-		schema, err := d.getTableSchema(tableName)
+		var table = table{
+			Name:     tableName,
+			DBScheme: defaultSchemaName,
+		}
+
+		tableSchema, sequenceSchema, err := d.getTableSchema(tableName)
 		if err != nil {
 			return err
 		}
-		table.Schema = schema
+
 		data, err := d.getTableData(tableName)
 		if err != nil {
 			return err
 		}
+
+		table.Schema = d.tableSchemeDump(tableName, tableSchema)
+		table.SequenceScheme = d.tableSequenceDump(tableName, sequenceSchema)
 		table.Data = data
 		dump.Tables = append(dump.Tables, table)
 	}
-	dump.EndTime = time.Now().String()
+
 	t, err := template.New("postgresqlbackup").Parse(dumpTemplate)
 	if err != nil {
 		return err
 	}
+
 	d.template = t
 	d.data = dump
 	return nil
