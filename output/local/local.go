@@ -3,7 +3,6 @@ package local
 import (
 	"io"
 	"os"
-	"fmt"
 	"github.com/copybird/copybird/output"
 )
 
@@ -39,29 +38,16 @@ func (loc *Local) InitModule(_config interface{}) error {
 
 func (loc *Local) Run() error {
 
-	f, err := os.Create(loc.config.FileName)
-    if err != nil {
-        return err
+	// If the file doesn't exist, create it, or append to the file
+	f, err := os.OpenFile(loc.config.FileName, loc.config.DefaultMask, 0644)
+	if err != nil {
+		return err
 	}
 	
     defer f.Close()
 
-	buf := make([]byte, 12)
-	for {
-		_, err = loc.reader.Read(buf)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return fmt.Errorf("read err: %s", err)
-		}
-		_, err = loc.writer.Write(buf)
-		if err != nil {
-			return fmt.Errorf("write err: %s", err)
-		}
-	}
-	
-	return nil
+	_, err = io.Copy(f, loc.reader)
+	return err
 } 
 
 func (loc *Local) Close() error {
