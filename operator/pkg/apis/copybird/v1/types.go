@@ -24,25 +24,25 @@ import (
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// CopybirdSource is a specification for a CopybirdSource resource
-type CopybirdSource struct {
+// CopyBird is a specification for a CopyBird resource
+type CopyBird struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec CopybirdSourceSpec `json:"spec"`
+	Spec CopyBirdSpec `json:"spec"`
 }
 
-// CopybirdSourceSpec is the spec for a CopybirdSource resource
-type CopybirdSourceSpec struct {
-	Name    string `json:"name"`
+// CopyBirdSpec is the spec for a CopyBird resource
+type CopyBirdSpec struct {
+	Name string `json:"name"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// CopybirdSourceList is a list of CopybirdSource resources
-type CopybirdSourceList struct {
+// CopyBirdList is a list of CopyBird resources
+type CopyBirdList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []CopybirdSource `json:"items"`
+	Items []CopyBird `json:"items"`
 }
