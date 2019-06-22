@@ -1,16 +1,20 @@
 package common
 
 import (
+	"github.com/copybird/copybird/core"
 	"log"
 
 	"github.com/spf13/cobra"
 )
 
 type App struct {
+	registeredModules map[string]core.Module
 }
 
 func NewApp() *App {
-	return &App{}
+	return &App{
+		registeredModules: make(map[string]core.Module),
+	}
 }
 
 func (a *App) Run() error {
