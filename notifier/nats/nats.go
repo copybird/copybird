@@ -61,5 +61,6 @@ func (c *Nats) Run() error {
 
 // Close closes compressor
 func (c *Nats) Close() error {
+	c.conn.Close()
 	return nil
 }
