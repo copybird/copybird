@@ -6,6 +6,4 @@ import (
 
 type Output interface {
 	core.Module
-	core.PipeComponent
 }
- 
