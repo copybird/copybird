@@ -43,7 +43,7 @@ func (l *Local) Close() error {
 
 const MODULE_NAME = "telegram"
 
-func (conf Config) NotifyTelegramChannel() error {
+func (conf *Config) NotifyTelegramChannel() error {
 
 	bot, err := tgbotapi.NewBotAPI(conf.Token)
 	if err != nil {
