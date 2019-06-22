@@ -22,6 +22,10 @@ func TestGetConfig(t *testing.T) {
 	config := GetConfig()
 	require.Equal(t, Config{}, config)
 }
+func TestClose(t *testing.T) {
+	var conf Config
+	assert.Equal(t, nil, conf.Close())
+}
 
 func TestInitPipe(t *testing.T) {
 	var local Local
