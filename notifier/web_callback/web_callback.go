@@ -17,7 +17,7 @@ func (c *callback) sendNotification (targetUrl string) error{
 	data := url.Values{}
 	data.Set("success", "true")
 
-	req, err := http.NewRequest("GET", c.targetUrl, strings.NewReader(data.Encode()))
+	req, err := http.NewRequest("GET", targetUrl, strings.NewReader(data.Encode()))
 	if err != nil {
 		return err
 	}
