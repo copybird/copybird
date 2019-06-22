@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"io/ioutil"
 	"testing"
 )
@@ -63,6 +64,45 @@ func TestCompress_Unzip_Success_Unzip(t *testing.T) {
 	_ = compressor.InitModule(cfg)
 	_ = compressor.InitPipe(&wr, rd)
 	err := compressor.Unzip()
+	assert.Equal(t, err, nil)
+	assert.Equal(t, wr.String(), "hello world")
+}
+
+func TestCompress_Unzip_Fail_Read_Unzip(t *testing.T) {
+	cfg.Level = -1
+
+	rd := bytes.NewReader([]byte{
+		0x1f, 0x8b, 0x08, 0x08, 0xc8, 0x58, 0x13, 0x4a,
+		0x00, 0x03, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x2e,
+		0x74, 0x78, 0x74, 0x00, 0xcb, 0x48, 0xcd, 0xc9,
+		0xc9, 0x57, 0x28, 0xcf, 0x2f, 0xca, 0x49, 0xe1,
+		0x02, 0x00, 0x2d, 0x3b, 0x08, 0xaf, 0x0c, 0x00,
+		0x00, 0x00,
+	})
+	var wr bytes.Buffer
+
+
+	gr, err := gzip.NewReader(rd)
+	defer gr.Close()
+	assert.Equal(t, err, nil)
+
+	for {
+		buff := make([]byte, 4096)
+
+		_, err := gr.Read(buff)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			assert.Equal(t, err, nil)
+
+		}
+		_, err = wr.Write(buff)
+		assert.Equal(t, err, nil)
+
+	}
+
+
 	assert.Equal(t, err, nil)
 	assert.Equal(t, wr.String(), "hello world")
 }
