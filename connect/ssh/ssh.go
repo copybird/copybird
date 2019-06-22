@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -96,7 +95,6 @@ func (c *Ssh) Run() error {
 func (c *Ssh) Close() error {
 	return c.tunnel.Stop()
 }
-
 
 func getHostKey(host string) (ssh.PublicKey, error) {
 	// parse OpenSSH known_hosts file
