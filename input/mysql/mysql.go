@@ -17,6 +17,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+const MODULE_NAME = "mysql"
+
 type (
 	// MySQLDumper is struct storing inner properties for mysql backups
 	MySQLDumper struct {
@@ -24,6 +26,9 @@ type (
 		conn     *sql.DB
 		data     dbDump
 		template *template.Template
+		config   *MySQLConfig
+		reader   io.Reader
+		writer   io.Writer
 	}
 	dbDump struct {
 		Version string
@@ -37,16 +42,35 @@ type (
 	}
 )
 
-// New inilializes new MySQLDumper instance
-func New(dsn string) (*MySQLDumper, error) {
-	conn, err := sql.Open("mysql", dsn)
+// GetName returns name of module
+func (d *MySQLDumper) GetName() string {
+	return MODULE_NAME
+}
+
+// GetConfig returns config of module
+func (d *MySQLDumper) GetConfig() interface{} {
+	return d.config
+}
+
+// InitPipe initializes pipe
+func (d *MySQLDumper) InitPipe(w io.Writer, r io.Reader, cfg interface{}) error {
+	d.reader = r
+	d.writer = w
+	return nil
+}
+
+// InitModule initializes module
+func (d *MySQLDumper) InitModule(cfg interface{}) error {
+	d.config = cfg.(*MySQLConfig)
+	conn, err := sql.Open("mysql", d.config.DSN)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if err := conn.Ping(); err != nil {
-		return nil, err
+		return err
 	}
-	return &MySQLDumper{conn: conn}, nil
+	d.conn = conn
+	return nil
 }
 
 // Init initializes ...
