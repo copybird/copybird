@@ -1,8 +1,8 @@
 package gzip
 
 import (
-	"bufio"
 	"compress/gzip"
+	"fmt"
 	"io"
 	"log"
 )
@@ -23,19 +23,26 @@ func (c *Compress) InitCompress(w io.Writer, r io.Reader) error {
 	return nil
 }
 
-func (c *Compress) Run() error  {
+func (c *Compress) Run() error {
+	buff := make([]byte, 4096)
 	gw := gzip.NewWriter(c.writer)
 
 	for {
-		buff := bufio.NewReader(c.reader)
-
-		_, err := buff.WriteTo(gw)
+		_, err := c.reader.Read(buff)
 		if err != nil {
-			return err
+			if err == io.EOF {
+				break
+			}
+			return fmt.Errorf("read error: %s", err)
+		}
+		_, err = gw.Write(buff)
+		if err != nil {
+			return fmt.Errorf("write error: %s", err)
 		}
 	}
+	return nil
 }
 
-func (c *Compress) Close() error  {
+func (c *Compress) Close() error {
 	return nil
 }
