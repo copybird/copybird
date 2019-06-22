@@ -15,7 +15,7 @@ import (
 	"github.com/copybird/copybird/output/s3"
 	"github.com/copybird/copybird/output/scp"
 	"github.com/spf13/cobra"
-	"strings"
+	//"strings"
 
 	//"log"
 	"reflect"
@@ -60,23 +60,27 @@ func (a *App) Setup() error {
 }
 
 func (a *App) addFlagString(cmd *cobra.Command, name string, defaultValue string) {
-	a.vars[name] = cmd.Flags().String(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+	//a.vars[name] = cmd.Flags().String(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
 }
 
 func (a *App) addFlagInt64(cmd *cobra.Command, name string, defaultValue int64) {
-	a.vars[name] = cmd.Flags().Int64(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+	//a.vars[name] = cmd.Flags().Int64(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
 
 }
 
 func (a *App) addFlagBool(cmd *cobra.Command, name string, defaultValue bool) {
-	a.vars[name] = cmd.Flags().Bool(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+	//a.vars[name] = cmd.Flags().Bool(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
 }
 
 func (a *App) RegisterModules() {
 	a.RegisterModule(ModuleTypeConnect, &connect_ssh.Ssh{})
+
 	a.RegisterModule(ModuleTypeInput, &mysql.MySQLDumper{})
+
 	a.RegisterModule(ModuleTypeCompress, &compress_gzip.Compress{})
+
 	a.RegisterModule(ModuleTypeEncryption, &aesgcm.EncryptionAESGCM{})
+
 	a.RegisterModule(ModuleTypeOutput, &local.Local{})
 	a.RegisterModule(ModuleTypeOutput, &s3.S3{})
 	a.RegisterModule(ModuleTypeOutput, &gcp.GCP{})
