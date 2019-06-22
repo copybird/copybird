@@ -2,9 +2,11 @@ package input
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/copybird/copybird/core"
@@ -94,7 +96,7 @@ func (d *MySQLDumper) getTableData(name string) (string, error) {
 	}
 	var data []string
 	for rows.Next() {
-		scanData := make([]*sql.NullString, len(columns))
+		scanData := make([]sql.RawBytes, len(columns))
 		pointers := make([]interface{}, len(columns))
 		for i := range scanData {
 			pointers[i] = &scanData[i]
@@ -104,16 +106,16 @@ func (d *MySQLDumper) getTableData(name string) (string, error) {
 		}
 		rowData := make([]string, len(columns))
 		for i, v := range scanData {
-			fmt.Printf("%T\n", pointers[i])
-			switch pointers[i].(type) {
-			case int:
-				fmt.Println("HEY")
-			}
-			if v != nil && v.Valid {
-				rowData[i] = fmt.Sprintf("'%s'", v.String)
+			if v != nil {
+				if _, err := strconv.Atoi(string(v)); err == nil {
+					rowData[i] = string(v)
+				} else {
+					rowData[i] = fmt.Sprintf("'%s'", strings.Replace(string(v), "'", "\\'", -1))
+				}
 			} else {
 				rowData[i] = "NULL"
 			}
+			json.Unmarshal(v, pointers)
 		}
 		data = append(data, fmt.Sprintf("(%s)", strings.Join(rowData, ",")))
 
