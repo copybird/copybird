@@ -10,7 +10,7 @@ import (
 const MODULE_NAME = "web_callback"
 
 type callback struct{
-	targetUrl string
+	config     *Config
 }
 
 func (c *callback) GetName() string {
@@ -18,16 +18,17 @@ func (c *callback) GetName() string {
 }
 
 func (c *callback) GetConfig() interface{} {
-	return nil
+	return &Config{}
 }
 
-func (c *callback) sendNotification (targetUrl string) error{
+
+func (c *callback) sendNotification () error{
 
 	//Set request body params
 	data := url.Values{}
 	data.Set("success", "true")
 
-	req, err := http.NewRequest("GET", targetUrl, strings.NewReader(data.Encode()))
+	req, err := http.NewRequest("GET", c.config.targetUrl, strings.NewReader(data.Encode()))
 	if err != nil {
 		return err
 	}
