@@ -11,6 +11,7 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gorilla/schema v1.1.0 // indirect
+	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/pierrec/lz4 v2.0.5+incompatible

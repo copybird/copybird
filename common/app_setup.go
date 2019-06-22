@@ -1,13 +1,20 @@
 package common
 
 import (
+	"flag"
 	"fmt"
 	compress_gzip "github.com/copybird/copybird/compress/gzip"
 	"github.com/copybird/copybird/core"
 	"github.com/copybird/copybird/encryption/aesgcm"
 	"github.com/copybird/copybird/input/mysql"
 	"github.com/copybird/copybird/output/local"
-	"log"
+	"github.com/copybird/copybird/output/s3"
+
+	//"log"
+	"reflect"
+	//"strings"
+
+	"github.com/iancoleman/strcase"
 
 	// lz4_compress "github.com/copybird/copybird/compress/lz4"
 	// lz4_decompress "github.com/copybird/copybird/decompress/lz4"
@@ -45,11 +52,31 @@ func (a *App) RegisterModules() {
 	a.RegisterModule(ModuleTypeCompress, &compress_gzip.Compress{})
 	a.RegisterModule(ModuleTypeEncryption, &aesgcm.EncryptionAESGCM{})
 	a.RegisterModule(ModuleTypeOutput, &local.Local{})
+	a.RegisterModule(ModuleTypeOutput, &s3.S3{})
 }
 
 func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
-	globalName := fmt.Sprintf("%s_%s", moduleType.String(), module.GetName())
-	a.registeredModules[globalName] = module
-	log.Printf("register module: %s", globalName)
+	moduleGlobalName := fmt.Sprintf("%s_%s", moduleType.String(), module.GetName())
+	a.registeredModules[moduleGlobalName] = module
+	//log.Printf("register module: %s", moduleGlobalName)
+	cfg := module.GetConfig()
+	cfgValue := reflect.Indirect(reflect.ValueOf(cfg))
+	cfgType := cfgValue.Type()
+	for i := 0; i < cfgType.NumField(); i++ {
+		field := cfgType.Field(i)
+		name := strcase.ToSnake(field.Name)
+		argName := fmt.Sprintf("%s_%s", moduleGlobalName, name)
+		//envName := strings.ToUpper(argName)
+
+		//log.Printf("argName: %s, envName: %s", argName, envName)
+		switch (field.Type.Kind()) {
+		case reflect.Int:
+			flag.Int64(argName, cfgValue.Field(i).Int(), argName)
+		case reflect.String:
+			flag.String(argName, cfgValue.Field(i).String(), argName)
+		case reflect.Bool:
+			flag.Bool(argName, cfgValue.Field(i).Bool(), argName)
+		}
+	}
 	return nil
 }
