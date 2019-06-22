@@ -8,10 +8,9 @@ import (
 )
 
 var decompressor Decompress
-var cfg Config
 
 func TestCompress_InitCompress_Default_Compress(t *testing.T) {
-	err := decompressor.InitModule(cfg)
+	err := decompressor.InitModule(nil)
 	assert.Equal(t, err, nil)
 }
 
@@ -26,7 +25,7 @@ func TestCompress_Unzip_Success_Unzip(t *testing.T) {
 		0x00, 0x00,
 	})
 
-	_ = decompressor.InitModule(cfg)
+	_ = decompressor.InitModule(nil)
 	_ = decompressor.InitPipe(&wr, rd)
 	err := decompressor.Run()
 	assert.Equal(t, err, nil)
@@ -37,7 +36,7 @@ func TestCompress_Unzip_Unsuccess_Unzip(t *testing.T) {
 	var wr bytes.Buffer
 	rd := bytes.NewReader([]byte{})
 
-	_ = decompressor.InitModule(cfg)
+	_ = decompressor.InitModule(nil)
 	_ = decompressor.InitPipe(&wr, rd)
 	err := decompressor.Run()
 	assert.NotEqual(t, err, nil)

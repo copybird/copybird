@@ -21,7 +21,7 @@ func (c *Decompress) GetName() string {
 }
 
 func (c *Decompress) GetConfig() interface{} {
-	return &Config{}
+	return nil
 }
 
 func (c *Decompress) InitPipe(w io.Writer, r io.Reader) error {
