@@ -28,7 +28,7 @@ func (n *Nats) GetName() string {
 }
 
 func (n *Nats) GetConfig() interface{} {
-	return n.config
+	return &Config{}
 }
 
 func (c *Nats) InitPipe(w io.Writer, r io.Reader) error {
@@ -38,8 +38,8 @@ func (c *Nats) InitPipe(w io.Writer, r io.Reader) error {
 }
 
 func (c *Nats) InitModule(_cfg interface{}) error {
-	cfg := _cfg.(Config)
-	c.config = &cfg
+	cfg := _cfg.(*Config)
+	c.config = cfg
 
 	if c.config.Topic == "" {
 		return errNatsEmptyTopic
@@ -55,8 +55,7 @@ func (c *Nats) InitModule(_cfg interface{}) error {
 }
 
 func (c *Nats) Run() error {
-	c.conn.Publish(c.config.Topic, []byte(c.config.Msg))
-	return nil
+	return c.conn.Publish(c.config.Topic, []byte(c.config.Msg))
 }
 
 // Close closes compressor
