@@ -1,26 +1,52 @@
 package common
 
 import (
-	"reflect"
 	"log"
 
-	"github.com/copybird/copybird/core"
-	"github.com/copybird/copybird/input/mysql"
 	compress_gzip "github.com/copybird/copybird/compress/gzip"
-	decompress_gzip "github.com/copybird/copybird/decompress/gzip"
+	"github.com/copybird/copybird/core"
+	"github.com/copybird/copybird/encryption/aesgcm"
+	"github.com/copybird/copybird/input/mysql"
+	"github.com/copybird/copybird/output/local"
 	// lz4_compress "github.com/copybird/copybird/compress/lz4"
 	// lz4_decompress "github.com/copybird/copybird/decompress/lz4"
 )
 
+type ModuleType int
+
+const (
+	ModuleTypeConnect ModuleType = iota
+	ModuleTypeInput
+	ModuleTypeCompress
+	ModuleTypeEncryption
+	ModuleTypeOutput
+	ModuleTypeNotify
+)
+
+func (m ModuleType) String() string {
+	return [...]string{
+		"connect",
+		"input",
+		"compress",
+		"encryption",
+		"output",
+		"notify",
+	}[m]
+}
+
 func (a *App) Setup() error {
-	a.RegisterModule(&mysql.MySQLDumper{})
-	a.RegisterModule(&compress_gzip.Compress{})
-	a.RegisterModule(&decompress_gzip.Decompress{})
+	a.RegisterModules()
 	return nil
 }
 
-func (a *App) RegisterModule(module core.Module) error {
-	moduleType := reflect.TypeOf(module)
-	log.Printf("register module: %s", moduleType.PkgPath())
+func (a *App) RegisterModules() {
+	a.RegisterModule(ModuleTypeInput, &mysql.MySQLDumper{})
+	a.RegisterModule(ModuleTypeCompress, &compress_gzip.Compress{})
+	a.RegisterModule(ModuleTypeEncryption, &aesgcm.EncryptionAESGCM{})
+	a.RegisterModule(ModuleTypeOutput, &local.Local{})
+}
+
+func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
+	log.Printf("register module: %s::%s", moduleType.String(), module.GetName())
 	return nil
 }
