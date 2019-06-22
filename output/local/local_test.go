@@ -1,4 +1,4 @@
-package s3
+package local
 
 import (
 	"testing"
@@ -8,27 +8,27 @@ import (
 
 //InitOutput initializes S3 with session
 func TestGetName(t *testing.T) {
-	var s S3
-	name := s.GetName()
-	require.Equal(t, "s3", name)
+	var loc Local
+	name := loc.GetName()
+	require.Equal(t, "local", name)
 }
 
 func TestGetConfig(t *testing.T) {
-	var s S3
-	conf := s.GetConfig()
+	var loc Local
+	conf := loc.GetConfig()
 	require.Equal(t, Config{}, conf)
 }
 
 
 func TestInitPipe(t *testing.T){
-	var s S3
+	var loc Local
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, s.InitPipe(bufOutput, bufInput))
+	require.NoError(t, loc.InitPipe(bufOutput, bufInput))
 }
 
 func TestInitModule(t *testing.T) {
-	var s S3
-	err := s.InitModule(Config{Region: "us-east-1"})
+	var loc Local
+	err := loc.InitModule(Config{FileName: "test.sql"})
 	require.NoError(t, err, "should not be any error here")
 }

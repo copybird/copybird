@@ -16,7 +16,7 @@ func TestGetName(t *testing.T) {
 func TestGetConfig(t *testing.T) {
 	var gcp GCP
 	conf := gcp.GetConfig()
-	require.Equal(t, nil, conf)
+	require.Equal(t, Config{}, conf)
 }
 
 func TestInitPipe(t *testing.T){
@@ -25,17 +25,14 @@ func TestInitPipe(t *testing.T){
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, gcp.InitPipe(bufOutput, bufInput))
 }
-//InitOutput initializes S3 with session
-func TestInitOutput(t *testing.T) {
+//InitModule initializes S3 with session
+func TestInitModule(t *testing.T) {
 
 	var gcp GCP
 
-	err := gcp.InitModule(map[string]string{"AWS_REGION": "us-east-1"})
+	err := gcp.InitModule(Config{CredentialsFilePath: ""})
 	require.Error(t, err, "Should fail to find credentials")
  
-	err = gcp.InitModule(map[string]string{"TOKEN_SOURCE": "some token source"})
-	require.Error(t, err, "token source is not supported")
-
-	err = gcp.InitModule(map[string]string{"CREDENTIALS_FILE": "creds.json"})
+	err = gcp.InitModule(Config{CredentialsFilePath: "creds.json"})
 	require.Error(t, err, "credentials file is missing")
 }

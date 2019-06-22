@@ -1,4 +1,4 @@
-package input
+package mysql
 
 import (
 	"database/sql"
@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"strconv"
 	"strings"
 	"text/template"
@@ -49,7 +48,7 @@ func (d *MySQLDumper) GetName() string {
 
 // GetConfig returns config of module
 func (d *MySQLDumper) GetConfig() interface{} {
-	return d.config
+	return &MySQLConfig{}
 }
 
 // InitPipe initializes pipe
@@ -73,22 +72,12 @@ func (d *MySQLDumper) InitModule(cfg interface{}) error {
 	return nil
 }
 
-// Init initializes ...
-func (d *MySQLDumper) Init(w io.Writer, r io.Reader) error {
-	return nil
-}
-
 // Run dumps database
 func (d *MySQLDumper) Run() error {
 	if err := d.dumpDatabase(); err != nil {
 		return err
 	}
-	f, err := os.Create("dump.sql")
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-	if err := d.template.Execute(f, d.data); err != nil {
+	if err := d.template.Execute(d.writer, d.data); err != nil {
 		return err
 	}
 

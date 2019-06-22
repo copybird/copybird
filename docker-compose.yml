@@ -14,3 +14,13 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ./samples/mysql.sql:/docker-entrypoint-initdb.d/init.sql
+
+  mongo:
+    image: mongo:3.4
+    environment:
+      MONGO_INIT_ROOT_USERNAME: root
+      MONGO_INIT_ROOT_PASSWORD: root
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./mongo:/data/db
