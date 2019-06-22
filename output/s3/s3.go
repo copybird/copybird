@@ -2,7 +2,6 @@ package s3
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 	"os"
 
@@ -12,28 +11,28 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-func main() {
+type S3 struct {
+	session *session.Session
+}
+
+//InitOutput initializes S3 with session
+func (s *S3) InitOutput() error {
 
 	session, err := session.NewSession(&aws.Config{
 		Region:      aws.String(os.Getenv("AWS_REGION")),
 		Credentials: credentials.NewStaticCredentials(os.Getenv("AWS_ACCESS_KEY_ID"), os.Getenv("AWS_SECRET_ACCESS_KEY"), ""),
 	})
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	err = AddFileToS3(session, os.Getenv("FILE_PATH"))
-	if err != nil {
-		log.Fatal(err)
-	}
+	s.session = session
+	return nil
 }
 
-// AddFileToS3 will upload a single file to S3, it will require a pre-built aws session
-// and will set file info like content type and encryption on the uploaded file.
-func AddFileToS3(s *session.Session, filepath string) error {
+func (s *S3) Run() error {
 
-	// Open the file for use
-	file, err := os.Open(filepath)
+	file, err := os.Open(os.Getenv("FILE_PATH"))
 	if err != nil {
 		return err
 	}
@@ -48,9 +47,9 @@ func AddFileToS3(s *session.Session, filepath string) error {
 	buffer := make([]byte, size)
 	file.Read(buffer)
 
-	_, err = s3.New(s).PutObject(&s3.PutObjectInput{
+	_, err = s3.New(s.session).PutObject(&s3.PutObjectInput{
 		Bucket:             aws.String(os.Getenv("AWS_BUCKET")),
-		Key:                aws.String(filepath),
+		Key:                aws.String(os.Getenv("FILE_PATH")),
 		ACL:                aws.String("private"),
 		Body:               bytes.NewReader(buffer),
 		ContentLength:      aws.Int64(size),

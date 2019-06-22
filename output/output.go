@@ -6,5 +6,5 @@ import (
 
 type Output interface {
 	core.PipeComponent
-	Upload() error
+	InitOutput() error
 }
