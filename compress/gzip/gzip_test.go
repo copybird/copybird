@@ -3,10 +3,11 @@ package gzip
 import (
 	"bytes"
 	"compress/gzip"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var compressor Compress
@@ -81,28 +82,12 @@ func TestCompress_Unzip_Fail_Read_Unzip(t *testing.T) {
 	})
 	var wr bytes.Buffer
 
-
 	gr, err := gzip.NewReader(rd)
 	defer gr.Close()
 	assert.Equal(t, err, nil)
 
-	for {
-		buff := make([]byte, 4096)
+	_, err = io.Copy(&wr, gr)
+	assert.Nil(t, err)
 
-		_, err := gr.Read(buff)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			assert.Equal(t, err, nil)
-
-		}
-		_, err = wr.Write(buff)
-		assert.Equal(t, err, nil)
-
-	}
-
-
-	assert.Equal(t, err, nil)
-	assert.Equal(t, wr.String(), "hello world")
+	assert.Equal(t, wr.String(), "hello world\n")
 }
