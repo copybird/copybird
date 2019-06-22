@@ -11,8 +11,8 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/copybird/copybird/core"
 	// We need this shit
+	"github.com/copybird/copybird/input"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,7 +21,7 @@ const MODULE_NAME = "mysql"
 type (
 	// MySQLDumper is struct storing inner properties for mysql backups
 	MySQLDumper struct {
-		core.PipeComponent
+		input.Input
 		conn     *sql.DB
 		data     dbDump
 		template *template.Template
