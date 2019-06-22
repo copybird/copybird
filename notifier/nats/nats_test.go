@@ -17,11 +17,11 @@ func TestNats(t *testing.T) {
 	assert.Assert(t, nats.GetConfig() != nil)
 	err := nats.InitModule(conf)
 	if err != nil {
-		panic(err)
+		t.Errorf("TestNats: %v", err)
 	}
 
 	err = nats.Run()
 	if err != nil {
-		panic(err)
+		t.Errorf("TestNats: %v", err)
 	}
 }
