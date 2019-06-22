@@ -13,7 +13,7 @@ type Config struct {
 		Host string
 		Port int
 	}
-	User    string
+	RemoteUser    string
 
 	// Full path to id_rsa key
 	KeyPath string

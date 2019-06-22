@@ -14,6 +14,7 @@ type Ssh struct {
 	reader io.Reader
 	writer io.Writer
 	config *Config
+	tunnel *SSHtunnel
 }
 
 func (c *Ssh) GetName() string {
@@ -63,7 +64,7 @@ func (c *Ssh) Run() error {
 	}
 
 	sshConfig := &ssh.ClientConfig{
-		User: c.config.User,
+		User: c.config.RemoteUser,
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(signer),
 		},
@@ -78,14 +79,11 @@ func (c *Ssh) Run() error {
 		Server: serverEndpoint,
 		Remote: remoteEndpoint,
 	}
+	c.tunnel = tunnel
 
-	err = tunnel.Start()
-	if err != nil {
-		return err
-	}
-	return nil
+	return c.tunnel.Start()
 }
 
 func (c *Ssh) Close() error {
-	return nil
+	return c.tunnel.Stop()
 }
