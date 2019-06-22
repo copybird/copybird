@@ -13,15 +13,11 @@ type SlackMessage struct {
 	Text string `json:"text"`
 }
 
-type Config struct {
-	Hook    string
-	Message string
-}
-
-func GetCongifForSlack() Config {
+func GetCongif() Config {
 	conf := Config{}
-	conf.Message = os.Getenv("SLACK_NOTIFY_MESSAGE")
-	conf.Message = os.Getenv("SLACK_HOOK")
+	conf.MessageSuccess = os.Getenv("SLACK_NOTIFY_MESSAGE_SUCCESS")
+	conf.MessageFail = os.Getenv("SLACK_NOTIFY_MESSAGE_FAIL")
+	conf.Hook = os.Getenv("SLACK_HOOK")
 	return conf
 }
 
@@ -31,13 +27,20 @@ const (
 	MIMEApplicationJSON = "application/json"
 )
 
-func (c Config) NotifySlackChannel() error {
+func (c Config) NotifySlackChannel(Success bool) error {
 
 	urls := fmt.Sprintf("%s/%s", SlackHookSite, c.Hook)
 
-	client := &http.Client{}
+	var slackMessage []byte
+	var err error
 
-	slackMessage, err := json.Marshal(SlackMessage{Text: "<!channel> " + c.Message})
+	client := &http.Client{}
+	if Success {
+		slackMessage, err = json.Marshal(SlackMessage{Text: "<!channel> " + c.MessageSuccess})
+	} else {
+		slackMessage, err = json.Marshal(SlackMessage{Text: "<!channel> " + c.MessageFail})
+	}
+
 	if err != nil {
 		return err
 	}
