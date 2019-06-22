@@ -4,8 +4,9 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/compress"
 	"io"
+
+	"github.com/copybird/copybird/compress"
 )
 
 const MODULE_NAME = "GZIP"
@@ -69,7 +70,7 @@ func (c *Compress) Close() error {
 	return nil
 }
 
-func (c *Compress) Unzip() error  {
+func (c *Compress) Unzip() error {
 
 	gr, err := gzip.NewReader(c.reader)
 	if err != nil {
@@ -78,7 +79,7 @@ func (c *Compress) Unzip() error  {
 	defer gr.Close()
 
 	for {
-		buff := make([]byte, 1)
+		buff := make([]byte, 4096)
 
 		_, err := gr.Read(buff)
 		if err != nil {
