@@ -13,11 +13,11 @@ type callback struct{
 	targetUrl string
 }
 
-func (e *callback) GetName() string {
+func (c *callback) GetName() string {
 	return MODULE_NAME
 }
 
-func (e *callback) GetConfig() interface{} {
+func (c *callback) GetConfig() interface{} {
 	return nil
 }
 
