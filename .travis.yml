@@ -6,9 +6,9 @@ os:
 - linux
 
 env:
-  - GO111MODULE=on
-  - PRODUCT=copybird
-  - ARCH=amd64
+  global:
+    - GO111MODULE=on
+    - PRODUCT=copybird
 
 go:
 - 1.12.x
