@@ -1,0 +1,35 @@
+language: go
+
+sudo: false
+
+os:
+- linux
+- osx
+
+env:
+  - GO111MODULE=on
+  - PRODUCT=copybird
+  - ARCH=amd64
+
+go:
+- 1.12.x
+
+install:
+# - make deps
+
+script:
+- go build -o bin/$PRODUCT main.go
+
+before_deploy:
+- mkdir -p build
+- tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
+
+deploy:
+- provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file:
+  - build/$PRODUCT-$TRAVIS_TAG.linux-$ARCH.tar.gz
+  - build/$PRODUCT-$TRAVIS_TAG.osx-$ARCH.tar.gz
+  skip_cleanup: true
+  on:
+    tags: true
