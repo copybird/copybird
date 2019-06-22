@@ -76,7 +76,6 @@ func (a *App) addFlagString(cmd *cobra.Command, name string, defaultValue string
 
 func (a *App) addFlagInt64(cmd *cobra.Command, name string, defaultValue int64) {
 	a.vars[name] = cmd.Flags().Int64(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
-
 }
 
 func (a *App) addFlagBool(cmd *cobra.Command, name string, defaultValue bool) {
