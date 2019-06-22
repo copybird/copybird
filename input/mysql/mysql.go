@@ -2,12 +2,18 @@ package input
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
+	"io"
 
+	"github.com/copybird/copybird/core"
+	// We need this shit
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // MySQLDumper is struct storing inner properties for mysql backups
 type MySQLDumper struct {
+	core.PipeComponent
 	conn *sql.DB
 }
 
@@ -21,6 +27,26 @@ func New(dsn string) (*MySQLDumper, error) {
 		return nil, err
 	}
 	return &MySQLDumper{conn: conn}, nil
+}
+
+// Init initializes ...
+func (d *MySQLDumper) Init(w io.Writer, r io.Reader) error {
+	return nil
+}
+
+// Run dumps database
+func (d *MySQLDumper) Run() error {
+	tables, err := d.getTables()
+	if err != nil {
+		return err
+	}
+	_ = tables
+	return nil
+}
+
+// Close closes ...
+func (d *MySQLDumper) Close() error {
+	return nil
 }
 func (d *MySQLDumper) getTables() ([]string, error) {
 	tables := []string{}
@@ -37,4 +63,16 @@ func (d *MySQLDumper) getTables() ([]string, error) {
 		tables = append(tables, table)
 	}
 	return tables, rows.Err()
+}
+func (d *MySQLDumper) getTableSchema(name string) (string, error) {
+	q := fmt.Sprintf("SHOW CREATE TABLE %s", name)
+	var returnTable string
+	var sqlTable string
+	if err := d.conn.QueryRow(q).Scan(&returnTable, &sqlTable); err != nil {
+		return "", err
+	}
+	if returnTable != name {
+		return "", errors.New("wrong table returned")
+	}
+	return sqlTable, nil
 }
