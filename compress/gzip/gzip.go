@@ -5,21 +5,36 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
+	"github.com/copybird/copybird/compress"
 )
 
+const MODULE_NAME = "GZIP"
+
 type Compress struct {
+	compress.Output
 	reader io.Reader
 	writer io.Writer
-	level int
+	level  int
 }
 
-func (c *Compress) Init(w io.Writer, r io.Reader) error {
+func (c *Compress) GetName() string {
+	return MODULE_NAME
+}
+
+func (c *Compress) GetConfig() interface{} {
+	return nil
+}
+
+func (c *Compress) InitPipe(w io.Writer, r io.Reader) error {
 	c.reader = r
 	c.writer = w
 	return nil
 }
 
-func (c *Compress) InitCompress(level int) error {
+func (c *Compress) InitModule(_cfg interface{}) error {
+	cfg := _cfg.(Config)
+	level := cfg.level
 	if level < -1 || level > 9 {
 		return errors.New("compression level must be between -1 and 9")
 	}

@@ -9,33 +9,37 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var compressor Compress
+var cfg Config
+
+
 func TestCompress_InitCompress_Default_Compress(t *testing.T) {
-	var compressor Compress
-	err := compressor.InitCompress(-1)
+	cfg.level = -1
+	err := compressor.InitModule(cfg)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, compressor.level, -1)
 }
 
 func TestCompress_InitCompress_Compress_Level_Out_Of_range(t *testing.T) {
-	var compressor Compress
-	err := compressor.InitCompress(10)
-	assert.Equal(t, err, nil)
+	cfg.level = 10
+	err := compressor.InitModule(cfg)
+	assert.NotEqual(t, err, nil)
 }
 
 func TestCompress_Run_Success_Compress(t *testing.T) {
-	var compressor Compress
-	rb := new(bytes.Buffer)
-	wb := new(bytes.Buffer)
-	rb.WriteString("hello, world.")
+	cfg.level = -1
 
-	_ = compressor.InitCompress(-1)
-	_ = compressor.Init(wb, rb)
+	rb := bytes.NewBufferString("hello, world.")
+	wb := new(bytes.Buffer)
+
+	_ = compressor.InitModule(cfg)
+	_ = compressor.InitPipe(wb, rb)
 	err := compressor.Run()
 	if err != nil {
 		t.Fatalf("Error: %s", err)
 	}
 
-	data := make([]byte, 13)
+	data := make([]byte, 4096)
 	var buff2  = new(bytes.Buffer)
 	gr, err := gzip.NewReader(wb)
 	defer gr.Close()
