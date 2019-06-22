@@ -26,6 +26,9 @@ func TestGetTables(t *testing.T) {
 	c.DSN = "root:root@tcp(localhost:3306)/test"
 
 	require.NoError(t, d.InitModule(c))
+	f, err := os.Create("dump.sql")
+	assert.NoError(t, err)
+	assert.NoError(t, d.InitPipe(f, nil))
 	tables, err := d.getTables()
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(tables))

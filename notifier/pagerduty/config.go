@@ -2,6 +2,5 @@ package pagerduty
 
 type Config struct {
 	AuthToken string
-	From      string
-	To        string
+	From      string //use user email in this field
 }
