@@ -1,11 +1,10 @@
 package lz4
 
 import (
-	"bufio"
 	"errors"
 	"io"
-	"os"
 
+	"github.com/copybird/copybird/compress"
 	"github.com/pierrec/lz4"
 )
 
@@ -13,95 +12,63 @@ var (
 	errCompLevel = errors.New("compression level must be between -1 and 9")
 )
 
-// Compressor represents ...
-type Compressor struct {
+const MODULE_NAME = "lz4"
+
+// CompressLZ4 represents ...
+type CompressLZ4 struct {
+	compress.Output
 	reader io.Reader
 	writer io.Writer
-	level  int
+	lz4    *lz4.Writer
 }
 
-// Init initializez comressor struct with reader, write
-func (c *Compressor) Init(w io.Writer, r io.Reader) error {
+func (c *CompressLZ4) GetName() string {
+	return MODULE_NAME
+}
+
+func (c *CompressLZ4) GetConfig() interface{} {
+	return &Config{}
+}
+
+func (c *CompressLZ4) InitPipe(w io.Writer, r io.Reader, _cfg interface{}) error {
 	c.reader = r
 	c.writer = w
 	return nil
 }
 
-// InitLevel  initializez compressor with level
-func (c *Compressor) InitLevel(level int) error {
-	if level < -1 || level > 9 {
-		return errCompLevel
-	}
-	c.level = level
-	return nil
-}
-
-func (c *Compressor) CompressFile(inputFile, outputFile string) error {
-
-	// open input file
-	fin, err := os.Open(inputFile)
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		if err := fin.Close(); err != nil {
-			panic(err)
-		}
-	}()
-	// make a read buffer
-	c.reader = bufio.NewReader(fin)
-
-	// open output file
-	fout, err := os.Create(outputFile)
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		if err := fout.Close(); err != nil {
-			panic(err)
-		}
-	}()
-
-	if err = c.Compress(); err != nil {
-		return err
-	}
+func (c *CompressLZ4) InitModule(_cfg interface{}) error {
+	// cfg := _cfg.(*Config)
+	// make an lz4 write buffer
+	c.lz4 = lz4.NewWriter(c.writer)
 
 	return nil
 }
 
-// Compress compresses file from input, saves to output
-func (c *Compressor) Compress() error {
+func (c *CompressLZ4) Run() error {
 
 	// make a buffer to keep chunks that are read
-	buf := make([]byte, 4096)
-
-	// make an lz4 write buffer
-	w := lz4.NewWriter(c.writer)
+	buf := make([]byte, 12)
 
 	for {
 		// read a chunk
 		n, err := c.reader.Read(buf)
 		if err != nil && err != io.EOF {
-			panic(err)
+			return err
 		}
 		if n == 0 {
 			break
 		}
 
 		// write a chunk
-		if _, err := w.Write(buf[:n]); err != nil {
-			panic(err)
+		if _, err := c.lz4.Write(buf[:n]); err != nil {
+			return err
 		}
-	}
-
-	if err := w.Flush(); err != nil {
-		panic(err)
 	}
 
 	return nil
 }
 
 // Close closes compressor
-func (c *Compressor) Close() error {
+func (c *CompressLZ4) Close() error {
 	return nil
 }
