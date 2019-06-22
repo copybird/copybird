@@ -41,19 +41,35 @@ func (scp *SCP) InitPipe(w io.Writer, r io.Reader) error {
 }
 
 func (scp *SCP) InitModule(_config interface{}) error {
-
+	var clientConfig *ssh.ClientConfig
 	conf := _config.(Config)
 	scp.config = &conf
 
 	// get host public key
 	hostKey := getHostKey(conf.Addr)
 
-	clientConfig := &ssh.ClientConfig{
-		User: scp.config.User,
-		Auth: []ssh.AuthMethod{
-			ssh.Password(scp.config.Password),
-		},
-		HostKeyCallback: ssh.FixedHostKey(hostKey),
+	if conf.PathToKey != "" {
+		// TODO need to get private key!
+		signer, err := ssh.ParsePrivateKey([]byte("privateKey"))
+		if err != nil {
+			return err
+		}
+		clientConfig = &ssh.ClientConfig{
+			User: scp.config.User,
+			Auth: []ssh.AuthMethod{
+				ssh.PublicKeys(signer),
+			},
+			HostKeyCallback: ssh.FixedHostKey(hostKey),
+		}
+
+	} else {
+		clientConfig = &ssh.ClientConfig{
+			User: scp.config.User,
+			Auth: []ssh.AuthMethod{
+				ssh.Password(scp.config.Password),
+			},
+			HostKeyCallback: ssh.FixedHostKey(hostKey),
+		}
 	}
 
 	conn, err := ssh.Dial("tcp", conf.Addr+conf.Port, clientConfig)

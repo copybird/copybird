@@ -9,7 +9,7 @@ import (
 	"github.com/copybird/copybird/compress"
 )
 
-const MODULE_NAME = "GZIP"
+const MODULE_NAME = "gzip_compress"
 
 type Compress struct {
 	compress.Output
@@ -57,19 +57,5 @@ func (c *Compress) Run() error {
 }
 
 func (c *Compress) Close() error {
-	return nil
-}
-
-func (c *Compress) Unzip() error {
-
-	gr, err := gzip.NewReader(c.reader)
-	if err != nil {
-		return fmt.Errorf("cant start gzip reader with error: %s", err)
-	}
-	defer gr.Close()
-	_, err = io.Copy(c.writer, gr)
-	if err != nil {
-		return fmt.Errorf("copy error: %s", err)
-	}
 	return nil
 }
