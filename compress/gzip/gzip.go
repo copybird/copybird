@@ -23,7 +23,9 @@ func (c *Compress) GetName() string {
 }
 
 func (c *Compress) GetConfig() interface{} {
-	return &Config{}
+	return &Config{
+		Level: 3,
+	}
 }
 
 func (c *Compress) InitPipe(w io.Writer, r io.Reader) error {
