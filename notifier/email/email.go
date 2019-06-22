@@ -53,8 +53,8 @@ func (e *Email) SendEmail () error{
 	header += "\r\n" + body + "\r\n"
 
 
-	err := smtp.SendMail("smtp.yandex.ru:587",
-		smtp.PlainAuth("", from, pass, "smtp.yandex.ru"),
+	err := smtp.SendMail("smtp.gmail.com:587",
+		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
 		from, []string{to}, []byte(header))
 
 	if err != nil {
