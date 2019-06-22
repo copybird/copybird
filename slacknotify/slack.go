@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 )
 
@@ -39,7 +40,8 @@ func NotifySlackChannel(message, urls string) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New(string(resp.StatusCode))
+		statusCode := fmt.Sprintf("%v", resp.StatusCode)
+		return errors.New("StatusCode: " + statusCode)
 	}
 
 	return nil
