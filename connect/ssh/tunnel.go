@@ -21,6 +21,7 @@ type SSHtunnel struct {
 	Local  *Endpoint
 	Server *Endpoint
 	Remote *Endpoint
+	Listener net.Listener
 
 	Config *ssh.ClientConfig
 }
@@ -30,10 +31,12 @@ func (tunnel *SSHtunnel) Start() error {
 	if err != nil {
 		return err
 	}
-	defer listener.Close()
+	tunnel.Listener = listener
+
+	defer tunnel.Listener.Close()
 
 	for {
-		conn, err := listener.Accept()
+		conn, err := tunnel.Listener.Accept()
 		if err != nil {
 			return err
 		}
@@ -63,4 +66,8 @@ func (tunnel *SSHtunnel) forward(localConn net.Conn) {
 
 	go copyConn(localConn, remoteConn)
 	go copyConn(remoteConn, localConn)
+}
+
+func (tunnel *SSHtunnel) Stop() error  {
+	return tunnel.Listener.Close()
 }
