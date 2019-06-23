@@ -13,9 +13,18 @@ import (
 )
 
 const (
-	// MODULE_NAME is name of a module
 	MODULE_NAME = "awssqs"
+	GROUP_NAME  = "global"
+	TYPE_NAME   = "notifier"
 )
+
+func (m *GlobalNotifierAWSSQS) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierAWSSQS) GetType() core.ModuleType {
+	return TYPE_NAME
+}
 
 type GlobalNotifierAWSSQS struct {
 	core.Module
