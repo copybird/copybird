@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/copybird/copybird/core"
 	"io"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -80,9 +81,58 @@ func (m *RestoreOutputMysql) Run() error {
 func (m *RestoreOutputMysql) RestoreDatabase() error {
 	reader := bufio.NewReader(m.reader)
 
-	// TODO: Need validate for SQL-like string here.
-	str, err := reader.ReadString('\n')
+	var lines []string
+	var prevLine string
 
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+
+			return err
+		}
+
+		if strings.HasPrefix(line, "--") {
+			continue
+		}
+		if strings.HasPrefix(line, "/*") {
+			continue
+		}
+
+		line = strings.TrimSuffix(line, "\n")
+		if line == "" {
+			continue
+		}
+
+		if !strings.HasSuffix(line, ";") || !strings.HasSuffix(prevLine, ";") {
+			lines = append(lines, line)
+			continue
+		}
+
+		if len(lines) > 0 {
+			line = strings.Join(lines, " ")
+		}
+
+		// Setting current line as prev fo next loop iteration use
+		prevLine = line
+
+		err = m.execute(line)
+		if err != nil {
+			return err
+		}
+
+	}
+	return nil
+}
+
+// Close connection to DB.
+func (m *RestoreOutputMysql) Close() error {
+	return m.conn.Close()
+}
+
+func (m *RestoreOutputMysql) execute(line string) error  {
 	// Start transaction
 	tx, err := m.conn.Begin()
 	if err != nil {
@@ -90,21 +140,16 @@ func (m *RestoreOutputMysql) RestoreDatabase() error {
 	}
 
 	// Execute transaction
-	res, err := tx.Exec(str)
+	_, err = tx.Exec(line)
 	if err != nil {
 		return err
 	}
-	print(res)
+
 	// Commit transaction
 	err = tx.Commit()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil
-}
-
-// Close closes ...
-func (m *RestoreOutputMysql) Close() error {
-	return m.conn.Close()
 }
