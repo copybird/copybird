@@ -4,9 +4,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
@@ -17,13 +19,13 @@ import (
 
 	backupclientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
 	backupinformer_v1 "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/backup/v1"
+	backuplister_v1 "github.com/copybird/copybird/operator/pkg/client/listers/backup/v1"
 )
 
-// retrieve the Kubernetes cluster client from outside of the cluster
-func getKubernetesClient() (kubernetes.Interface, backupclientset.Interface) {
+func Run() {
 	// construct the path to resolve to `~/.kube/config`
 	kubeConfigPath := os.Getenv("HOME") + "/.kube/config"
- 
+
 	// create the config from the path
 	config, err := clientcmd.BuildConfigFromFlags("", kubeConfigPath)
 	if err != nil {
@@ -42,23 +44,19 @@ func getKubernetesClient() (kubernetes.Interface, backupclientset.Interface) {
 	}
 
 	log.Info("Successfully constructed k8s client")
-	return client, backupClient
-}
-
-// main code path
-func Run() {
-	// get the Kubernetes client for connectivity
-	client, backupClient := getKubernetesClient()
 
 	// retrieve our custom resource informer which was generated from
 	// the code generator and pass it the custom resource client, specifying
 	// we should be looking through all namespaces for listing and watching
-	informer := backupinformer_v1.NewBackupInformer(
+	backupInformer := backupinformer_v1.NewBackupInformer(
 		backupClient,
 		meta_v1.NamespaceAll,
 		0,
 		cache.Indexers{},
 	)
+
+	sharedInformerFactory := informers.NewSharedInformerFactory(client, time.Second*5)
+	jobInformer := sharedInformerFactory.Batch().V1().Jobs()
 
 	// create a new queue so that when the informer gets a resource that is either
 	// a result of listing or watching, we can add an idenfitying key to the queue
@@ -69,7 +67,7 @@ func Run() {
 	//  - adding new resources
 	//  - updating existing resources
 	//  - deleting resources
-	informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
+	backupInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			// convert the resource object into a key (in this case
 			// we are just doing it in the format of 'namespace/name')
@@ -105,11 +103,13 @@ func Run() {
 	// handle logging, connections, informing (listing and watching), the queue,
 	// and the handler
 	controller := Controller{
-		logger:    log.NewEntry(log.New()),
-		clientset: client,
-		informer:  informer,
-		queue:     queue,
-		handler:   &BackupHandler{},
+		logger:         log.NewEntry(log.New()),
+		clientset:      client,
+		jobInformer:    jobInformer,
+		backupInformer: backupInformer,
+		backupLister:   backuplister_v1.NewBackupLister(backupInformer.GetIndexer()),
+		workqueue:      queue,
+		handler:        &BackupHandler{},
 	}
 
 	// use a channel to synchronize the finalization for a graceful shutdown
