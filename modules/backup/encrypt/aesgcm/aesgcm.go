@@ -9,6 +9,8 @@ import (
 	"io"
 )
 
+const GROUP_NAME = "backup"
+const TYPE_NAME = "encrypt"
 const MODULE_NAME = "aesgcm"
 
 type BackupEncryptAesgcm struct {
@@ -17,6 +19,14 @@ type BackupEncryptAesgcm struct {
 	writer io.Writer
 	gcm    cipher.AEAD
 	nonce  []byte
+}
+
+func (m *BackupEncryptAesgcm) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupEncryptAesgcm) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupEncryptAesgcm) GetName() string {
