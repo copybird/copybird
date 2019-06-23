@@ -1,11 +1,14 @@
 package awssqs
 
 import (
+	"io"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/aws/aws-sdk-go/service/sqs/sqsiface"
+	"github.com/copybird/copybird/core"
 	"github.com/knative/pkg/cloudevents"
 )
 
@@ -13,6 +16,17 @@ const (
 	// MODULE_NAME is name of a module
 	MODULE_NAME = "awssqs"
 )
+
+type GlobalNotifierAWSSQS struct {
+	core.Module
+	config *Config
+	reader io.Reader
+	writer io.Writer
+}
+
+func (m *GlobalNotifierAWSSQS) GetName() string {
+	return MODULE_NAME
+}
 
 type Clients struct {
 	SQS         sqsiface.SQSAPI
