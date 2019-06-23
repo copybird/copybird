@@ -1,6 +1,6 @@
 package local
 
 type Config struct {
-	FileName    string
+	File        string
 	DefaultMask int
 }

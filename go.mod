@@ -21,6 +21,7 @@ require (
 	github.com/knative/pkg v0.0.0-20190621220722-c2cd40c1c217
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/lib/pq v1.1.1
+	github.com/mitchellh/mapstructure v1.1.2
 	github.com/nats-io/gnatsd v1.4.1 // indirect
 	github.com/nats-io/go-nats v1.7.2
 	github.com/nats-io/nkeys v0.0.2 // indirect

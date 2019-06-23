@@ -18,7 +18,7 @@ func TestGetConfig(t *testing.T) {
 	conf := l.GetConfig()
 	require.Equal(t, &Config{
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
-		FileName:    "output",
+		File:        "output",
 	}, conf)
 }
 
@@ -36,7 +36,7 @@ func TestRun(t *testing.T) {
 	require.NoError(t, l.InitPipe(bufOutput, bufInput))
 	conf := &Config{
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
-		FileName:    "test.txt",
+		File:        "test.txt",
 	}
 	err := l.InitModule(conf)
 	require.NoError(t, err)
@@ -47,6 +47,6 @@ func TestRun(t *testing.T) {
 
 func TestInitModule(t *testing.T) {
 	l := &BackupOutputLocal{}
-	err := l.InitModule(&Config{FileName: "test.sql"})
+	err := l.InitModule(&Config{File: "test.sql"})
 	require.NoError(t, err, "should not be any error here")
 }
