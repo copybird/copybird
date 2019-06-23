@@ -7,57 +7,39 @@ import (
 )
 
 func TestRabbitMQ_InvalidConn(t *testing.T) {
-	qConf := QueueConfig{
-		Name: "test.queue",
-	}
-	mConf := MsgConfig{
-		ContentType: "text/plain",
-		Body:        []byte("Test msg"),
-	}
-	pConf := PublishConfig{
-		Key: "test.queue",
-	}
-	conf := Config{
-		QueueConfig:   qConf,
-		MsgConfig:     mConf,
-		PublishConfig: pConf,
-		RabbitMQURL:   "amqp://guest:guest@localhost:5679/",
+	conf := &Config{
+		QueueName:      "test.queue",
+		PublishKey:     "test.queue",
+		RabbitMQURL:    "amqp://guest:guest@localhost:5679/",
+		MsgContentType: "text/plain",
+		MsgBody:        "Hello",
 	}
 
-	rmq := GlobalNotifierRabbitmq{}
-	assert.Assert(t, GetConfig() != nil)
+	rmq := &GlobalNotifierRabbitmq{}
+	assert.Assert(t, rmq.GetConfig() != nil)
 
-	err := InitModule(conf)
-	assert.Error(t, err, "dial tcp 127.0.0.1:5679: connect: connection refused")
+	err := rmq.InitModule(conf)
+	assert.Error(t, err, "dial tcp [::1]:5679: connect: connection refused")
 }
 
 func TestRabbitMQ_ValidConn(t *testing.T) {
-	qConf := QueueConfig{
-		Name: "test.queue",
-	}
-	mConf := MsgConfig{
-		ContentType: "text/plain",
-		Body:        []byte("Test msg"),
-	}
-	pConf := PublishConfig{
-		Key: "test.queue",
-	}
-	conf := Config{
-		QueueConfig:   qConf,
-		MsgConfig:     mConf,
-		PublishConfig: pConf,
-		RabbitMQURL:   "amqp://guest:guest@localhost:5672/",
+	conf := &Config{
+		QueueName:      "test.queue",
+		MsgContentType: "text/plain",
+		MsgBody:        "Hello",
+		PublishKey:     "test.queue",
+		RabbitMQURL:    "amqp://guest:guest@localhost:5672/",
 	}
 
-	rmq := GlobalNotifierRabbitmq{}
-	assert.Assert(t, GetConfig() != nil)
+	rmq := &GlobalNotifierRabbitmq{}
+	assert.Assert(t, rmq.GetConfig() != nil)
 
-	err := InitModule(conf)
+	err := rmq.InitModule(conf)
 	if err != nil {
 		t.Errorf("TestRabbitMQ: %v", err)
 	}
 
-	err = Run()
+	err = rmq.Run()
 	if err != nil {
 		t.Errorf("TestRabbitMQ: %v", err)
 	}
