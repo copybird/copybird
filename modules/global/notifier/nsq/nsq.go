@@ -52,6 +52,14 @@ func (m *GlobalNotifierNSQ) InitModule(_cfg interface{}) error {
 	return nil
 }
 
+func (m *GlobalNotifierNSQ) Run() error {
+	if err := m.config.NotifyNSQ(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type NSQMessage struct {
 	Message string `json:"message"`
 }
