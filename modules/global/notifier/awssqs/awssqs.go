@@ -34,6 +34,11 @@ func (m *GlobalNotifierAWSSQS) InitPipe(w io.Writer, r io.Reader) error {
 	return nil
 }
 
+func (m *GlobalNotifierAWSSQS) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
+	return nil
+}
+
 type Clients struct {
 	SQS         sqsiface.SQSAPI
 	CloudEvents *cloudevents.Client
