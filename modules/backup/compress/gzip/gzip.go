@@ -24,11 +24,11 @@ func (m *BackupCompressGzip) GetName() string {
 	return MODULE_NAME
 }
 
-func (m *BackupCompressGzip) GetGroup() string {
+func (m *BackupCompressGzip) GetGroup() core.ModuleGroup {
 	return MODULE_GROUP
 }
 
-func (m *BackupCompressGzip) GetType() string {
+func (m *BackupCompressGzip) GetType() core.ModuleType {
 	return MODULE_TYPE
 }
 

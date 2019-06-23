@@ -23,11 +23,11 @@ type BackupOutputS3 struct {
 	config  *Config
 }
 
-func (m *BackupOutputS3) GetGroup() string {
+func (m *BackupOutputS3) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *BackupOutputS3) GetType() string {
+func (m *BackupOutputS3) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

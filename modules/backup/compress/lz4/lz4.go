@@ -26,11 +26,11 @@ type BackupCompressLz4 struct {
 	level  int
 }
 
-func (m *BackupCompressLz4) GetGroup() string {
+func (m *BackupCompressLz4) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *BackupCompressLz4) GetType() string {
+func (m *BackupCompressLz4) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

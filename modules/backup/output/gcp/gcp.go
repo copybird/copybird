@@ -25,11 +25,11 @@ type BackupOutputGcp struct {
 	config     *Config
 }
 
-func (m *BackupOutputGcp) GetGroup() string {
+func (m *BackupOutputGcp) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *BackupOutputGcp) GetType() string {
+func (m *BackupOutputGcp) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 
