@@ -3,9 +3,12 @@ package postgres
 import (
 	"bufio"
 	"database/sql"
+	"io"
+	"log"
+	"strings"
+
 	"github.com/copybird/copybird/core"
 	_ "github.com/lib/pq"
-	"io"
 )
 
 // Module Constants
@@ -17,10 +20,10 @@ type (
 	// BackupInputPostgresql is struct storing inner properties for mysql backups
 	RestoreOutputPostgresql struct {
 		core.Module
-		reader   io.Reader
-		writer   io.Writer
-		conn     *sql.DB
-		config   *Config
+		reader io.Reader
+		writer io.Writer
+		conn   *sql.DB
+		config *Config
 	}
 )
 
@@ -70,26 +73,40 @@ func (r *RestoreOutputPostgresql) Run() error {
 	reader := bufio.NewReader(r.reader)
 
 	// TODO: Need validate for SQL-like string here.
-	str, err := reader.ReadString('\n')
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
 
-	// Start transaction
-	tx, err := r.conn.Begin()
-	if err != nil {
-		return err
-	}
+			log.Fatalf("read file line error: %v", err)
+			return err
+		}
 
-	// Execute transaction
-	res, err := tx.Exec(str)
-	if err != nil {
-		return err
-	}
-	print(res)
-	// Commit transaction
-	err = tx.Commit()
-	if err != nil {
-		return nil
-	}
+		// Comment protection
+		if strings.HasPrefix(line, "--") {
+			continue
+		}
 
+		// Start transaction
+		tx, err := r.conn.Begin()
+		if err != nil {
+			return err
+		}
+
+		// Execute transaction
+		_, err = tx.Exec(line)
+		if err != nil {
+			return err
+		}
+
+		// Commit transaction
+		err = tx.Commit()
+		if err != nil {
+			return nil
+		}
+	}
 	return nil
 }
 

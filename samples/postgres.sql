@@ -26,7 +26,7 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
--1-
+---
 -- Name: authors; Type: TABLE; Schema: public; Owner: -
 --
 

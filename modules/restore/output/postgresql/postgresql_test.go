@@ -17,7 +17,8 @@ func TestRestoreOutputPostgresql_Run(t *testing.T) {
 	assert.Equal(t, err, nil)
 
 	// TODO: Need parse file, but after implement sql formatter
-	f, _ := os.Open("./samples/postgres.sql")
+	f, err := os.Open("../../../../samples/postgres.sql")
+	assert.Equal(t, err, nil)
 	rs.reader = bufio.NewReader(f)
 
 	//rs.reader = bytes.NewReader([]byte("connect test \n "))
