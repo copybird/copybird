@@ -1,5 +1,7 @@
 [![GitHub release](https://img.shields.io/github/release/copybird/copybird/all.svg?style=flat-square)](https://github.com/copybird/copybird/releases)
-[![Docker image](https://dockerbuildbadges.quelltext.eu/status.svg?organization=copybird&repository=copybird)](https://hub.docker.com/r/copybird/copybird)
+
+[![](https://images.microbadger.com/badges/version/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
+[![](https://images.microbadger.com/badges/image/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
 
 # Copybird
 
