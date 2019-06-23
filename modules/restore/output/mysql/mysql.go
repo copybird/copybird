@@ -1,19 +1,20 @@
 package mysql
 
 import (
-	"bufio"
 	"database/sql"
-	"github.com/copybird/copybird/core"
 	"io"
-	"strings"
+
+	"github.com/copybird/copybird/core"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/xwb1989/sqlparser"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // Module Constants
 const (
-	GROUP_NAME = "restore"
-	TYPE_NAME = "output"
+	GROUP_NAME  = "restore"
+	TYPE_NAME   = "output"
 	MODULE_NAME = "mysql"
 )
 
@@ -21,10 +22,10 @@ type (
 	// RestoreOutputMysql is struct storing inner properties for mysql backups
 	RestoreOutputMysql struct {
 		core.Module
-		conn           *sql.DB
-		config         *MySQLConfig
-		reader         io.Reader
-		writer         io.Writer
+		conn   *sql.DB
+		config *MySQLConfig
+		reader io.Reader
+		writer io.Writer
 	}
 )
 
@@ -79,45 +80,23 @@ func (m *RestoreOutputMysql) Run() error {
 
 // RestoreDatabase restores db
 func (m *RestoreOutputMysql) RestoreDatabase() error {
-	reader := bufio.NewReader(m.reader)
-
-	var lines []string
+	tokenizer := sqlparser.NewTokenizer(m.reader)
 
 	for {
-		line, err := reader.ReadString('\n')
+		stmt, err := sqlparser.ParseNext(tokenizer)
 		if err != nil {
-			if err == io.EOF {
-				break
+			spew.Dump(err)
+		}
+		if err == io.EOF {
+			break
+		}
+		switch stmt.(type) {
+		case *sqlparser.Select, *sqlparser.Insert, *sqlparser.DBDDL, *sqlparser.DDL:
+			if _, err := m.conn.Exec(sqlparser.String(stmt)); err != nil {
+				return err
 			}
-			return err
-		}
-
-		if strings.HasPrefix(line, "--") {
+		default:
 			continue
-		}
-		if strings.HasPrefix(line, "/*") {
-			continue
-		}
-
-		line = strings.TrimSuffix(line, "\n")
-		if line == "" {
-			continue
-		}
-
-		if !strings.HasSuffix(line, ";") {
-			lines = append(lines, line)
-			continue
-		}
-
-		if len(lines) > 0 {
-			lines = append(lines, line)
-			line = strings.Join(lines, " ")
-			lines = []string{}
-		}
-
-		err = m.execute(line)
-		if err != nil {
-			return err
 		}
 
 	}
@@ -129,7 +108,7 @@ func (m *RestoreOutputMysql) Close() error {
 	return m.conn.Close()
 }
 
-func (m *RestoreOutputMysql) execute(line string) error  {
+func (m *RestoreOutputMysql) execute(line string) error {
 	// Start transaction
 	tx, err := m.conn.Begin()
 	if err != nil {

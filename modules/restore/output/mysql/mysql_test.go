@@ -1,10 +1,10 @@
 package mysql
 
 import (
-	"bufio"
-	"gotest.tools/assert"
 	"os"
 	"testing"
+
+	"gotest.tools/assert"
 )
 
 var rs RestoreOutputMysql
@@ -18,7 +18,7 @@ func TestRestoreOutputMysql_Run(t *testing.T) {
 
 	// TODO: Need parse file, but after implement sql formatter
 	f, _ := os.Open("../../../../samples/mysql.sql")
-	rs.reader = bufio.NewReader(f)
+	rs.InitPipe(nil, f)
 
 	err = rs.Run()
 	if err != nil {

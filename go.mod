@@ -50,6 +50,7 @@ require (
 	github.com/ugorji/go v1.1.1 // indirect
 	github.com/xconstruct/go-pushbullet v0.0.0-20171206132031-67759df45fbb
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
+	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2
 	go.etcd.io/etcd v3.3.13+incompatible
 	go.mongodb.org/mongo-driver v1.0.3
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
