@@ -47,6 +47,11 @@ func (m *GlobalNotifierNSQ) InitPipe(w io.Writer, r io.Reader) error {
 	return nil
 }
 
+func (m *GlobalNotifierNSQ) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
+	return nil
+}
+
 type NSQMessage struct {
 	Message string `json:"message"`
 }
