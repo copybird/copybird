@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"bytes"
+	"bufio"
 	"database/sql"
 	"github.com/copybird/copybird/core"
 	"io"
@@ -76,14 +76,12 @@ func (m *RestoreOutputMysql) Run() error {
 	return m.RestoreDatabase()
 }
 
-// Close closes ...
-func (m *RestoreOutputMysql) Close() error {
-	return m.conn.Close()
-}
-
 // RestoreDatabase restores db
 func (m *RestoreOutputMysql) RestoreDatabase() error {
-	str := StreamToString(m.reader)
+	reader := bufio.NewReader(m.reader)
+
+	// TODO: Need validate for SQL-like string here.
+	str, err := reader.ReadString('/')
 
 	// Start transaction
 	tx, err := m.conn.Begin()
@@ -106,8 +104,7 @@ func (m *RestoreOutputMysql) RestoreDatabase() error {
 	return nil
 }
 
-func StreamToString(stream io.Reader) string {
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(stream)
-	return buf.String()
+// Close closes ...
+func (m *RestoreOutputMysql) Close() error {
+	return m.conn.Close()
 }
