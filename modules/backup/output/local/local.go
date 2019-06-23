@@ -32,7 +32,7 @@ func (m *BackupOutputLocal) GetName() string {
 
 func (m *BackupOutputLocal) GetConfig() interface{} {
 	return &Config{
-		FileName:    "output",
+		File:        "output",
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
 	}
 }
@@ -51,7 +51,7 @@ func (m *BackupOutputLocal) InitModule(_config interface{}) error {
 func (m *BackupOutputLocal) Run() error {
 
 	// If the file doesn't exist, create it, or append to the file
-	f, err := os.OpenFile(m.config.FileName, m.config.DefaultMask, 0644)
+	f, err := os.OpenFile(m.config.File, m.config.DefaultMask, 0644)
 	if err != nil {
 		return err
 	}
