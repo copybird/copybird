@@ -1,8 +1,6 @@
-# Copybird
-
 <div style="display: flex; align-items: center;">
             <img width="100px" src="https://raw.githubusercontent.com/copybird/copybird/master/docs/logo.svg?sanitize=true" alt="Copybird">
-            <span style="font-size: 22px; font-weight: 900;">CopyBird</span>
+            <span style="font-size: 32px; font-weight: 900;">CopyBird</span>
 </div>
 
 [![](https://images.microbadger.com/badges/version/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
