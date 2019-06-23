@@ -84,6 +84,6 @@ kubectl apply -f your-backup-manifest.yaml
 
 <div align="center">
     <h3>Built with Mad Devs support for the community</h3>
-    <a href="https://maddevs.io"><img style="width: 100px" src ="docs/md-logo.png" /></a>
+    <a href="https://maddevs.io"><img height="100px" src ="docs/md-logo.png" /></a>
 </div>
 
