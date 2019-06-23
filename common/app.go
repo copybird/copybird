@@ -9,7 +9,10 @@ import (
 	"github.com/copybird/copybird/modules/backup/input/mysql"
 	postgres "github.com/copybird/copybird/modules/backup/input/postgresql"
 	"github.com/copybird/copybird/modules/backup/output/gcp"
+	"github.com/copybird/copybird/modules/backup/output/http"
+	"github.com/copybird/copybird/modules/backup/output/local"
 	"github.com/copybird/copybird/modules/backup/output/s3"
+	"github.com/copybird/copybird/modules/backup/output/scp"
 	"github.com/copybird/copybird/operator"
 	"github.com/spf13/cobra"
 	"log"
@@ -73,6 +76,9 @@ func (a *App) registerModules() {
 	core.RegisterModule(&gzip.BackupCompressGzip{})
 	core.RegisterModule(&lz4.BackupCompressLz4{})
 	core.RegisterModule(&aesgcm.BackupEncryptAesgcm{})
-	core.RegisterModule(&s3.BackupOutputS3{})
 	core.RegisterModule(&gcp.BackupOutputGcp{})
+	core.RegisterModule(&http.BackupOutputHttp{})
+	core.RegisterModule(&local.BackupOutputLocal{})
+	core.RegisterModule(&s3.BackupOutputS3{})
+	core.RegisterModule(&scp.BackupOutputScp{})
 }

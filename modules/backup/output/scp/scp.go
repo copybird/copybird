@@ -29,11 +29,11 @@ type BackupOutputScp struct {
 	client *sftp.Client
 }
 
-func (m *BackupOutputScp) GetGroup() string {
+func (m *BackupOutputScp) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *BackupOutputScp) GetType() string {
+func (m *BackupOutputScp) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

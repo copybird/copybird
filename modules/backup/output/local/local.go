@@ -18,11 +18,11 @@ type BackupOutputLocal struct {
 	config *Config
 }
 
-func (m *BackupOutputLocal) GetGroup() string {
+func (m *BackupOutputLocal) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *BackupOutputLocal) GetType() string {
+func (m *BackupOutputLocal) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 
