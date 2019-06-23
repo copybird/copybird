@@ -72,6 +72,7 @@ func (r *RestoreOutputPostgresql) InitModule(cfg interface{}) error {
 func (r *RestoreOutputPostgresql) Run() error {
 	reader := bufio.NewReader(r.reader)
 
+	var lines []string
 	// TODO: Need validate for SQL-like string here.
 	for {
 		line, err := reader.ReadString('\n')
@@ -88,23 +89,25 @@ func (r *RestoreOutputPostgresql) Run() error {
 		if strings.HasPrefix(line, "--") {
 			continue
 		}
-
-		// Start transaction
-		tx, err := r.conn.Begin()
-		if err != nil {
-			return err
+		if strings.HasPrefix(line, "/*") {
+			continue
 		}
 
-		// Execute transaction
-		_, err = tx.Exec(line)
-		if err != nil {
-			return err
+		line = strings.TrimSuffix(line, "\n")
+		if line == "" {
+			continue
 		}
 
-		// Commit transaction
-		err = tx.Commit()
+		if !strings.HasSuffix(line, ";") {
+			lines = append(lines, line)
+			continue
+		}
+		if len(lines) > 1 {
+			line = strings.Join(lines, " ")
+		}
+		err = r.execute(line)
 		if err != nil {
-			return nil
+			return err
 		}
 	}
 	return nil
@@ -113,4 +116,25 @@ func (r *RestoreOutputPostgresql) Run() error {
 // Close connection to DB.
 func (r *RestoreOutputPostgresql) Close() error {
 	return r.conn.Close()
+}
+
+func (r *RestoreOutputPostgresql) execute(line string) error  {
+	// Start transaction
+	tx, err := r.conn.Begin()
+	if err != nil {
+		return err
+	}
+
+	// Execute transaction
+	_, err = tx.Exec(line)
+	if err != nil {
+		return err
+	}
+
+	// Commit transaction
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+	return nil
 }

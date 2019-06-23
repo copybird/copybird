@@ -23,8 +23,5 @@ func TestRestoreOutputPostgresql_Run(t *testing.T) {
 
 	//rs.reader = bytes.NewReader([]byte("connect test \n "))
 	err = rs.Run()
-	if err != nil {
-		print(err.Error())
-	}
 	assert.Equal(t, err, nil)
 }
