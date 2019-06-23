@@ -2,7 +2,7 @@ package scp
 
 type Config struct {
 	Addr               string
-	Port               string
+	Port               int
 	User               string
 	Password           string
 	FileName           string
