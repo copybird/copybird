@@ -27,16 +27,16 @@ import (
 const controllerAgentName = "backup-controller"
 
 const (
-	// SuccessSynced is used as part of the Event 'reason' when a Foo is synced
+	// SuccessSynced is used as part of the Event 'reason' when a Backup is synced
 	SuccessSynced = "Synced"
-	// ErrResourceExists is used as part of the Event 'reason' when a Foo fails
+	// ErrResourceExists is used as part of the Event 'reason' when a Backup fails
 	// to sync due to a Job of the same name already existing.
 	ErrResourceExists = "ErrResourceExists"
 
 	// MessageResourceExists is the message used for Events when a resource
 	// fails to sync due to a Job already existing
 	MessageResourceExists = "Resource %q already exists and is not managed by Backup"
-	// MessageResourceSynced is the message used for an Event fired when a Foo
+	// MessageResourceSynced is the message used for an Event fired when a Backup
 	// is synced successfully
 	MessageResourceSynced = "Backup synced successfully"
 )
@@ -123,7 +123,7 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	defer c.workqueue.ShutDown()
 
 	// Start the informer factories to begin populating the informer caches
-	log.Info("Starting Foo controller")
+	log.Info("Starting Backup controller")
 
 	// Wait for the caches to be synced before starting workers
 	log.Info("Waiting for informer caches to sync")
@@ -132,7 +132,7 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	}
 
 	log.Info("Starting workers")
-	// Launch two workers to process Foo resources
+	// Launch two workers to process Backup resources
 	for i := 0; i < threadiness; i++ {
 		go wait.Until(c.runWorker, time.Second, stopCh)
 	}
@@ -278,7 +278,7 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 	log.Infof("Processing object: %s", object.GetName())
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
-		// If this object is not owned by a Foo, we should not do anything more
+		// If this object is not owned by a Backup, we should not do anything more
 		// with it.
 		if ownerRef.Kind != "Backup" {
 			return
@@ -310,7 +310,7 @@ func (c *Controller) proceedToJob(backup *backupv1.Backup) error {
 		return err
 	}
 
-	// If the Job is not controlled by this Foo resource, we should log
+	// If the Job is not controlled by this Backup resource, we should log
 	// a warning to the event recorder and ret
 	if !metav1.IsControlledBy(job, backup) {
 		msg := fmt.Sprintf(MessageResourceExists, job.Name)
@@ -342,7 +342,7 @@ func (c *Controller) proceedToCronJob(backup *backupv1.Backup) error {
 		return err
 	}
 
-	// If the Job is not controlled by this Foo resource, we should log
+	// If the Job is not controlled by this Backup resource, we should log
 	// a warning to the event recorder and ret
 	if !metav1.IsControlledBy(job, backup) {
 		msg := fmt.Sprintf(MessageResourceExists, job.Name)
