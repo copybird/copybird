@@ -11,19 +11,19 @@ var (
 )
 
 func TestAwsSes_NoCredentialProvErrs(t *testing.T) {
-	conf := Config{
+	conf := &Config{
 		Region: "us-west-2",
 	}
 
-	as := GlobalNotifierAwsses{}
-	assert.Assert(t, GetConfig() != nil)
-	assert.NilError(t, InitModule(&conf))
-	err := Run()
+	as := &GlobalNotifierAwsses{}
+	assert.Assert(t, as.GetConfig() != nil)
+	assert.NilError(t, as.InitModule(conf))
+	err := as.Run()
 	assert.Error(t, err, noCredErr)
 }
 
 func TestAwsSes_WithCredential(t *testing.T) {
-	conf := Config{
+	conf := &Config{
 		Region:    "us-west-2",
 		Sender:    "sender@example.com",
 		Recipient: "recipient@example.com",
@@ -33,9 +33,9 @@ func TestAwsSes_WithCredential(t *testing.T) {
 		Charset:   "UTF-8",
 	}
 
-	as := GlobalNotifierAwsses{}
-	assert.Assert(t, GetConfig() != nil)
-	assert.NilError(t, InitModule(&conf))
-	err := Run()
+	as := &GlobalNotifierAwsses{}
+	assert.Assert(t, as.GetConfig() != nil)
+	assert.NilError(t, as.InitModule(conf))
+	err := as.Run()
 	assert.Error(t, err, noCredErr)
 }
