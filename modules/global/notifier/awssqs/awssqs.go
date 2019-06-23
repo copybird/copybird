@@ -47,6 +47,10 @@ func (m *GlobalNotifierAWSSQS) Run() error {
 	return nil
 }
 
+func (m *GlobalNotifierAWSSQS) GetConfig() interface{} {
+	return &Config{}
+}
+
 type Clients struct {
 	SQS         sqsiface.SQSAPI
 	CloudEvents *cloudevents.Client
