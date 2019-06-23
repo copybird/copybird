@@ -1,10 +1,3 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 11.2
--- Dumped by pg_dump version 11.2
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -33,7 +26,7 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
---
+-1-
 -- Name: authors; Type: TABLE; Schema: public; Owner: -
 --
 
