@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	GROUP_NAME = "global"
+	TYPE_NAME = "notifier"
 	MODULE_NAME = "rabbitmq"
 )
 
@@ -20,6 +22,14 @@ type GlobalNotifierRabbitmq struct {
 	publ    amqp.Publishing
 	reader  io.Reader
 	writer  io.Writer
+}
+
+func (m *GlobalNotifierRabbitmq) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierRabbitmq) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierRabbitmq) GetName() string {

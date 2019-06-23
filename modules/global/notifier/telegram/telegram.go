@@ -8,11 +8,23 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
+const GROUP_NAME = "global"
+const TYPE_NAME = "notifier"
+const MODULE_NAME = "telegram"
+
 type GlobalNotifierTelegram struct {
 	core.Module
 	config *Config
 	reader io.Reader
 	writer io.Writer
+}
+
+func (m *GlobalNotifierTelegram) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierTelegram) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierTelegram) GetName() string {
@@ -44,8 +56,6 @@ func (m *GlobalNotifierTelegram) GetConfig() interface{} {
 func (m *GlobalNotifierTelegram) Close() error {
 	return nil
 }
-
-const MODULE_NAME = "telegram"
 
 func (conf *Config) NotifyTelegramChannel() error {
 
