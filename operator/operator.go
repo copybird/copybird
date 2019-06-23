@@ -56,7 +56,7 @@ func Run() {
 	kubeInformerFactory.Start(stopCh)
 	backupInformerFactory.Start(stopCh)
 
-	if err = controller.Run(2, stopCh); err != nil {
+	if err = controller.Run(1, stopCh); err != nil {
 		log.Fatalf("Error running controller: %s", err.Error())
 	}
 }
