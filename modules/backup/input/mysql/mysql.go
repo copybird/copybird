@@ -15,6 +15,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "input"
 const MODULE_NAME = "mysql"
 
 type (
@@ -41,6 +44,16 @@ type (
 		Data   string
 	}
 )
+
+// GetGroup returns group
+func (m *BackupInputMysql) GetGroup() string {
+	return GROUP_NAME
+}
+
+// GetType returns type
+func (m *BackupInputMysql) GetType() string {
+	return TYPE_NAME
+}
 
 // GetName returns name of module
 func (m *BackupInputMysql) GetName() string {

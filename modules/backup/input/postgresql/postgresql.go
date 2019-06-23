@@ -14,6 +14,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "input"
 const moduleName = "postgresql"
 
 type (
@@ -41,6 +44,16 @@ type (
 		DBScheme       string
 	}
 )
+
+// GetGroup returns group
+func (m *BackupInputPostgresql) GetGroup() string {
+	return GROUP_NAME
+}
+
+// GetType returns type
+func (m *BackupInputPostgresql) GetType() string {
+	return TYPE_NAME
+}
 
 // GetName returns name of module
 func (m *BackupInputPostgresql) GetName() string {
