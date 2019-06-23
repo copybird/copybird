@@ -46,12 +46,12 @@ type (
 )
 
 // GetGroup returns group
-func (m *BackupInputPostgresql) GetGroup() string {
+func (m *BackupInputPostgresql) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
 // GetType returns type
-func (m *BackupInputPostgresql) GetType() string {
+func (m *BackupInputPostgresql) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 
@@ -66,7 +66,7 @@ func (m *BackupInputPostgresql) GetConfig() interface{} {
 }
 
 // InitPipe initializes pipe
-func (m *BackupInputPostgresql) InitPipe(w io.Writer, r io.Reader, cfg interface{}) error {
+func (m *BackupInputPostgresql) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
 	return nil

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	input2 "github.com/copybird/copybird/modules/backup/input"
+	"github.com/copybird/copybird/core"
 	"io"
 	"strconv"
 	"strings"
@@ -23,7 +23,7 @@ const MODULE_NAME = "mysql"
 type (
 	// BackupInputMysql is struct storing inner properties for mysql backups
 	BackupInputMysql struct {
-		input2.Input
+		core.Module
 		conn           *sql.DB
 		headerTemplate *template.Template
 		footerTemplate *template.Template
@@ -46,12 +46,12 @@ type (
 )
 
 // GetGroup returns group
-func (m *BackupInputMysql) GetGroup() string {
+func (m *BackupInputMysql) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
 // GetType returns type
-func (m *BackupInputMysql) GetType() string {
+func (m *BackupInputMysql) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

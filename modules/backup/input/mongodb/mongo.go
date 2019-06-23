@@ -1,8 +1,9 @@
-package mongo
+package mongodb
 
 import (
 	"context"
 	"fmt"
+	"github.com/copybird/copybird/core"
 	input2 "github.com/copybird/copybird/modules/backup/input"
 	"io"
 
@@ -20,7 +21,7 @@ const MODULE_NAME = "mongodb"
 type (
 	// BackupInputMongodb represents struct for dumping mongo
 	BackupInputMongodb struct {
-		input2.Input
+		core.Module
 		config *MongoConfig
 		reader io.Reader
 		writer io.Writer
@@ -29,12 +30,12 @@ type (
 )
 
 // GetGroup returns group
-func (m *BackupInputMongodb) GetGroup() string {
+func (m *BackupInputMongodb) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
 // GetType returns type
-func (m *BackupInputMongodb) GetType() string {
+func (m *BackupInputMongodb) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

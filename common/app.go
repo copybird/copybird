@@ -1,6 +1,10 @@
 package common
 
 import (
+	"github.com/copybird/copybird/core"
+	"github.com/copybird/copybird/modules/backup/input/mongodb"
+	"github.com/copybird/copybird/modules/backup/input/mysql"
+	postgres "github.com/copybird/copybird/modules/backup/input/postgresql"
 	"github.com/copybird/copybird/operator"
 	"github.com/spf13/cobra"
 	"log"
@@ -58,4 +62,7 @@ func cmdCallback(f func() error) func(cmd *cobra.Command, args []string) {
 }
 
 func (a *App) registerModules() {
+	core.RegisterModule(&mysql.BackupInputMysql{})
+	core.RegisterModule(&postgres.BackupInputPostgresql{})
+	core.RegisterModule(&mongodb.BackupInputMongodb{})
 }
