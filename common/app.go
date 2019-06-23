@@ -65,14 +65,6 @@ func (a *App) Run() error {
 	return rootCmd.Execute()
 }
 
-func (a *App) DoBackup() error {
-	return nil
-}
-
-func (a *App) DoRestore() error {
-	return nil
-}
-
 func cmdCallback(f func() error) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		err := f()
@@ -94,4 +86,33 @@ func (a *App) registerModules() {
 	core.RegisterModule(&local.BackupOutputLocal{})
 	core.RegisterModule(&s3.BackupOutputS3{})
 	core.RegisterModule(&scp.BackupOutputScp{})
+}
+
+func (a *App) Setup() error {
+
+	a.addFlagString(a.cmdBackup, "config", "f", "", "")
+	a.addFlagString(a.cmdBackup, "connect", "c", "", "")
+	a.addFlagString(a.cmdBackup, "input", "i", "", "(required)")
+	a.addFlagString(a.cmdBackup, "compress", "z", "", "")
+	a.addFlagString(a.cmdBackup, "encrypt", "e", "", "")
+	a.addFlagString(a.cmdBackup, "output", "o", "","(required)")
+	a.addFlagStrings(a.cmdBackup, "notifier", "n", "")
+
+	a.addFlagString(a.cmdRestore, "config", "f", "", "")
+	a.addFlagString(a.cmdRestore, "connect", "c", "", "")
+	a.addFlagString(a.cmdRestore, "input", "i", "", "(required)")
+	a.addFlagString(a.cmdRestore, "decompress", "z", "", "")
+	a.addFlagString(a.cmdRestore, "decrypt", "e", "", "")
+	a.addFlagString(a.cmdRestore, "output", "o", "","(required)")
+	a.addFlagStrings(a.cmdRestore, "notifier", "n", "")
+
+	return nil
+}
+
+func (a *App) addFlagString(cmd *cobra.Command, name, shortName, defaultValue, comment string) {
+	a.vars[name] = cmd.Flags().StringP(name, shortName, defaultValue, comment)
+}
+
+func (a *App) addFlagStrings(cmd *cobra.Command, name, shortName, comment string) {
+	a.vars[name] = cmd.Flags().StringArrayP(name, shortName, nil, comment)
 }
