@@ -78,6 +78,10 @@ First get the source code on your machine
 go get -u github.com/copybird/copybird
 ```
 Then run it with `go run main.go` to see helpers for various optional parameters
+Example creating MySQL dump: 
+```
+go run -v main.go backup -i 'mysql::dsn=root:root@tcp(localhost:3306)/test' -o local::file=dump.sql
+```
 
 ### Run with Docker
 Run `docker run copybird/copybird` to see the available optional parameters
