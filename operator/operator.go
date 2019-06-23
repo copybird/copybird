@@ -109,7 +109,7 @@ func Run() {
 		clientset: client,
 		informer:  informer,
 		queue:     queue,
-		handler:   &TestHandler{},
+		handler:   &BackupHandler{},
 	}
 
 	// use a channel to synchronize the finalization for a graceful shutdown
