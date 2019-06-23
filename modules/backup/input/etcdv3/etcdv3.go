@@ -14,7 +14,7 @@ import (
 const (
 	GroupName  = "backup"
 	TypeName   = "input"
-	ModuleName = "etcd"
+	ModuleName = "etcdv3"
 )
 
 type (
