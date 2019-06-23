@@ -82,7 +82,6 @@ func (m *RestoreOutputMysql) RestoreDatabase() error {
 	reader := bufio.NewReader(m.reader)
 
 	var lines []string
-	var prevLine string
 
 	for {
 		line, err := reader.ReadString('\n')
@@ -90,7 +89,6 @@ func (m *RestoreOutputMysql) RestoreDatabase() error {
 			if err == io.EOF {
 				break
 			}
-
 			return err
 		}
 
@@ -106,17 +104,16 @@ func (m *RestoreOutputMysql) RestoreDatabase() error {
 			continue
 		}
 
-		if !strings.HasSuffix(line, ";") || !strings.HasSuffix(prevLine, ";") {
+		if !strings.HasSuffix(line, ";") {
 			lines = append(lines, line)
 			continue
 		}
 
 		if len(lines) > 0 {
+			lines = append(lines, line)
 			line = strings.Join(lines, " ")
+			lines = []string{}
 		}
-
-		// Setting current line as prev fo next loop iteration use
-		prevLine = line
 
 		err = m.execute(line)
 		if err != nil {
