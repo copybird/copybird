@@ -5,6 +5,8 @@ import (
 	"time"
 
 	backupv1 "github.com/copybird/copybird/operator/pkg/apis/backup/v1"
+	backupclientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
+	backupinformer "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/backup/v1"
 	listers "github.com/copybird/copybird/operator/pkg/client/listers/backup/v1"
 	log "github.com/sirupsen/logrus"
 	v1 "k8s.io/api/batch/v1"
@@ -14,11 +16,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
+	batch "k8s.io/client-go/informers/batch"
 	"k8s.io/client-go/kubernetes"
+	listersv1 "k8s.io/client-go/listers/batch/v1"
+	listersv1_beta1 "k8s.io/client-go/listers/batch/v1beta1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
-
-	"k8s.io/klog"
 )
 
 const controllerAgentName = "backup-controller"
@@ -42,55 +45,109 @@ const (
 // logging, client connectivity, informing (list and watching)
 // queueing, and handling of resource changes
 type Controller struct {
-	logger         *log.Entry
-	clientset      kubernetes.Interface
-	workqueue      workqueue.RateLimitingInterface
-	backupLister   listers.BackupLister
-	backupInformer cache.SharedIndexInformer
-	handler        Handler
+	logger          *log.Entry
+	kubeclientset   kubernetes.Interface
+	backupclientset backupclientset.Interface
+	jobsLister      listersv1.JobLister
+	jobsSynced      cache.InformerSynced
+	cronjobsLister  listersv1_beta1.CronJobLister
+	cronjobsSynced  cache.InformerSynced
+	backupsLister   listers.BackupLister
+	backupsSynced   cache.InformerSynced
+	workqueue       workqueue.RateLimitingInterface
+}
+
+//NewController creates controller instance
+func NewController(kubeclientset kubernetes.Interface,
+	backupclientset *backupclientset.Clientset,
+	batchInterface batch.Interface,
+	backupInformer backupinformer.BackupInformer) *Controller {
+
+	controller := &Controller{
+		logger:          log.NewEntry(log.New()),
+		kubeclientset:   kubeclientset,
+		backupclientset: backupclientset,
+		jobsLister:      batchInterface.V1().Jobs().Lister(),
+		jobsSynced:      batchInterface.V1().Jobs().Informer().HasSynced,
+		cronjobsLister:  batchInterface.V1beta1().CronJobs().Lister(),
+		cronjobsSynced:  batchInterface.V1beta1().CronJobs().Informer().HasSynced,
+		backupsLister:   backupInformer.Lister(),
+		backupsSynced:   backupInformer.Informer().HasSynced,
+		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Backups"),
+	}
+
+	// Set up an event handler for when Backup resources change
+	backupInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: controller.enqueueBackup,
+		UpdateFunc: func(old, new interface{}) {
+			controller.enqueueBackup(new)
+		},
+	})
+
+	batchInterface.V1().Jobs().Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: controller.handleObject,
+		UpdateFunc: func(old, new interface{}) {
+			newJob := new.(*v1.Job)
+			oldJob := old.(*v1.Job)
+			if newJob.ResourceVersion == oldJob.ResourceVersion {
+				// Periodic resync will send update events for all known Jobs.
+				// Two different versions of the same Job will always have different RVs.
+				return
+			}
+			controller.handleObject(new)
+		},
+		DeleteFunc: controller.handleObject,
+	})
+
+	batchInterface.V1beta1().CronJobs().Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc: controller.handleObject,
+		UpdateFunc: func(old, new interface{}) {
+			newCronJob := new.(*v1_beta1.CronJob)
+			oldCronJob := old.(*v1_beta1.CronJob)
+			if newCronJob.ResourceVersion == oldCronJob.ResourceVersion {
+				// Periodic resync will send update events for all known CronJobs.
+				// Two different versions of the same Job will always have different RVs.
+				return
+			}
+			controller.handleObject(new)
+		},
+		DeleteFunc: controller.handleObject,
+	})
+
+	return controller
 }
 
 // Run is the main path of execution for the controller loop
-func (c *Controller) Run(stopCh <-chan struct{}) {
-	// handle a panic with logging and exiting
+func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	defer utilruntime.HandleCrash()
-	// ignore new items in the queue but when all goroutines
-	// have completed existing items then shutdown
 	defer c.workqueue.ShutDown()
 
-	c.logger.Info("Controller.Run: initiating")
+	// Start the informer factories to begin populating the informer caches
+	log.Info("Starting Foo controller")
 
-	// run the informer to start listing and watching resources
-	go c.backupInformer.Run(stopCh)
-
-	// do the initial synchronization (one time) to populate resources
-	if !cache.WaitForCacheSync(stopCh, c.HasSynced) {
-		utilruntime.HandleError(fmt.Errorf("Error syncing cache"))
-		return
+	// Wait for the caches to be synced before starting workers
+	log.Info("Waiting for informer caches to sync")
+	if ok := cache.WaitForCacheSync(stopCh, c.jobsSynced, c.cronjobsSynced, c.backupsSynced); !ok {
+		return fmt.Errorf("failed to wait for caches to sync")
 	}
-	c.logger.Info("Controller.Run: cache sync complete")
 
-	// run the runWorker method every second with a stop channel
-	wait.Until(c.runWorker, time.Second, stopCh)
-}
+	log.Info("Starting workers")
+	// Launch two workers to process Foo resources
+	for i := 0; i < threadiness; i++ {
+		go wait.Until(c.runWorker, time.Second, stopCh)
+	}
 
-// HasSynced allows us to satisfy the Controller interface
-// by wiring up the informer's HasSynced method to it
-func (c *Controller) HasSynced() bool {
-	return c.backupInformer.HasSynced()
+	log.Info("Started workers")
+	<-stopCh
+	log.Info("Shutting down workers")
+
+	return nil
 }
 
 // runWorker executes the loop to process new items added to the queue
 func (c *Controller) runWorker() {
-	log.Info("Controller.runWorker: starting")
-
-	// invoke processNextItem to fetch and consume the next change
-	// to a watched or listed resource
 	for c.processNextItem() {
-		log.Info("Controller.runWorker: processing next item")
 	}
-
-	log.Info("Controller.runWorker: completed")
 }
 
 // processNextItem retrieves each queued item and takes the
@@ -137,7 +194,7 @@ func (c *Controller) processNextItem() bool {
 		// Finally, if no error occurs we Forget this item so it does not
 		// get queued again until another change happens.
 		c.workqueue.Forget(obj)
-		klog.Infof("Successfully synced '%s'", key)
+		log.Infof("Successfully synced '%s'", key)
 		return nil
 	}(obj)
 
@@ -161,7 +218,7 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	// Get the Backup resource with this namespace/name
-	backup, err := c.backupLister.Backups(namespace).Get(name)
+	backup, err := c.backupsLister.Backups(namespace).Get(name)
 	if err != nil {
 		if errors.IsNotFound(err) {
 			utilruntime.HandleError(fmt.Errorf("backup '%s' in work queue no longer exists", key))
@@ -177,58 +234,132 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	if backup.Spec.Cron != "" {
-		err := c.ProceedToCronJob(backup)
+		err := c.proceedToCronJob(backup)
 		return err
 	}
 
-	err = c.ProceedToJob(backup)
+	err = c.proceedToJob(backup)
 	return err
 }
 
-func (c *Controller) ProceedToJob(backup *backupv1.Backup) error {
-	log.Info("Proceed to Job")
-	// Get the Job with the name specified in Backup.spec
-	job, err := c.clientset.BatchV1().Jobs(backup.Namespace).Get(backup.Spec.Name, metav1.GetOptions{})
+// enqueueBackup takes a Backup resource and converts it into a namespace/name
+// string which is then put onto the work queue. This method should *not* be
+// passed resources of any type other than Backup.
+func (c *Controller) enqueueBackup(obj interface{}) {
+	var key string
+	var err error
+	if key, err = cache.MetaNamespaceKeyFunc(obj); err != nil {
+		utilruntime.HandleError(err)
+		return
+	}
+	c.workqueue.Add(key)
+}
 
+// handleObject will take any resource implementing metav1.Object and attempt
+// to find the Backup resource that 'owns' it. It does this by looking at the
+// objects metadata.ownerReferences field for an appropriate OwnerReference.
+// It then enqueues that Backup resource to be processed. If the object does not
+// have an appropriate OwnerReference, it will simply be skipped.
+func (c *Controller) handleObject(obj interface{}) {
+	var object metav1.Object
+	var ok bool
+	if object, ok = obj.(metav1.Object); !ok {
+		tombstone, ok := obj.(cache.DeletedFinalStateUnknown)
+		if !ok {
+			utilruntime.HandleError(fmt.Errorf("error decoding object, invalid type"))
+			return
+		}
+		object, ok = tombstone.Obj.(metav1.Object)
+		if !ok {
+			utilruntime.HandleError(fmt.Errorf("error decoding object tombstone, invalid type"))
+			return
+		}
+		log.Infof("Recovered deleted object '%s' from tombstone", object.GetName())
+	}
+	log.Infof("Processing object: %s", object.GetName())
+	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
+		// If this object is not owned by a Foo, we should not do anything more
+		// with it.
+		if ownerRef.Kind != "Backup" {
+			return
+		}
+
+		backup, err := c.backupsLister.Backups(object.GetNamespace()).Get(ownerRef.Name)
+		if err != nil {
+			log.Infof("ignoring orphaned object '%s' of backup '%s'", object.GetSelfLink(), ownerRef.Name)
+			return
+		}
+
+		c.enqueueBackup(backup)
+		return
+	}
+}
+
+func (c *Controller) proceedToJob(backup *backupv1.Backup) error {
+	// Get the job with the name specified in Backup.spec
+	job, err := c.jobsLister.Jobs(backup.Namespace).Get(backup.Name)
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
-		_, err = c.clientset.BatchV1().Jobs(backup.Namespace).Create(NewJob(backup))
-		if err != nil {
-			return err
-		}
-		return nil
+		job, err = c.kubeclientset.BatchV1().Jobs(backup.Namespace).Create(newJob(backup))
 	}
 
-	job, err = c.clientset.BatchV1().Jobs(backup.Namespace).Update(job)
+	// If an error occurs during Get/Create, we'll requeue the item so we can
+	// attempt processing again later. This could have been caused by a
+	// temporary network failure, or any other transient reason.
 	if err != nil {
 		return err
 	}
-	return nil
-}
 
-func (c *Controller) ProceedToCronJob(backup *backupv1.Backup) error {
-	log.Info("Proceed to CronJob")
-
-	// Get the Job with the name specified in Backup.spec
-	job, err := c.clientset.BatchV1beta1().CronJobs(backup.Namespace).Get(backup.Spec.Name, metav1.GetOptions{})
-
-	// If the resource doesn't exist, we'll create it
-	if errors.IsNotFound(err) {
-		_, err = c.clientset.BatchV1beta1().CronJobs(backup.Namespace).Create(NewCronJob(backup))
-		if err != nil {
-			return err
-		}
-		return nil
+	// If the Job is not controlled by this Foo resource, we should log
+	// a warning to the event recorder and ret
+	if !metav1.IsControlledBy(job, backup) {
+		msg := fmt.Sprintf(MessageResourceExists, job.Name)
+		return fmt.Errorf(msg)
 	}
 
-	job, err = c.clientset.BatchV1beta1().CronJobs(backup.Namespace).Update(job)
+	// If an error occurs during Update, we'll requeue the item so we can
+	// attempt processing again later. THis could have been caused by a
+	// temporary network failure, or any other transient reason.
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func NewJob(backup *backupv1.Backup) *v1.Job {
+func (c *Controller) proceedToCronJob(backup *backupv1.Backup) error {
+	// Get the job with the name specified in Backup.spec
+	job, err := c.cronjobsLister.CronJobs(backup.Namespace).Get(backup.Name)
+	// If the resource doesn't exist, we'll create it
+	if errors.IsNotFound(err) {
+		job, err = c.kubeclientset.BatchV1beta1().CronJobs(backup.Namespace).Create(newCronJob(backup))
+	}
+
+	// If an error occurs during Get/Create, we'll requeue the item so we can
+	// attempt processing again later. This could have been caused by a
+	// temporary network failure, or any other transient reason.
+	if err != nil {
+		return err
+	}
+
+	// If the Job is not controlled by this Foo resource, we should log
+	// a warning to the event recorder and ret
+	if !metav1.IsControlledBy(job, backup) {
+		msg := fmt.Sprintf(MessageResourceExists, job.Name)
+		return fmt.Errorf(msg)
+	}
+
+	// If an error occurs during Update, we'll requeue the item so we can
+	// attempt processing again later. THis could have been caused by a
+	// temporary network failure, or any other transient reason.
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func newJob(backup *backupv1.Backup) *v1.Job {
 	return &v1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: backup.Spec.Name,
@@ -252,7 +383,7 @@ func NewJob(backup *backupv1.Backup) *v1.Job {
 	}
 }
 
-func NewCronJob(backup *backupv1.Backup) *v1_beta1.CronJob {
+func newCronJob(backup *backupv1.Backup) *v1_beta1.CronJob {
 	return &v1_beta1.CronJob{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: backup.Spec.Name,

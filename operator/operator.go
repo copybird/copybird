@@ -2,25 +2,26 @@ package operator
 
 import (
 	"os"
-	"os/signal"
-	"syscall"
+	"time"
 
+	"github.com/knative/pkg/signals"
 	log "github.com/sirupsen/logrus"
-	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/workqueue"
 
 	//need this line to parse gcp credentials
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
 	backupclientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
-	backupinformer_v1 "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/backup/v1"
-	backuplister_v1 "github.com/copybird/copybird/operator/pkg/client/listers/backup/v1"
+	backupinformers "github.com/copybird/copybird/operator/pkg/client/informers/externalversions"
+	kubeinformers "k8s.io/client-go/informers"
 )
 
+//Run starts the operator
 func Run() {
+
+	// set up signals so we handle the first shutdown signal gracefully
+	stopCh := signals.SetupSignalHandler()
 	// construct the path to resolve to `~/.kube/config`
 	kubeConfigPath := os.Getenv("HOME") + "/.kube/config"
 
@@ -43,70 +44,19 @@ func Run() {
 
 	log.Info("Successfully constructed k8s client")
 
-	// retrieve our custom resource informer which was generated from
-	// the code generator and pass it the custom resource client, specifying
-	// we should be looking through all namespaces for listing and watching
-	backupInformer := backupinformer_v1.NewBackupInformer(
-		backupClient,
-		meta_v1.NamespaceAll,
-		0,
-		cache.Indexers{},
-	)
-	// create a new queue so that when the informer gets a resource that is either
-	// a result of listing or watching, we can add an idenfitying key to the queue
-	// so that it can be handled in the handler
-	queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
+	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(client, time.Second*30)
+	backupInformerFactory := backupinformers.NewSharedInformerFactory(backupClient, time.Second*30)
 
-	// add event handlers to handle the three types of events for resources:
-	//  - adding new resources
-	//  - updating existing resources
-	//  - deleting resources
-	backupInformer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: func(obj interface{}) {
-			// convert the resource object into a key (in this case
-			// we are just doing it in the format of 'namespace/name')
-			key, err := cache.MetaNamespaceKeyFunc(obj)
-			if err == nil {
-				queue.Add(key)
-			}
-		},
-		UpdateFunc: func(oldObj, newObj interface{}) {
-			key, err := cache.MetaNamespaceKeyFunc(newObj)
-			if err == nil {
-				queue.Add(key)
-			}
-		},
-		DeleteFunc: func(obj interface{}) {
-			key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
-			if err == nil {
-				queue.Add(key)
-			}
-		},
-	})
+	controller := NewController(client, backupClient,
+		kubeInformerFactory.Batch(),
+		backupInformerFactory.Backups().V1().Backups())
 
-	// construct the Controller object which has all of the necessary components to
-	// handle logging, connections, informing (listing and watching), the queue,
-	// and the handler
-	controller := Controller{
-		logger:         log.NewEntry(log.New()),
-		clientset:      client,
-		backupInformer: backupInformer,
-		backupLister:   backuplister_v1.NewBackupLister(backupInformer.GetIndexer()),
-		workqueue:      queue,
-		handler:        &BackupHandler{},
+	// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(stopCh)
+	// Start method is non-blocking and runs all registered informers in a dedicated goroutine.
+	kubeInformerFactory.Start(stopCh)
+	backupInformerFactory.Start(stopCh)
+
+	if err = controller.Run(2, stopCh); err != nil {
+		log.Fatalf("Error running controller: %s", err.Error())
 	}
-
-	// use a channel to synchronize the finalization for a graceful shutdown
-	stopCh := make(chan struct{})
-	defer close(stopCh)
-
-	// run the controller loop to process items
-	go controller.Run(stopCh)
-
-	// use a channel to handle OS signals to terminate and gracefully shut
-	// down processing
-	sigTerm := make(chan os.Signal, 1)
-	signal.Notify(sigTerm, syscall.SIGTERM)
-	signal.Notify(sigTerm, syscall.SIGINT)
-	<-sigTerm
 }
