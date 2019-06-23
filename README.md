@@ -20,6 +20,7 @@ Currently Copybird supports the following databases:
 - MySQL
 - Postgres
 - MongoDB
+- Etcd (v2 and v3 API)
 
 ## Compression
 Copybird compresses with the following tools:
