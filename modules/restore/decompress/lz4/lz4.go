@@ -16,6 +16,8 @@ var (
 	errNotCompressible = errors.New("is not compressible")
 )
 
+const GROUP_NAME = "restore"
+const TYPE_NAME = "decompress"
 const MODULE_NAME = "lz4"
 
 // RestoreDecompressLz4 represents ...
@@ -23,6 +25,14 @@ type RestoreDecompressLz4 struct {
 	core.Module
 	reader io.Reader
 	writer io.Writer
+}
+
+func (m *RestoreDecompressLz4) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *RestoreDecompressLz4) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *RestoreDecompressLz4) GetName() string {

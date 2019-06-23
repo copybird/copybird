@@ -7,12 +7,22 @@ import (
 	"io"
 )
 
+const GROUP_NAME = "restore"
+const TYPE_NAME = "decompress"
 const MODULE_NAME = "gzip"
 
 type RestoreDecompressGzip struct {
 	core.Module
 	reader io.Reader
 	writer io.Writer
+}
+
+func (m *RestoreDecompressGzip) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *RestoreDecompressGzip) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *RestoreDecompressGzip) GetName() string {
