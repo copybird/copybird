@@ -8,26 +8,29 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var scp BackupOutputScp
-	name := scp.GetName()
-	require.Equal(t, "scp", name)
+	s := &BackupOutputScp{}
+	require.Equal(t, "scp", s.GetName())
 }
 
 func TestGetConfig(t *testing.T) {
-	var scp BackupOutputScp
-	conf := scp.GetConfig()
-	require.Equal(t, Config{}, conf)
+	s := &BackupOutputScp{}
+	require.Equal(t, &Config{}, s.GetConfig())
 }
 
 func TestInitPipe(t *testing.T) {
-	var scp BackupOutputScp
+	s := &BackupOutputScp{}
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, scp.InitPipe(bufOutput, bufInput))
+	require.NoError(t, s.InitPipe(bufOutput, bufInput))
 }
 
 func TestInitModule(t *testing.T) {
-	var scp BackupOutputScp
-	err := scp.InitModule(Config{})
-	require.NoError(t, err, "should not be any error here")
+	s := &BackupOutputScp{}
+	err := s.InitModule(&Config{
+		Addr:     "127.0.0.1",
+		Port:     2222,
+		User:     "user",
+		Password: "user",
+	})
+	require.NoError(t, err)
 }

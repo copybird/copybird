@@ -9,13 +9,13 @@ import (
 
 func TestMongoBackup(t *testing.T) {
 	d := &BackupInputMongodb{}
-	c := GetConfig().(*MongoConfig)
-	DSN = "mongodb://127.0.0.1:27017"
-	require.NoError(t, InitModule(c))
-	names, err := getDatabases()
+	c := d.GetConfig().(*MongoConfig)
+	c.DSN = "mongodb://127.0.0.1:27017"
+	require.NoError(t, d.InitModule(c))
+	names, err := d.getDatabases()
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"admin", "local", "test"}, names)
-	collections, err := getCollections("test")
+	collections, err := d.getCollections("test")
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"link", "test"}, collections)
 

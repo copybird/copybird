@@ -8,11 +8,11 @@ import (
 
 func TestKafka(t *testing.T) {
 	k := &GlobalNotifieKafka{}
-	c := GetConfig().(*Config)
+	c := k.GetConfig().(*Config)
 	assert.NotNil(t, c)
-	BrokerList = []string{"localhost:9092", "localhost:9092"}
-	Topic = "hello"
-	Message = "world"
-	assert.NoError(t, InitModule(c))
-	assert.NoError(t, Run())
+	c.BrokerList = []string{"localhost:9092", "localhost:9092"}
+	c.Topic = "hello"
+	c.Message = "world"
+	assert.NoError(t, k.InitModule(c))
+	assert.NoError(t, k.Run())
 }
