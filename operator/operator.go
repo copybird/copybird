@@ -4,11 +4,9 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
@@ -54,10 +52,6 @@ func Run() {
 		0,
 		cache.Indexers{},
 	)
-
-	sharedInformerFactory := informers.NewSharedInformerFactory(client, time.Second*5)
-	jobInformer := sharedInformerFactory.Batch().V1().Jobs()
-
 	// create a new queue so that when the informer gets a resource that is either
 	// a result of listing or watching, we can add an idenfitying key to the queue
 	// so that it can be handled in the handler
@@ -105,7 +99,6 @@ func Run() {
 	controller := Controller{
 		logger:         log.NewEntry(log.New()),
 		clientset:      client,
-		jobInformer:    jobInformer,
 		backupInformer: backupInformer,
 		backupLister:   backuplister_v1.NewBackupLister(backupInformer.GetIndexer()),
 		workqueue:      queue,

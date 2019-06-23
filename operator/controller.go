@@ -13,12 +13,28 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
-	batch_v1 "k8s.io/client-go/informers/batch/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 
 	"k8s.io/klog"
+)
+
+const controllerAgentName = "backup-controller"
+
+const (
+	// SuccessSynced is used as part of the Event 'reason' when a Foo is synced
+	SuccessSynced = "Synced"
+	// ErrResourceExists is used as part of the Event 'reason' when a Foo fails
+	// to sync due to a Job of the same name already existing.
+	ErrResourceExists = "ErrResourceExists"
+
+	// MessageResourceExists is the message used for Events when a resource
+	// fails to sync due to a Job already existing
+	MessageResourceExists = "Resource %q already exists and is not managed by Backup"
+	// MessageResourceSynced is the message used for an Event fired when a Foo
+	// is synced successfully
+	MessageResourceSynced = "Backup synced successfully"
 )
 
 // Controller struct defines how a controller should encapsulate
@@ -28,7 +44,6 @@ type Controller struct {
 	logger         *log.Entry
 	clientset      kubernetes.Interface
 	workqueue      workqueue.RateLimitingInterface
-	jobInformer    batch_v1.JobInformer
 	backupLister   listers.BackupLister
 	backupInformer cache.SharedIndexInformer
 	handler        Handler
@@ -115,9 +130,8 @@ func (c *Controller) processNextItem() bool {
 		// Backup resource to be synced.
 		if err := c.syncHandler(key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
-			// c.workqueue.AddRateLimited(key)
-			// return fmt.Errorf("error syncing '%s': %s, requeuing", key, err.Error())
-			return nil
+			c.workqueue.AddRateLimited(key)
+			return fmt.Errorf("error syncing '%s': %s, requeuing", key, err.Error())
 		}
 		// Finally, if no error occurs we Forget this item so it does not
 		// get queued again until another change happens.
@@ -159,7 +173,7 @@ func (c *Controller) syncHandler(key string) error {
 			return nil
 		}
 
-		return err
+		return nil
 	}
 
 	jobName := backup.Spec.Name
@@ -171,24 +185,30 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	// Get the deployment with the name specified in Backup.spec
-	job, err := c.jobInformer.Lister().Jobs(backup.Namespace).Get(jobName)
+	// Get the Job with the name specified in Backup.spec
+	job, err := c.clientset.BatchV1().Jobs(backup.Namespace).Get(jobName, metav1.GetOptions{})
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
+		log.Error(err)
 		job, err = c.clientset.BatchV1().Jobs(backup.Namespace).Create(NewJob(backup))
-		if err != nil {
-			return err
-		}
-		log.Infof("Now job created, %v", job.Name)
 	}
 
+	if err != nil {
+		return err
+	}
+
+	job, err = c.clientset.BatchV1().Jobs(namespace).Update(job)
+	if err != nil {
+		return err
+	}
+	log.Infof("Job was updated, %v", job.Name)
 	return nil
 }
 
 func NewJob(backup *backupv1.Backup) *v1.Job {
 	return &v1.Job{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: backup.Name,
+			Name: backup.Spec.Name,
 		},
 		Spec: v1.JobSpec{
 			Template: corev1.PodTemplateSpec{
