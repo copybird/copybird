@@ -41,6 +41,12 @@ func (m *GlobalNotifierNSQ) GetName() string {
 	return MODULE_NAME
 }
 
+func (m *GlobalNotifierNSQ) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
+	return nil
+}
+
 type NSQMessage struct {
 	Message string `json:"message"`
 }
