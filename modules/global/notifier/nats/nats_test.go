@@ -7,33 +7,33 @@ import (
 )
 
 func TestNats_InvalidConn(t *testing.T) {
-	conf := Config{
+	conf := &Config{
 		NATSURL: "0.0.0.0:4223",
 		Topic:   "test.topic",
 		Msg:     "Test",
 	}
 
-	nats := GlobalNotifierNats{}
-	assert.Assert(t, GetConfig() != nil)
-	err := InitModule(&conf)
+	n := &GlobalNotifierNats{}
+	assert.Assert(t, n.GetConfig() != nil)
+	err := n.InitModule(conf)
 	assert.Error(t, err, "nats: no servers available for connection")
 }
 
 func TestNats_ValidConn(t *testing.T) {
-	conf := Config{
+	conf := &Config{
 		NATSURL: "0.0.0.0:4222",
 		Topic:   "test.topic",
 		Msg:     "Test",
 	}
 
-	nats := GlobalNotifierNats{}
-	assert.Assert(t, GetConfig() != nil)
-	err := InitModule(&conf)
+	n := GlobalNotifierNats{}
+	assert.Assert(t, n.GetConfig() != nil)
+	err := n.InitModule(conf)
 	if err != nil {
 		t.Errorf("TestNats: %v", err)
 	}
 
-	err = Run()
+	err = n.Run()
 	if err != nil {
 		t.Errorf("TestNats: %v", err)
 	}
