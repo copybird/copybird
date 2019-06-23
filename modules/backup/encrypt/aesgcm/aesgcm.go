@@ -4,6 +4,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 
@@ -35,9 +37,7 @@ func (m *BackupEncryptAesgcm) GetName() string {
 }
 
 func (m *BackupEncryptAesgcm) GetConfig() interface{} {
-	return &Config{
-		Key: []byte("HELLOWORLD123"),
-	}
+	return &Config{}
 }
 
 func (m *BackupEncryptAesgcm) InitPipe(w io.Writer, r io.Reader) error {
@@ -49,7 +49,14 @@ func (m *BackupEncryptAesgcm) InitPipe(w io.Writer, r io.Reader) error {
 func (m *BackupEncryptAesgcm) InitModule(_cfg interface{}) error {
 	cfg := _cfg.(*Config)
 
-	block, err := aes.NewCipher(cfg.Key)
+	if cfg.Key == "" {
+		return errors.New("need key")
+	}
+	key, err := hex.DecodeString(cfg.Key)
+	if err != nil {
+		return fmt.Errorf("cipher key hex decode err: %s", err)
+	}
+	block, err := aes.NewCipher(key)
 	if err != nil {
 		return fmt.Errorf("cipher init err: %s", err)
 	}
