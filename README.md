@@ -1,5 +1,5 @@
 <div style="display: flex; align-items: center;" align="center">
-            <img width="100px" src="https://raw.githubusercontent.com/copybird/copybird/master/docs/logo.svg?sanitize=true" alt="Copybird">
+<a href="https://copybird.org"><img width="100px" src="https://raw.githubusercontent.com/copybird/copybird/master/docs/logo.svg?sanitize=true" alt="Copybird"></a>
 </div>
 
 # Copybird
@@ -26,6 +26,8 @@ It allows you to:
 5. Get notification about backup status in messagers and notification services
 6. Enjoy simple backup as a service with k8s backup controller
 
+learn more at [copybird.org](https://copybird.org)
+
 ## Databases
 Currently Copybird supports the following databases:
 - MySQL
@@ -50,6 +52,8 @@ Copybird can deliver encrypted compressed backup to the following destinations:
 - send over SCP
 
 ## Notification services
+Copybird currently supports the following notification services: 
+
 - Slack
 - Telegram
 - AWS SES
@@ -63,24 +67,52 @@ Copybird can deliver encrypted compressed backup to the following destinations:
 - Twilio
 - Webcallback
 
-## Backup as a Service (BAAS)
-Run custom K8s controller with Backup custom resources
+If you would like to add additional service, please submit an issue with feature request or add it yourself and send a Pull Request.
 
-## Install & Run
-Choose how to run the tool:
+## How to Run the tool
+There are different ways you can use this tool: 
 
-1. Run as a CLI tool with
+### Run locally
+First get the source code on your machine
 ```
 go get -u github.com/copybird/copybird
 ```
-2. Run with Docker
+Then run it with `go run main.go` to see helpers for various optional parameters
+
+### Run with Docker
+Run `docker run copybird/copybird` to see the available optional parameters
+
+### Use Backup Custom Controller/Operator for k8s
+
+First create custom resource definition in your cluster: 
 ```
-docker run copybird/copybird
+kubectl apply -f operator/crd/crd.yaml
 ```
-3. Use k8s custom controller
+
+To run the controller:
+``` 
+go run main.go operator
 ```
-kubectl apply -f your-backup-manifest.yaml
+
+And then in a separate shell, create custom resource:
 ```
+kubectl create -f operator/example/backup-example.yaml
+```
+As output you get the following logs when creating, updating or deleting custom resource:
+```
+INFO[0000] Successfully constructed k8s client          
+INFO[0000] Starting Foo controller                      
+INFO[0000] Waiting for informer caches to sync          
+INFO[0001] Starting workers                             
+INFO[0001] Started workers               
+```
+You can modify example file as you wish to get proper configuration for your jobs
+
+## Contributing
+Pull requests are more than welcomed. For major changes, please open an issue first to discuss what you would like to change. 
+
+Before submission of pull request make sure you pulled recent updates, included tests for your code that covers at least the core functionality and you submitted a desciptive issue that will be fixed with your pull request. Do not forget to mention the issue in the pull request. 
+
 
 <div align="center">
     <h3>Built with Mad Devs support for the community</h3>
