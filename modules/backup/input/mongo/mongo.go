@@ -12,7 +12,9 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-// MODULE_NAME is name of module
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "input"
 const MODULE_NAME = "mongodb"
 
 type (
@@ -25,6 +27,16 @@ type (
 		conn   *mongo.Client
 	}
 )
+
+// GetGroup returns group
+func (m *BackupInputMongodb) GetGroup() string {
+	return GROUP_NAME
+}
+
+// GetType returns type
+func (m *BackupInputMongodb) GetType() string {
+	return TYPE_NAME
+}
 
 // GetName returns name
 func (m *BackupInputMongodb) GetName() string {
