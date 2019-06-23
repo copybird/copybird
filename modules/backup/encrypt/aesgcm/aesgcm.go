@@ -21,11 +21,11 @@ type BackupEncryptAesgcm struct {
 	nonce  []byte
 }
 
-func (m *BackupEncryptAesgcm) GetGroup() string {
+func (m *BackupEncryptAesgcm) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *BackupEncryptAesgcm) GetType() string {
+func (m *BackupEncryptAesgcm) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

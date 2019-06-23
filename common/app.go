@@ -2,9 +2,14 @@ package common
 
 import (
 	"github.com/copybird/copybird/core"
+	"github.com/copybird/copybird/modules/backup/compress/gzip"
+	"github.com/copybird/copybird/modules/backup/compress/lz4"
+	"github.com/copybird/copybird/modules/backup/encrypt/aesgcm"
 	"github.com/copybird/copybird/modules/backup/input/mongodb"
 	"github.com/copybird/copybird/modules/backup/input/mysql"
 	postgres "github.com/copybird/copybird/modules/backup/input/postgresql"
+	"github.com/copybird/copybird/modules/backup/output/gcp"
+	"github.com/copybird/copybird/modules/backup/output/s3"
 	"github.com/copybird/copybird/operator"
 	"github.com/spf13/cobra"
 	"log"
@@ -65,4 +70,9 @@ func (a *App) registerModules() {
 	core.RegisterModule(&mysql.BackupInputMysql{})
 	core.RegisterModule(&postgres.BackupInputPostgresql{})
 	core.RegisterModule(&mongodb.BackupInputMongodb{})
+	core.RegisterModule(&gzip.BackupCompressGzip{})
+	core.RegisterModule(&lz4.BackupCompressLz4{})
+	core.RegisterModule(&aesgcm.BackupEncryptAesgcm{})
+	core.RegisterModule(&s3.BackupOutputS3{})
+	core.RegisterModule(&gcp.BackupOutputGcp{})
 }
