@@ -5,26 +5,27 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
 	"strconv"
 	"strings"
 	"text/template"
 	"time"
 
+	"github.com/copybird/copybird/core"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // Module Constants
-const GROUP_NAME = "backup"
-const TYPE_NAME = "input"
-const MODULE_NAME = "mysql"
+const GroupName = "backup"
+const TypeName = "input"
+const ModuleName = "mysql"
 
 type (
 	// BackupInputMysql is struct storing inner properties for mysql backups
 	BackupInputMysql struct {
 		core.Module
-		conn           *sql.DB
+		conn           *sql.Tx
 		headerTemplate *template.Template
 		footerTemplate *template.Template
 		tableTemplate  *template.Template
@@ -47,17 +48,17 @@ type (
 
 // GetGroup returns group
 func (m *BackupInputMysql) GetGroup() core.ModuleGroup {
-	return GROUP_NAME
+	return GroupName
 }
 
 // GetType returns type
 func (m *BackupInputMysql) GetType() core.ModuleType {
-	return TYPE_NAME
+	return TypeName
 }
 
 // GetName returns name of module
 func (m *BackupInputMysql) GetName() string {
-	return MODULE_NAME
+	return ModuleName
 }
 
 // GetConfig returns config of module
@@ -84,7 +85,11 @@ func (m *BackupInputMysql) InitModule(cfg interface{}) error {
 	if err := conn.Ping(); err != nil {
 		return err
 	}
-	m.conn = conn
+	tx, err := conn.Begin()
+	if err != nil {
+		return err
+	}
+	m.conn = tx
 	t, err := template.New("headerTemplate").Parse(headerTemplate)
 	if err != nil {
 		return err
