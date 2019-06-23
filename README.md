@@ -26,7 +26,7 @@ Copybird compresses with the following tools:
 - gzip
 - lz4
 
-## Encription
+## Encryption
 Copybird uses AES-GCM for Efficient Authenticated Encryption
 
 ## Output

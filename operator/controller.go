@@ -115,8 +115,9 @@ func (c *Controller) processNextItem() bool {
 		// Backup resource to be synced.
 		if err := c.syncHandler(key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
-			c.workqueue.AddRateLimited(key)
-			return fmt.Errorf("error syncing '%s': %s, requeuing", key, err.Error())
+			// c.workqueue.AddRateLimited(key)
+			// return fmt.Errorf("error syncing '%s': %s, requeuing", key, err.Error())
+			return nil
 		}
 		// Finally, if no error occurs we Forget this item so it does not
 		// get queued again until another change happens.
@@ -150,7 +151,11 @@ func (c *Controller) syncHandler(key string) error {
 		// The Backup resource may no longer exist, in which case we stop
 		// processing.
 		if errors.IsNotFound(err) {
-			utilruntime.HandleError(fmt.Errorf("backup '%s' in work queue no longer exists", key))
+			err := c.clientset.BatchV1().Jobs(namespace).Delete(name, &metav1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+			log.Infof("Now job was deleted, %v", name)
 			return nil
 		}
 
