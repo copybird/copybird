@@ -18,11 +18,11 @@ type BackupOutputHttp struct {
 	config *Config
 }
 
-func (m *BackupOutputHttp) GetGroup() string {
+func (m *BackupOutputHttp) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *BackupOutputHttp) GetType() string {
+func (m *BackupOutputHttp) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

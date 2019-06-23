@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,12 +16,15 @@ const authorsData = "(1,'test','test','te@asd.ru','2019-06-22T13:26:37.078767Z')
 
 func TestGetTables(t *testing.T) {
 	d := &BackupInputPostgresql{}
-	c := GetConfig().(*Config)
-	DSN = "host=127.0.0.1 port=5432 user=kbereza password=1qazXSW@ dbname=copybird sslmode=disable"
+	c := d.GetConfig().(*Config)
+	c.DSN = "host=127.0.0.1 port=5432 user=postgres password=postgres dbname=test sslmode=disable"
 
-	require.NoError(t, InitModule(c))
+	f, err := os.Create("dump.sql")
+	assert.NoError(t, err)
+	require.NoError(t, d.InitModule(c))
+	assert.NoError(t, d.InitPipe(f, nil, c))
 
-	tables, err := getTables()
+	tables, err := d.getTables()
 	assert.NoError(t, err)
 	assert.Equal(t, "authors", tables[0])
 	assert.Equal(t, "posts", tables[1])
@@ -37,8 +41,6 @@ func TestGetTables(t *testing.T) {
 	assert.Equal(t, authorsData, data)
 
 	assert.NoError(t, d.dumpDatabase())
-	assert.Equal(t, authorsData, Data)
-	assert.Equal(t, authorsSchema, Schema)
 
-	assert.NoError(t, Run())
+	assert.NoError(t, d.Run())
 }

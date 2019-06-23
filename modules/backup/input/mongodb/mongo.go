@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/copybird/copybird/core"
-	input2 "github.com/copybird/copybird/modules/backup/input"
 	"io"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -59,7 +58,7 @@ func (m *BackupInputMongodb) InitPipe(w io.Writer, r io.Reader) error {
 // InitModule initializes module
 func (m *BackupInputMongodb) InitModule(cfg interface{}) error {
 	m.config = cfg.(*MongoConfig)
-	cO := options.Client().ApplyURI(DSN)
+	cO := options.Client().ApplyURI(m.config.DSN)
 	conn, err := mongo.Connect(context.TODO(), cO)
 	if err != nil {
 		return err

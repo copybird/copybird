@@ -2,13 +2,15 @@ package postgres
 
 import (
 	"database/sql"
-	//"encoding/json"
+	"encoding/json"
+	"strconv"
+	"strings"
+	"time"
+
 	"fmt"
 	"io"
-	//"strconv"
-	//"strings"
+
 	"text/template"
-	//"time"
 
 	"github.com/copybird/copybird/core"
 	_ "github.com/lib/pq"
@@ -69,6 +71,7 @@ func (m *BackupInputPostgresql) GetConfig() interface{} {
 func (m *BackupInputPostgresql) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
+	m.config = cfg.(*Config)
 	return nil
 }
 
@@ -88,14 +91,13 @@ func (m *BackupInputPostgresql) InitModule(cfg interface{}) error {
 
 // Run dumps database
 func (m *BackupInputPostgresql) Run() error {
-	/*
-		if err := m.dumpDatabase(); err != nil {
-			return err
-		}
-		if err := m.template.Execute(m.writer, m.data); err != nil {
-			return err
-		}
-	*/
+
+	if err := m.dumpDatabase(); err != nil {
+		return err
+	}
+	if err := m.template.Execute(m.writer, m.data); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -124,7 +126,6 @@ func (m *BackupInputPostgresql) getTables() ([]string, error) {
 	return tables, rows.Err()
 }
 
-/*
 func (d *BackupInputPostgresql) getTableSchema(tableName string) ([]tableScheme, []sequenceScheme, error) {
 
 	var (
@@ -319,4 +320,3 @@ func (d *BackupInputPostgresql) getServerVersion() (string, error) {
 	}
 	return version.String, nil
 }
-*/
