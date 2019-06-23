@@ -9,24 +9,22 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var local GlobalNotifierAWSSQS
-	name := GetName()
-	require.Equal(t, MODULE_NAME, name)
+	g := &GlobalNotifierAWSSQS{}
+	require.Equal(t, MODULE_NAME, g.GetName())
 }
 
 func TestGetConfig(t *testing.T) {
-	var local GlobalNotifierAWSSQS
-	config := GetConfig()
-	require.Equal(t, Config{}, config)
+	g := &GlobalNotifierAWSSQS{}
+	require.Equal(t, &Config{}, g.GetConfig())
 }
 func TestClose(t *testing.T) {
-	var local GlobalNotifierAWSSQS
-	assert.Equal(t, nil, Close())
+	g := &GlobalNotifierAWSSQS{}
+	assert.Equal(t, nil, g.Close())
 }
 
 func TestInitPipe(t *testing.T) {
-	var local GlobalNotifierAWSSQS
+	g := &GlobalNotifierAWSSQS{}
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, InitPipe(bufOutput, bufInput))
+	require.NoError(t, g.InitPipe(bufOutput, bufInput))
 }

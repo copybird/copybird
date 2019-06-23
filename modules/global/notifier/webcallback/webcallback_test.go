@@ -30,8 +30,9 @@ func TestSendNotification(t *testing.T) {
 	for _, tc := range testCase {
 		urls := fmt.Sprintf("%s", tc.TargetUrl)
 		httpmock.RegisterResponder("GET", urls, tc.Responder)
-		conf := GlobalNotifierWebcallback{Config: &Config{TargetUrl: tc.TargetUrl, SuccessMsg: tc.SuccessMsg, FailMsg: tc.FailMsg}}
-		err := SendNotification()
+		n := &GlobalNotifierWebcallback{}
+		assert.NoError(t, n.InitModule(&Config{TargetUrl: tc.TargetUrl, SuccessMsg: tc.SuccessMsg, FailMsg: tc.FailMsg}))
+		err := n.SendNotification()
 		assert.Equal(t, tc.Error, err)
 	}
 }

@@ -13,30 +13,29 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var local GlobalNotifierSlack
-	name := GetName()
-	require.Equal(t, MODULE_NAME, name)
+	n := &GlobalNotifierSlack{}
+	require.Equal(t, MODULE_NAME, n.GetName())
 }
 
 func TestGetConfig(t *testing.T) {
-	var local GlobalNotifierSlack
-	config := GetConfig()
-	require.Equal(t, Config{}, config)
+	n := &GlobalNotifierSlack{}
+	require.Equal(t, &Config{}, n.GetConfig())
 }
 func TestClose(t *testing.T) {
-	var local GlobalNotifierSlack
-	assert.Equal(t, nil, Close())
+	n := &GlobalNotifierSlack{}
+	assert.Equal(t, nil, n.Close())
 }
 
 func TestInitPipe(t *testing.T) {
-	var local GlobalNotifierSlack
+	n := &GlobalNotifierSlack{}
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, InitPipe(bufOutput, bufInput))
+	require.NoError(t, n.InitPipe(bufOutput, bufInput))
 }
 
 func TestNotifySlackChannel(t *testing.T) {
 
+	n := &GlobalNotifierSlack{}
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
@@ -54,8 +53,8 @@ func TestNotifySlackChannel(t *testing.T) {
 	for _, tt := range testCase {
 		urls := fmt.Sprintf("%s/%s", SlackHookSite, tt.Hook)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
-		conf := Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}
-		err := NotifySlackChannel()
+		assert.NoError(t, n.InitModule(&Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}))
+		err := n.Run()
 		assert.Equal(t, tt.Error, err)
 	}
 }
@@ -77,10 +76,11 @@ func TestRun(t *testing.T) {
 	}
 
 	for _, tt := range testCase {
+		n := &GlobalNotifierSlack{}
 		urls := fmt.Sprintf("%s/%s", SlackHookSite, tt.Hook)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
-		local := GlobalNotifierSlack{config: &Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}}
-		err := Run()
+		assert.NoError(t, n.InitModule(&Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}))
+		err := n.Run()
 		assert.Equal(t, tt.Error, err)
 	}
 }

@@ -4,6 +4,6 @@ type Config struct {
 	Region                 string
 	AccountAccessKeyID     string
 	AccountSecretAccessKey string
-	QueueUrl               string
+	Queues                 string
 	MessageBody            string
 }
