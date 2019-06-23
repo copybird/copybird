@@ -1,6 +1,10 @@
 package common
 
 import (
+	"github.com/copybird/copybird/core"
+	"github.com/copybird/copybird/modules/backup/input/mongodb"
+	"github.com/copybird/copybird/modules/backup/input/mysql"
+	postgres "github.com/copybird/copybird/modules/backup/input/postgresql"
 	"github.com/copybird/copybird/operator"
 	"github.com/spf13/cobra"
 	"log"
@@ -12,12 +16,12 @@ type App struct {
 	cmmRoot        *cobra.Command
 	cmdBackup      *cobra.Command
 	cmdOperator    *cobra.Command
-	vars           map[string]interface{}
+	//vars           map[string]interface{}
 }
 
 func NewApp() *App {
 	return &App{
-		vars:          make(map[string]interface{}),
+		//vars:          make(map[string]interface{}),
 	}
 }
 
@@ -39,6 +43,7 @@ func (a *App) Run() error {
 		},
 	}
 	rootCmd.AddCommand(a.cmdBackup)
+	rootCmd.AddCommand(a.cmdOperator)
 	a.Setup()
 	return rootCmd.Execute()
 }
@@ -57,4 +62,7 @@ func cmdCallback(f func() error) func(cmd *cobra.Command, args []string) {
 }
 
 func (a *App) registerModules() {
+	core.RegisterModule(&mysql.BackupInputMysql{})
+	core.RegisterModule(&postgres.BackupInputPostgresql{})
+	core.RegisterModule(&mongodb.BackupInputMongodb{})
 }

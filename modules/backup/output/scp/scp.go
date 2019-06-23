@@ -15,6 +15,9 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "output"
 const MODULE_NAME = "scp"
 
 type BackupOutputScp struct {
@@ -24,6 +27,14 @@ type BackupOutputScp struct {
 	config *Config
 	sess   ssh.Session
 	client *sftp.Client
+}
+
+func (m *BackupOutputScp) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupOutputScp) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupOutputScp) GetName() string {

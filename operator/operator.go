@@ -12,6 +12,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/workqueue"
 
+	//need this line to parse gcp credentials
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
 	backupclientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"

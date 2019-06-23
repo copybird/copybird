@@ -38,9 +38,9 @@ Wu got it locked, performin' live on your hottest block`
 	rd := bytes.NewReader(hw)
 	assert.Equal(t, hw, nil)
 
-	assert.NoError(t, InitModule(nil))
-	assert.NoError(t, InitPipe(wr, rd))
-	assert.NoError(t, Run())
+	assert.NoError(t, decompressor.InitModule(nil))
+	assert.NoError(t, decompressor.InitPipe(wr, rd))
+	assert.NoError(t, decompressor.Run())
 	spew.Dump(wr)
 
 	assert.Equal(t, wr.String(), "hello world")

@@ -9,6 +9,9 @@ import (
 	"google.golang.org/api/option"
 )
 
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "output"
 const MODULE_NAME = "gcp"
 
 type BackupOutputGcp struct {
@@ -20,6 +23,14 @@ type BackupOutputGcp struct {
 	bucketName string
 	bucket     *storage.BucketHandle
 	config     *Config
+}
+
+func (m *BackupOutputGcp) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupOutputGcp) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupOutputGcp) GetName() string {
