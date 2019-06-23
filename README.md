@@ -1,3 +1,6 @@
+<img width="300px" src="https://raw.githubusercontent.com/copybird/copybird/master/docs/logo.svg?sanitize=true">
+# Copybird
+
 [![](https://images.microbadger.com/badges/version/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
 [![](https://images.microbadger.com/badges/image/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
 [![](https://godoc.org/github.com/copybird/copybird?status.svg)](http://godoc.org/github.com/copybird/copybird)
@@ -7,10 +10,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/copybird/copybird/badge.svg)](https://coveralls.io/github/copybird/copybird)
 [![Go Report Card](https://goreportcard.com/badge/github.com/copybird/copybird)](https://goreportcard.com/report/github.com/copybird/copybird)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-
-[](https://raw.githubusercontent.com/copybird/copybird/master/docs/logo.svg)
-# Copybird
 
 ## About
 
