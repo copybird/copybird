@@ -3,50 +3,49 @@ package gzip
 import (
 	"compress/gzip"
 	"fmt"
+	"github.com/copybird/copybird/core"
 	"io"
-
-	"github.com/copybird/copybird/modules/backup/compress"
 )
 
-const MODULE_NAME = "gzip_decompress"
+const MODULE_NAME = "gzip"
 
-type Decompress struct {
-	compress.Output
+type RestoreDecompressGzip struct {
+	core.Module
 	reader io.Reader
 	writer io.Writer
 }
 
-func (c *Decompress) GetName() string {
+func (m *RestoreDecompressGzip) GetName() string {
 	return MODULE_NAME
 }
 
-func (c *Decompress) GetConfig() interface{} {
+func (m *RestoreDecompressGzip) GetConfig() interface{} {
 	return nil
 }
 
-func (c *Decompress) InitPipe(w io.Writer, r io.Reader) error {
-	c.reader = r
-	c.writer = w
+func (m *RestoreDecompressGzip) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (c *Decompress) InitModule(_cfg interface{}) error {
+func (m *RestoreDecompressGzip) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (c *Decompress) Run() error {
-	gr, err := gzip.NewReader(c.reader)
+func (m *RestoreDecompressGzip) Run() error {
+	gr, err := gzip.NewReader(m.reader)
 	if err != nil {
 		return fmt.Errorf("cant start gzip reader with error: %s", err)
 	}
 	defer gr.Close()
-	_, err = io.Copy(c.writer, gr)
+	_, err = io.Copy(m.writer, gr)
 	if err != nil {
 		return fmt.Errorf("copy error: %s", err)
 	}
 	return nil
 }
 
-func (c *Decompress) Close() error {
+func (m *RestoreDecompressGzip) Close() error {
 	return nil
 }

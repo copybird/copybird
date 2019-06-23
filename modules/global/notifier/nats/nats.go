@@ -2,6 +2,7 @@ package nats
 
 import (
 	"errors"
+	"github.com/copybird/copybird/core"
 	"io"
 
 	"github.com/nats-io/go-nats"
@@ -17,6 +18,7 @@ var (
 )
 
 type GlobalNotifierNats struct {
+	core.Module
 	config *Config
 	conn   *nats.Conn
 	reader io.Reader

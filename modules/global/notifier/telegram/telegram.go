@@ -1,45 +1,47 @@
 package telegram
 
 import (
+	"github.com/copybird/copybird/core"
 	"io"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-type Local struct {
+type GlobalNotifierTelegram struct {
+	core.Module
 	config *Config
 	reader io.Reader
 	writer io.Writer
 }
 
-func (l *Local) GetName() string {
+func (m *GlobalNotifierTelegram) GetName() string {
 	return MODULE_NAME
 }
 
-func (local *Local) InitPipe(w io.Writer, r io.Reader) error {
-	local.reader = r
-	local.writer = w
+func (m *GlobalNotifierTelegram) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (l *Local) InitModule(_cfg interface{}) error {
-	l.config = _cfg.(*Config)
+func (m *GlobalNotifierTelegram) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 	return nil
 }
 
-func (l *Local) Run() error {
-	if err := l.config.NotifyTelegramChannel(); err != nil {
+func (m *GlobalNotifierTelegram) Run() error {
+	if err := m.config.NotifyTelegramChannel(); err != nil {
 		return err
 	}
 
 	return nil
 }
-func (l *Local) GetConfig() interface{} {
+func (m *GlobalNotifierTelegram) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (l *Local) Close() error {
+func (m *GlobalNotifierTelegram) Close() error {
 	return nil
 }
 

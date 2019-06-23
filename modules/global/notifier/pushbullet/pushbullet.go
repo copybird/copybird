@@ -1,48 +1,50 @@
 package pushbullet
 
 import (
+	"github.com/copybird/copybird/core"
 	"io"
 
 	"github.com/xconstruct/go-pushbullet"
 )
 
-type Local struct {
+type GlobalNotifierPushbuller struct {
+	core.Module
 	config *Config
 	reader io.Reader
 	writer io.Writer
 }
 
-type SlackMessage struct {
+type Message struct {
 	Text string `json:"text"`
 }
 
-func (l *Local) GetName() string {
+func (m *GlobalNotifierPushbuller) GetName() string {
 	return MODULE_NAME
 }
 
-func (local *Local) InitPipe(w io.Writer, r io.Reader) error {
-	local.reader = r
-	local.writer = w
+func (m *GlobalNotifierPushbuller) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (l *Local) InitModule(_cfg interface{}) error {
-	l.config = _cfg.(*Config)
+func (m *GlobalNotifierPushbuller) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 	return nil
 }
 
-func (l *Local) Run() error {
-	if err := l.config.NotifyPushbulletChannel(); err != nil {
+func (m *GlobalNotifierPushbuller) Run() error {
+	if err := m.config.NotifyPushbulletChannel(); err != nil {
 		return err
 	}
 
 	return nil
 }
-func (l *Local) GetConfig() interface{} {
+func (m *GlobalNotifierPushbuller) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (l *Local) Close() error {
+func (m *GlobalNotifierPushbuller) Close() error {
 	return nil
 }
 

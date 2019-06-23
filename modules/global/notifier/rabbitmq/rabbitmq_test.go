@@ -24,7 +24,7 @@ func TestRabbitMQ_InvalidConn(t *testing.T) {
 		RabbitMQURL:   "amqp://guest:guest@localhost:5679/",
 	}
 
-	rmq := RabbitMQ{}
+	rmq := GlobalNotifierRabbitmq{}
 	assert.Assert(t, GetConfig() != nil)
 
 	err := InitModule(conf)
@@ -49,7 +49,7 @@ func TestRabbitMQ_ValidConn(t *testing.T) {
 		RabbitMQURL:   "amqp://guest:guest@localhost:5672/",
 	}
 
-	rmq := RabbitMQ{}
+	rmq := GlobalNotifierRabbitmq{}
 	assert.Assert(t, GetConfig() != nil)
 
 	err := InitModule(conf)

@@ -12,25 +12,25 @@ import (
 
 const MODULE_NAME = "webcallback"
 
-type Callback struct {
+type GlobalNotifierWebcallback struct {
 	core.Module
 	config *Config
 }
 
-func (m *Callback) GetName() string {
+func (m *GlobalNotifierWebcallback) GetName() string {
 	return MODULE_NAME
 }
 
-func (m *Callback) GetConfig() interface{} {
+func (m *GlobalNotifierWebcallback) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (m *Callback) InitModule(_cfg interface{}) error {
+func (m *GlobalNotifierWebcallback) InitModule(_cfg interface{}) error {
 	m.config = _cfg.(*Config)
 	return nil
 }
 
-func (m *Callback) Run() error {
+func (m *GlobalNotifierWebcallback) Run() error {
 	if err := m.SendNotification(); err != nil {
 		return err
 	}
@@ -38,11 +38,11 @@ func (m *Callback) Run() error {
 	return nil
 }
 
-func (m *Callback) Close() error {
+func (m *GlobalNotifierWebcallback) Close() error {
 	return nil
 }
 
-func (m *Callback) SendNotification() error {
+func (m *GlobalNotifierWebcallback) SendNotification() error {
 
 	//Set request body params
 	data := url.Values{}

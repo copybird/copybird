@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var decompressor Decompress
+var decompressor RestoreDecompressGzip
 
 func TestCompress_InitCompress_Default_Compress(t *testing.T) {
 	err := InitModule(nil)

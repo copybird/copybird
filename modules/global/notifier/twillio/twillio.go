@@ -9,29 +9,29 @@ import (
 
 const MODULE_NAME = "twillio"
 
-type Twillio struct {
+type GlobalNotifierTwillio struct {
 	core.Module
-	Config *Config
+	config *Config
 	client *gotwilio.Twilio
 }
 
-func (t *Twillio) GetName() string {
+func (t *GlobalNotifierTwillio) GetName() string {
 	return MODULE_NAME
 }
 
-func (t *Twillio) GetConfig() interface{} {
+func (t *GlobalNotifierTwillio) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (t *Twillio) InitModule(_conf interface{}) error {
+func (t *GlobalNotifierTwillio) InitModule(_conf interface{}) error {
 	conf := _conf.(*Config)
 	t.client = gotwilio.NewTwilioClient(conf.AccountSid, conf.AuthToken)
 	return nil
 }
 
-func (t *Twillio) Run() error {
+func (t *GlobalNotifierTwillio) Run() error {
 
-	_, exception, err := t.client.SendSMS(t.Config.From, t.Config.To, "Dump created successfully", "", "")
+	_, exception, err := t.client.SendSMS(t.config.From, t.config.To, "Dump created successfully", "", "")
 	if err != nil {
 		return err
 	}
@@ -41,6 +41,6 @@ func (t *Twillio) Run() error {
 	return nil
 }
 
-func (t *Twillio) Close() error {
+func (t *GlobalNotifierTwillio) Close() error {
 	return nil
 }

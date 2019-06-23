@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/copybird/copybird/core"
 	"io"
 	"net/http"
 )
 
-type Local struct {
+type GlobalNotifierSlack struct {
+	core.Module
 	config *Config
 	reader io.Reader
 	writer io.Writer
@@ -19,33 +21,33 @@ type SlackMessage struct {
 	Text string `json:"text"`
 }
 
-func (l *Local) GetName() string {
+func (m *GlobalNotifierSlack) GetName() string {
 	return MODULE_NAME
 }
 
-func (local *Local) InitPipe(w io.Writer, r io.Reader) error {
-	local.reader = r
-	local.writer = w
+func (m *GlobalNotifierSlack) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (l *Local) InitModule(_cfg interface{}) error {
-	l.config = _cfg.(*Config)
+func (m *GlobalNotifierSlack) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 	return nil
 }
 
-func (l *Local) Run() error {
-	if err := l.config.NotifySlackChannel(); err != nil {
+func (m *GlobalNotifierSlack) Run() error {
+	if err := m.config.NotifySlackChannel(); err != nil {
 		return err
 	}
 
 	return nil
 }
-func (l *Local) GetConfig() interface{} {
+func (m *GlobalNotifierSlack) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (l *Local) Close() error {
+func (m *GlobalNotifierSlack) Close() error {
 	return nil
 }
 

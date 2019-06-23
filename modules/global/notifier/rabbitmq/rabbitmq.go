@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"github.com/copybird/copybird/core"
 	"io"
 
 	"github.com/streadway/amqp"
@@ -10,7 +11,8 @@ const (
 	MODULE_NAME = "rabbitmq"
 )
 
-type RabbitMQ struct {
+type GlobalNotifierRabbitmq struct {
+	core.Module
 	config  *Config
 	conn    *amqp.Connection
 	channel *amqp.Channel
@@ -20,68 +22,68 @@ type RabbitMQ struct {
 	writer  io.Writer
 }
 
-func (n *RabbitMQ) GetName() string {
+func (m *GlobalNotifierRabbitmq) GetName() string {
 	return MODULE_NAME
 }
 
-func (n *RabbitMQ) GetConfig() interface{} {
+func (m *GlobalNotifierRabbitmq) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (c *RabbitMQ) InitPipe(w io.Writer, r io.Reader) error {
-	c.reader = r
-	c.writer = w
+func (m *GlobalNotifierRabbitmq) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (c *RabbitMQ) InitModule(_cfg interface{}) error {
-	c.config = _cfg.(*Config)
+func (m *GlobalNotifierRabbitmq) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 
 	// connect to server
-	conn, err := amqp.Dial(c.config.RabbitMQURL)
+	conn, err := amqp.Dial(m.config.RabbitMQURL)
 	if err != nil {
 		return err
 	}
-	c.conn = conn
+	m.conn = conn
 
 	// init channel
-	ch, err := c.conn.Channel()
+	ch, err := m.conn.Channel()
 	if err != nil {
 		return err
 	}
-	c.channel = ch
+	m.channel = ch
 
 	// declare queue
-	q, err := c.channel.QueueDeclare(
-		c.config.QueueName,       // name
-		c.config.QueueDurable,    // durable
-		c.config.QueueAutoDelete, // delete when unused
-		c.config.QueueExclusive,  // exclusive
-		c.config.QueueNoWait,     // no-wait
-		nil,             // arguments
+	q, err := m.channel.QueueDeclare(
+		m.config.QueueName,       // name
+		m.config.QueueDurable,    // durable
+		m.config.QueueAutoDelete, // delete when unused
+		m.config.QueueExclusive,  // exclusive
+		m.config.QueueNoWait,     // no-wait
+		nil,                      // arguments
 	)
 	if err != nil {
 		return err
 	}
-	c.queue = &q
+	m.queue = &q
 
 	// init message to be published
 	p := amqp.Publishing{
-		ContentType: c.config.MsgContentType,
-		Body:        []byte(c.config.MsgBody),
+		ContentType: m.config.MsgContentType,
+		Body:        []byte(m.config.MsgBody),
 	}
-	c.publ = p
+	m.publ = p
 
 	return nil
 }
 
-func (c *RabbitMQ) Run() error {
-	err := c.channel.Publish(
-		c.config.PublishExchange,  // exchange
-		c.config.PublishKey,       // routing key
-		c.config.PublishMandatory, // mandatory
-		c.config.PublishImmediate, // immediate
-		c.publ,
+func (m *GlobalNotifierRabbitmq) Run() error {
+	err := m.channel.Publish(
+		m.config.PublishExchange,  // exchange
+		m.config.PublishKey,       // routing key
+		m.config.PublishMandatory, // mandatory
+		m.config.PublishImmediate, // immediate
+		m.publ,
 	)
 	if err != nil {
 		return err
@@ -90,8 +92,8 @@ func (c *RabbitMQ) Run() error {
 	return nil
 }
 
-func (c *RabbitMQ) Close() error {
-	c.channel.Close()
-	c.conn.Close()
+func (m *GlobalNotifierRabbitmq) Close() error {
+	m.channel.Close()
+	m.conn.Close()
 	return nil
 }
