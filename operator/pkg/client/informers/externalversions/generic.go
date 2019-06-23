@@ -21,9 +21,9 @@ package externalversions
 import (
 	"fmt"
 
-	v1 "github.com/copybird/copybird/operator/pkg/apis/copybird/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/tools/cache"
+	v1 "github.com/copybird/copybird/operator/pkg/apis/backup/v1"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // GenericInformer is type of SharedIndexInformer which will locate and delegate to other
@@ -52,9 +52,9 @@ func (f *genericInformer) Lister() cache.GenericLister {
 // TODO extend this to unknown resources with a client pool
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
-	// Group=copybirds.copybird.org, Version=v1
-	case v1.SchemeGroupVersion.WithResource("copybirds"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Copybirds().V1().CopyBirds().Informer()}, nil
+	// Group=backups.copybird.org, Version=v1
+	case v1.SchemeGroupVersion.WithResource("backups"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Backups().V1().Backups().Informer()}, nil
 
 	}
 

@@ -19,27 +19,27 @@ limitations under the License.
 package versioned
 
 import (
-	copybirdsv1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/copybird/v1"
-	"k8s.io/client-go/discovery"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/util/flowcontrol"
+	backupsv1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/backup/v1"
+	discovery "k8s.io/client-go/discovery"
+	rest "k8s.io/client-go/rest"
+	flowcontrol "k8s.io/client-go/util/flowcontrol"
 )
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
-	CopybirdsV1() copybirdsv1.CopybirdsV1Interface
+	BackupsV1() backupsv1.BackupsV1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	copybirdsV1 *copybirdsv1.CopybirdsV1Client
+	backupsV1 *backupsv1.BackupsV1Client
 }
 
-// CopybirdsV1 retrieves the CopybirdsV1Client
-func (c *Clientset) CopybirdsV1() copybirdsv1.CopybirdsV1Interface {
-	return c.copybirdsV1
+// BackupsV1 retrieves the BackupsV1Client
+func (c *Clientset) BackupsV1() backupsv1.BackupsV1Interface {
+	return c.backupsV1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -58,7 +58,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	}
 	var cs Clientset
 	var err error
-	cs.copybirdsV1, err = copybirdsv1.NewForConfig(&configShallowCopy)
+	cs.backupsV1, err = backupsv1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.copybirdsV1 = copybirdsv1.NewForConfigOrDie(c)
+	cs.backupsV1 = backupsv1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -83,7 +83,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.copybirdsV1 = copybirdsv1.New(c)
+	cs.backupsV1 = backupsv1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

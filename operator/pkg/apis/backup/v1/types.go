@@ -24,25 +24,46 @@ import (
 // +genclient:noStatus
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// CopyBird is a specification for a CopyBird resource
-type CopyBird struct {
+// Backup is a specification for a Backup resource
+type Backup struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec CopyBirdSpec `json:"spec"`
+	Spec BackupSpec `json:"spec"`
 }
 
-// CopyBirdSpec is the spec for a CopyBird resource
-type CopyBirdSpec struct {
-	Name string `json:"name"`
+// BackupSpec is the spec for a Backup resource
+type BackupSpec struct {
+	Name     string     `json:"name"`
+	Input    Input      `json:"input"`
+	Compress Compress   `json:"compress"`
+	Output   []Output   `json:"output"`
+	Notifier []Notifier `json:"notifier"`
+}
+
+type Input struct {
+	Type   string
+	Config map[string]string
+}
+type Compress struct {
+	Type   string
+	Config map[string]int
+}
+type Output struct {
+	Type   string
+	Config map[string]string
+}
+type Notifier struct {
+	Type   string
+	Config map[string]string
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-// CopyBirdList is a list of CopyBird resources
-type CopyBirdList struct {
+// BackupList is a list of Backup resources
+type BackupList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []CopyBird `json:"items"`
+	Items []Backup `json:"items"`
 }

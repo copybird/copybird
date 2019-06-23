@@ -19,17 +19,17 @@ limitations under the License.
 package externalversions
 
 import (
-	"reflect"
-	"sync"
-	"time"
+	reflect "reflect"
+	sync "sync"
+	time "time"
 
-	"github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
-	copybird "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/copybird"
-	"github.com/copybird/copybird/operator/pkg/client/informers/externalversions/internalinterfaces"
+	versioned "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
+	backup "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/backup"
+	internalinterfaces "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/internalinterfaces"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/tools/cache"
+	runtime "k8s.io/apimachinery/pkg/runtime"
+	schema "k8s.io/apimachinery/pkg/runtime/schema"
+	cache "k8s.io/client-go/tools/cache"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.
@@ -172,9 +172,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Copybirds() copybird.Interface
+	Backups() backup.Interface
 }
 
-func (f *sharedInformerFactory) Copybirds() copybird.Interface {
-	return copybird.New(f, f.namespace, f.tweakListOptions)
+func (f *sharedInformerFactory) Backups() backup.Interface {
+	return backup.New(f, f.namespace, f.tweakListOptions)
 }

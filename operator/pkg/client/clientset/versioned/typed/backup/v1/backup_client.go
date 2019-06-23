@@ -19,27 +19,27 @@ limitations under the License.
 package v1
 
 import (
-	v1 "github.com/copybird/copybird/operator/pkg/apis/copybird/v1"
+	v1 "github.com/copybird/copybird/operator/pkg/apis/backup/v1"
 	"github.com/copybird/copybird/operator/pkg/client/clientset/versioned/scheme"
-	"k8s.io/client-go/rest"
+	rest "k8s.io/client-go/rest"
 )
 
-type CopybirdsV1Interface interface {
+type BackupsV1Interface interface {
 	RESTClient() rest.Interface
-	CopyBirdsGetter
+	BackupsGetter
 }
 
-// CopybirdsV1Client is used to interact with features provided by the copybirds.copybird.org group.
-type CopybirdsV1Client struct {
+// BackupsV1Client is used to interact with features provided by the backups.copybird.org group.
+type BackupsV1Client struct {
 	restClient rest.Interface
 }
 
-func (c *CopybirdsV1Client) CopyBirds(namespace string) CopyBirdInterface {
-	return newCopyBirds(c, namespace)
+func (c *BackupsV1Client) Backups(namespace string) BackupInterface {
+	return newBackups(c, namespace)
 }
 
-// NewForConfig creates a new CopybirdsV1Client for the given config.
-func NewForConfig(c *rest.Config) (*CopybirdsV1Client, error) {
+// NewForConfig creates a new BackupsV1Client for the given config.
+func NewForConfig(c *rest.Config) (*BackupsV1Client, error) {
 	config := *c
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
@@ -48,12 +48,12 @@ func NewForConfig(c *rest.Config) (*CopybirdsV1Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &CopybirdsV1Client{client}, nil
+	return &BackupsV1Client{client}, nil
 }
 
-// NewForConfigOrDie creates a new CopybirdsV1Client for the given config and
+// NewForConfigOrDie creates a new BackupsV1Client for the given config and
 // panics if there is an error in the config.
-func NewForConfigOrDie(c *rest.Config) *CopybirdsV1Client {
+func NewForConfigOrDie(c *rest.Config) *BackupsV1Client {
 	client, err := NewForConfig(c)
 	if err != nil {
 		panic(err)
@@ -61,9 +61,9 @@ func NewForConfigOrDie(c *rest.Config) *CopybirdsV1Client {
 	return client
 }
 
-// New creates a new CopybirdsV1Client for the given RESTClient.
-func New(c rest.Interface) *CopybirdsV1Client {
-	return &CopybirdsV1Client{c}
+// New creates a new BackupsV1Client for the given RESTClient.
+func New(c rest.Interface) *BackupsV1Client {
+	return &BackupsV1Client{c}
 }
 
 func setConfigDefaults(config *rest.Config) error {
@@ -81,7 +81,7 @@ func setConfigDefaults(config *rest.Config) error {
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *CopybirdsV1Client) RESTClient() rest.Interface {
+func (c *BackupsV1Client) RESTClient() rest.Interface {
 	if c == nil {
 		return nil
 	}
