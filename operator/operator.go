@@ -14,15 +14,15 @@ import (
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
-	copybirdclientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
-	copybirdinformer_v1 "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/copybird/v1"
+	backupclientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
+	backupinformer_v1 "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/backup/v1"
 )
 
 // retrieve the Kubernetes cluster client from outside of the cluster
-func getKubernetesClient() (kubernetes.Interface, copybirdclientset.Interface) {
+func getKubernetesClient() (kubernetes.Interface, backupclientset.Interface) {
 	// construct the path to resolve to `~/.kube/config`
 	kubeConfigPath := os.Getenv("HOME") + "/.kube/config"
-
+ 
 	// create the config from the path
 	config, err := clientcmd.BuildConfigFromFlags("", kubeConfigPath)
 	if err != nil {
@@ -35,25 +35,25 @@ func getKubernetesClient() (kubernetes.Interface, copybirdclientset.Interface) {
 		log.Fatalf("getClusterConfig: %v", err)
 	}
 
-	copybirdClient, err := copybirdclientset.NewForConfig(config)
+	backupClient, err := backupclientset.NewForConfig(config)
 	if err != nil {
 		log.Fatalf("getClusterConfig: %v", err)
 	}
 
 	log.Info("Successfully constructed k8s client")
-	return client, copybirdClient
+	return client, backupClient
 }
 
 // main code path
 func Run() {
 	// get the Kubernetes client for connectivity
-	client, copybirdClient := getKubernetesClient()
+	client, backupClient := getKubernetesClient()
 
 	// retrieve our custom resource informer which was generated from
 	// the code generator and pass it the custom resource client, specifying
 	// we should be looking through all namespaces for listing and watching
-	informer := copybirdinformer_v1.NewCopyBirdInformer(
-		copybirdClient,
+	informer := backupinformer_v1.NewBackupInformer(
+		backupClient,
 		meta_v1.NamespaceAll,
 		0,
 		cache.Indexers{},
