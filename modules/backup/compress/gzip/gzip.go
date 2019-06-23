@@ -4,13 +4,16 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
+
+	"github.com/copybird/copybird/core"
 )
 
 const GROUP_NAME = "backup"
 const TYPE_NAME = "compress"
 const MODULE_NAME = "gzip"
+const MODULE_GROUP = "backup"
+const MODULE_TYPE = "compress"
 
 type BackupCompressGzip struct {
 	core.Module
@@ -31,16 +34,18 @@ func (m *BackupCompressGzip) GetName() string {
 	return MODULE_NAME
 }
 
+func (m *BackupCompressGzip) GetGroup() string {
+	return MODULE_GROUP
+}
+
+func (m *BackupCompressGzip) GetType() string {
+	return MODULE_TYPE
+}
+
 func (m *BackupCompressGzip) GetConfig() interface{} {
 	return &Config{
 		Level: 3,
 	}
-}
-
-func (m *BackupCompressGzip) InitPipe(w io.Writer, r io.Reader) error {
-	m.reader = r
-	m.writer = w
-	return nil
 }
 
 func (m *BackupCompressGzip) InitModule(_cfg interface{}) error {
@@ -68,5 +73,11 @@ func (m *BackupCompressGzip) Run() error {
 }
 
 func (m *BackupCompressGzip) Close() error {
+	return nil
+}
+
+func (m *BackupCompressGzip) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }

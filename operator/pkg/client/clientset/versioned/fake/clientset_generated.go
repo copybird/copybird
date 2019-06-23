@@ -20,8 +20,8 @@ package fake
 
 import (
 	clientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
-	copybirdsv1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/copybird/v1"
-	fakecopybirdsv1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/copybird/v1/fake"
+	backupsv1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/backup/v1"
+	fakebackupsv1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/backup/v1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
@@ -76,7 +76,7 @@ func (c *Clientset) Tracker() testing.ObjectTracker {
 
 var _ clientset.Interface = &Clientset{}
 
-// CopybirdsV1 retrieves the CopybirdsV1Client
-func (c *Clientset) CopybirdsV1() copybirdsv1.CopybirdsV1Interface {
-	return &fakecopybirdsv1.FakeCopybirdsV1{Fake: &c.Fake}
+// BackupsV1 retrieves the BackupsV1Client
+func (c *Clientset) BackupsV1() backupsv1.BackupsV1Interface {
+	return &fakebackupsv1.FakeBackupsV1{Fake: &c.Fake}
 }

@@ -1,6 +1,6 @@
 package rabbitmq
 
-// Config for RabbitMQ
+// Config for GlobalNotifierRabbitmq
 type Config struct {
 	RabbitMQURL      string
 	QueueName        string

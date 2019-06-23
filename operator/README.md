@@ -6,7 +6,7 @@ In case of any changes to types for the custom controller, use the following com
 
 ```
 ROOT_PACKAGE="github.com/copybird/copybird/operator"
-CUSTOM_RESOURCE_NAME="copybird"
+CUSTOM_RESOURCE_NAME="backup"
 CUSTOM_RESOURCE_VERSION="v1"
 
 go get -u k8s.io/code-generator/...

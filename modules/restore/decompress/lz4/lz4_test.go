@@ -13,7 +13,7 @@ import (
 
 func TestDecompress(t *testing.T) {
 	wr := new(bytes.Buffer)
-	var decompressor DecompressLZ4
+	var decompressor RestoreDecompressLz4
 
 	s := `I bomb atomically, Socrates' philosophies
 And hypotheses can't define how I be droppin' these

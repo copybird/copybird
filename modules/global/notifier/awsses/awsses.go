@@ -1,6 +1,7 @@
 package awsses
 
 import (
+	"github.com/copybird/copybird/core"
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -13,6 +14,7 @@ const (
 )
 
 type GlobalNotifierAwsses struct {
+	core.Module
 	config  *Config
 	simem   *ses.SES // simple email service
 	seInput *ses.SendEmailInput
