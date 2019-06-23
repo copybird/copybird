@@ -6,6 +6,9 @@ import (
 	"os"
 )
 
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "output"
 const MODULE_NAME = "local"
 
 type BackupOutputLocal struct {
@@ -13,6 +16,14 @@ type BackupOutputLocal struct {
 	reader io.Reader
 	writer io.Writer
 	config *Config
+}
+
+func (m *BackupOutputLocal) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupOutputLocal) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupOutputLocal) GetName() string {

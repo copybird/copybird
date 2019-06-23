@@ -10,6 +10,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "output"
 const MODULE_NAME = "s3"
 
 type BackupOutputS3 struct {
@@ -18,6 +21,14 @@ type BackupOutputS3 struct {
 	writer  io.Writer
 	session *session.Session
 	config  *Config
+}
+
+func (m *BackupOutputS3) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupOutputS3) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupOutputS3) GetName() string {

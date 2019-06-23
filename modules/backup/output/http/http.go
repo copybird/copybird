@@ -6,6 +6,9 @@ import (
 	"net/http"
 )
 
+// Module Constants
+const GROUP_NAME = "backup"
+const TYPE_NAME = "output"
 const MODULE_NAME = "http"
 
 type BackupOutputHttp struct {
@@ -13,6 +16,14 @@ type BackupOutputHttp struct {
 	reader io.Reader
 	writer io.Writer
 	config *Config
+}
+
+func (m *BackupOutputHttp) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupOutputHttp) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupOutputHttp) GetName() string {
