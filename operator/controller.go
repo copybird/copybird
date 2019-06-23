@@ -362,7 +362,11 @@ func (c *Controller) proceedToCronJob(backup *backupv1.Backup) error {
 func newJob(backup *backupv1.Backup) *v1.Job {
 	return &v1.Job{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: backup.Spec.Name,
+			Name:      backup.Spec.Name,
+			Namespace: backup.Namespace,
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(backup, backupv1.SchemeGroupVersion.WithKind("Backup")),
+			},
 		},
 		Spec: v1.JobSpec{
 			Template: corev1.PodTemplateSpec{
@@ -386,7 +390,11 @@ func newJob(backup *backupv1.Backup) *v1.Job {
 func newCronJob(backup *backupv1.Backup) *v1_beta1.CronJob {
 	return &v1_beta1.CronJob{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: backup.Spec.Name,
+			Name:      backup.Spec.Name,
+			Namespace: backup.Namespace,
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(backup, backupv1.SchemeGroupVersion.WithKind("Backup")),
+			},
 		},
 		Spec: v1_beta1.CronJobSpec{
 			Schedule: backup.Spec.Cron,
