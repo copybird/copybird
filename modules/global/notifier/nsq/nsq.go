@@ -22,19 +22,23 @@ const (
 
 const ()
 
-func (m *GlobalNotifierAWSSQS) GetGroup() core.ModuleGroup {
+func (m *GlobalNotifierNSQ) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *GlobalNotifierAWSSQS) GetType() core.ModuleType {
+func (m *GlobalNotifierNSQ) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 
-type GlobalNotifierAWSSQS struct {
+type GlobalNotifierNSQ struct {
 	core.Module
 	config *Config
 	reader io.Reader
 	writer io.Writer
+}
+
+func (m *GlobalNotifierNSQ) GetName() string {
+	return MODULE_NAME
 }
 
 type NSQMessage struct {
