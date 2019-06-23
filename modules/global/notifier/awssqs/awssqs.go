@@ -39,6 +39,14 @@ func (m *GlobalNotifierAWSSQS) InitModule(_cfg interface{}) error {
 	return nil
 }
 
+func (m *GlobalNotifierAWSSQS) Run() error {
+	if err := m.config.NotifyAWSSQS(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type Clients struct {
 	SQS         sqsiface.SQSAPI
 	CloudEvents *cloudevents.Client
