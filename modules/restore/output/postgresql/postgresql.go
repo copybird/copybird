@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"database/sql"
 	"io"
-	"log"
 	"strings"
 
 	"github.com/copybird/copybird/core"
@@ -80,8 +79,6 @@ func (r *RestoreOutputPostgresql) Run() error {
 			if err == io.EOF {
 				break
 			}
-
-			log.Fatalf("read file line error: %v", err)
 			return err
 		}
 
@@ -93,7 +90,7 @@ func (r *RestoreOutputPostgresql) Run() error {
 			continue
 		}
 
-		line = strings.TrimSuffix(line, "\n")
+		line = strings.TrimSpace(line)
 		if line == "" {
 			continue
 		}
@@ -102,9 +99,12 @@ func (r *RestoreOutputPostgresql) Run() error {
 			lines = append(lines, line)
 			continue
 		}
+
 		if len(lines) > 1 {
+			lines = append(lines, line)
 			line = strings.Join(lines, " ")
 		}
+
 		err = r.execute(line)
 		if err != nil {
 			return err
@@ -118,7 +118,7 @@ func (r *RestoreOutputPostgresql) Close() error {
 	return r.conn.Close()
 }
 
-func (r *RestoreOutputPostgresql) execute(line string) error  {
+func (r *RestoreOutputPostgresql) execute(line string) error {
 	// Start transaction
 	tx, err := r.conn.Begin()
 	if err != nil {
