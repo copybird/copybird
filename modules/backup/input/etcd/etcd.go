@@ -1,9 +1,13 @@
 package etcd
 
 import (
+	"context"
+	"encoding/json"
 	"io"
+	"sort"
 
 	"github.com/copybird/copybird/core"
+	"github.com/etcd-io/etcd/client"
 )
 
 // Module Constants
@@ -20,6 +24,7 @@ type (
 		reader io.Reader
 		writer io.Writer
 		config *Config
+		api    client.KeysAPI
 	}
 )
 
@@ -53,12 +58,25 @@ func (b *BackupInputEtcd) InitPipe(w io.Writer, r io.Reader) error {
 // InitModule initializes module
 func (b *BackupInputEtcd) InitModule(cfg interface{}) error {
 	b.config = cfg.(*Config)
+	c, err := client.New(client.Config{
+		Endpoints: b.config.Endpoints,
+	})
+	if err != nil {
+		return err
+	}
+	b.api = client.NewKeysAPI(c)
 	return nil
 }
 
 // Run dumps database
 func (b *BackupInputEtcd) Run() error {
-	return nil
+	resp, err := b.api.Get(context.TODO(), b.config.Key, &client.GetOptions{Recursive: true})
+	if err != nil {
+		return err
+	}
+	sort.Sort(resp.Node.Nodes)
+	j := json.NewEncoder(b.writer)
+	return j.Encode(resp.Node.Nodes)
 }
 
 // Close closes ...

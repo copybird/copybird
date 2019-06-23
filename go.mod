@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go v1.20.6
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
+	github.com/etcd-io/etcd v3.3.13+incompatible
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
