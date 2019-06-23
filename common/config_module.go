@@ -1,6 +1,6 @@
 package common
 
 type ConfigModule struct {
-	Name   string
-	Config interface{}
+	Type   string      `yaml:'type'`
+	Config interface{} `yaml:'config'`
 }
