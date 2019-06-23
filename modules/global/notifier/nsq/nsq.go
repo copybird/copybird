@@ -5,14 +5,37 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+
+	"github.com/copybird/copybird/core"
 )
 
 const (
+	MODULE_NAME         = "nsq"
+	GROUP_NAME          = "global"
+	TYPE_NAME           = "notifier"
 	HeaderContentType   = "Content-Type"
 	MIMEApplicationJSON = "application/json"
 	NSQUrlSite          = "http://127.0.0.1:4151/pub?topic"
 )
+
+const ()
+
+func (m *GlobalNotifierAWSSQS) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierAWSSQS) GetType() core.ModuleType {
+	return TYPE_NAME
+}
+
+type GlobalNotifierAWSSQS struct {
+	core.Module
+	config *Config
+	reader io.Reader
+	writer io.Writer
+}
 
 type NSQMessage struct {
 	Message string `json:"message"`
