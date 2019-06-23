@@ -28,6 +28,12 @@ func (m *GlobalNotifierAWSSQS) GetName() string {
 	return MODULE_NAME
 }
 
+func (m *GlobalNotifierAWSSQS) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
+	return nil
+}
+
 type Clients struct {
 	SQS         sqsiface.SQSAPI
 	CloudEvents *cloudevents.Client
