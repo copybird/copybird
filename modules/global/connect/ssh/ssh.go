@@ -13,6 +13,8 @@ import (
 )
 
 const MODULE_NAME = "ssh"
+const MODULE_GROUP = "global"
+const MODULE_TYPE = "connect"
 
 type GlobalConnectSsh struct {
 	reader io.Reader
@@ -23,6 +25,14 @@ type GlobalConnectSsh struct {
 
 func (m *GlobalConnectSsh) GetName() string {
 	return MODULE_NAME
+}
+
+func (m *GlobalConnectSsh) GetGroup() string {
+	return MODULE_GROUP
+}
+
+func (m *GlobalConnectSsh) GetType() string {
+	return MODULE_TYPE
 }
 
 func (m *GlobalConnectSsh) GetConfig() interface{} {
@@ -38,16 +48,19 @@ func (m *GlobalConnectSsh) InitPipe(w io.Writer, r io.Reader) error {
 func (m *GlobalConnectSsh) InitModule(_cfg interface{}) error {
 	m.config = _cfg.(*Config)
 
+	// Local machine tunnel output
 	localEndpoint := &Endpoint{
 		Host: m.config.LocalEndpointHost,
 		Port: m.config.LocalEndpointPort,
 	}
 
+	// External server
 	serverEndpoint := &Endpoint{
 		Host: m.config.ServerEndpointHost,
 		Port: m.config.ServerEndpointPort,
 	}
 
+	// External machine tunnel input
 	remoteEndpoint := &Endpoint{
 		Host: m.config.RemoteEndpointHost,
 		Port: m.config.RemoteEndpointPort,
@@ -63,7 +76,6 @@ func (m *GlobalConnectSsh) InitModule(_cfg interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	signer, err := ssh.ParsePrivateKey(key)
 	if err != nil {
 		return err
