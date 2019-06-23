@@ -171,30 +171,30 @@ func (c *Controller) syncHandler(key string) error {
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
 		job, err = c.clientset.BatchV1().Jobs(backup.Namespace).Create(NewJob(backup))
+		if err != nil {
+			return err
+		}
+		log.Infof("Now job created, %v", job.Name)
 	}
 
-	if err != nil {
-		return err
-	}
-	log.Infof("Now job created, %v", job)
 	return nil
 }
 
 func NewJob(backup *backupv1.Backup) *v1.Job {
 	return &v1.Job{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "testjob",
+			Name: backup.Name,
 		},
 		Spec: v1.JobSpec{
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "testjob",
+					Name: backup.Name,
 				},
 				Spec: corev1.PodSpec{
 					RestartPolicy: "OnFailure",
 					Containers: []corev1.Container{
 						corev1.Container{
-							Name:  "testJob",
+							Name:  backup.Name,
 							Image: "registry.hub.docker.com/copybird/copybird:latest",
 							Env: []corev1.EnvVar{
 								corev1.EnvVar{

@@ -3,6 +3,7 @@ kind: Backup
 metadata:
   name: sample-backup
 spec:
+  name: sample-backup
   input:
     type: mysql
     config:

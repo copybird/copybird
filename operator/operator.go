@@ -19,10 +19,10 @@ import (
 
 	backupclientset "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
 	backupinformer_v1 "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/backup/v1"
+	backuplister_v1 "github.com/copybird/copybird/operator/pkg/client/listers/backup/v1"
 )
 
-// retrieve the Kubernetes cluster client from outside of the cluster
-func getKubernetesClient() (kubernetes.Interface, backupclientset.Interface) {
+func Run() {
 	// construct the path to resolve to `~/.kube/config`
 	kubeConfigPath := os.Getenv("HOME") + "/.kube/config"
 
@@ -44,13 +44,6 @@ func getKubernetesClient() (kubernetes.Interface, backupclientset.Interface) {
 	}
 
 	log.Info("Successfully constructed k8s client")
-	return client, backupClient
-}
-
-// main code path
-func Run() {
-	// get the Kubernetes client for connectivity
-	client, backupClient := getKubernetesClient()
 
 	// retrieve our custom resource informer which was generated from
 	// the code generator and pass it the custom resource client, specifying
@@ -62,7 +55,7 @@ func Run() {
 		cache.Indexers{},
 	)
 
-	sharedInformerFactory := informers.NewSharedInformerFactory(client, time.Second)
+	sharedInformerFactory := informers.NewSharedInformerFactory(client, time.Second*5)
 	jobInformer := sharedInformerFactory.Batch().V1().Jobs()
 
 	// create a new queue so that when the informer gets a resource that is either
@@ -114,6 +107,7 @@ func Run() {
 		clientset:      client,
 		jobInformer:    jobInformer,
 		backupInformer: backupInformer,
+		backupLister:   backuplister_v1.NewBackupLister(backupInformer.GetIndexer()),
 		workqueue:      queue,
 		handler:        &BackupHandler{},
 	}
