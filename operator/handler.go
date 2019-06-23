@@ -12,26 +12,26 @@ type Handler interface {
 	ObjectUpdated(objOld, objNew interface{})
 }
 
-// TestHandler is a sample implementation of Handler
-type TestHandler struct{}
+// BackupHandler is a sample implementation of Handler
+type BackupHandler struct{}
 
 // Init handles any handler initialization
-func (t *TestHandler) Init() error {
-	log.Info("TestHandler.Init")
+func (t *BackupHandler) Init() error {
+	log.Info("BackupHandler.Init")
 	return nil
 }
 
 // ObjectCreated is called when an object is created
-func (t *TestHandler) ObjectCreated(obj interface{}) {
-	log.Info("TestHandler.ObjectCreated")
+func (t *BackupHandler) ObjectCreated(obj interface{}) {
+	log.Info("BackupHandler.ObjectCreated")
 }
 
 // ObjectDeleted is called when an object is deleted
-func (t *TestHandler) ObjectDeleted(obj interface{}) {
-	log.Info("TestHandler.ObjectDeleted")
+func (t *BackupHandler) ObjectDeleted(obj interface{}) {
+	log.Info("BackupHandler.ObjectDeleted")
 }
 
 // ObjectUpdated is called when an object is updated
-func (t *TestHandler) ObjectUpdated(objOld, objNew interface{}) {
-	log.Info("TestHandler.ObjectUpdated")
+func (t *BackupHandler) ObjectUpdated(objOld, objNew interface{}) {
+	log.Info("BackupHandler.ObjectUpdated")
 }

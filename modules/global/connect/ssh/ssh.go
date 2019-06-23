@@ -133,6 +133,5 @@ func getHostKey(host string) (ssh.PublicKey, error) {
 			break
 		}
 	}
-
 	return hostKey, nil
 }

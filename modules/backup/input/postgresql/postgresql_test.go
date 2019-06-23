@@ -22,7 +22,7 @@ func TestGetTables(t *testing.T) {
 	f, err := os.Create("dump.sql")
 	assert.NoError(t, err)
 	require.NoError(t, d.InitModule(c))
-	assert.NoError(t, d.InitPipe(f, nil, c))
+	assert.NoError(t, d.InitPipe(f, nil))
 
 	tables, err := d.getTables()
 	assert.NoError(t, err)

@@ -5,6 +5,9 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	v1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
@@ -124,9 +127,45 @@ func (c *Controller) processNextItem() bool {
 	} else {
 		c.logger.Infof("Controller.processNextItem: object created detected: %s", keyRaw)
 		c.handler.ObjectCreated(item)
+		c.CreateJob()
 		c.queue.Forget(key)
 	}
 
 	// keep the worker loop running by returning true
 	return true
+}
+
+func (c *Controller) CreateJob() {
+	job, err := c.clientset.BatchV1().Jobs("default").Create(&v1.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "testjob",
+		},
+		Spec: v1.JobSpec{
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "testjob",
+				},
+				Spec: corev1.PodSpec{
+					RestartPolicy: "OnFailure",
+					Containers: []corev1.Container{
+						corev1.Container{
+							Name:  "testJob",
+							Image: "registry.hub.docker.com/copybird/copybird:latest",
+							Env: []corev1.EnvVar{
+								corev1.EnvVar{
+									Name:  "test",
+									Value: "testValue",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		c.logger.Error("Controller.processNextItem: failed to create job")
+		return
+	}
+	c.logger.Infof("Controller.processNextItem: job created: %v", job)
 }

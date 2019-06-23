@@ -18,6 +18,7 @@ require (
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/jarcoal/httpmock v1.0.4
+	github.com/knative/pkg v0.0.0-20190621220722-c2cd40c1c217
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/lib/pq v1.1.1
 	github.com/nats-io/gnatsd v1.4.1 // indirect
@@ -42,6 +43,7 @@ require (
 	google.golang.org/appengine v1.6.1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20190502103701-55513cacd4ae
 	gotest.tools v2.2.0+incompatible
+	k8s.io/api v0.0.0-20190620073856-dcce3486da33
 	k8s.io/apimachinery v0.0.0-20190620073744-d16981aedf33
 	k8s.io/client-go v0.0.0-20190620074045-585a16d2e773
 	k8s.io/utils v0.0.0-20190607212802-c55fbcfc754a // indirect

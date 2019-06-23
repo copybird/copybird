@@ -21,15 +21,16 @@ import (
 )
 
 type App struct {
-	cmmRoot        *cobra.Command
-	cmdBackup      *cobra.Command
-	cmdOperator    *cobra.Command
-	//vars           map[string]interface{}
+	cmmRoot     *cobra.Command
+	cmdBackup   *cobra.Command
+	cmdRestore  *cobra.Command
+	cmdOperator *cobra.Command
+	vars        map[string]interface{}
 }
 
 func NewApp() *App {
 	return &App{
-		//vars:          make(map[string]interface{}),
+		vars: make(map[string]interface{}),
 	}
 }
 
@@ -43,6 +44,13 @@ func (a *App) Run() error {
 		Args:  cobra.MinimumNArgs(0),
 		Run:   cmdCallback(a.DoBackup),
 	}
+	a.cmdRestore = &cobra.Command{
+		Use:   "restore",
+		Short: "Start new restore",
+		Long:  ``,
+		Args:  cobra.MinimumNArgs(0),
+		Run:   cmdCallback(a.DoRestore),
+	}
 	a.cmdOperator = &cobra.Command{
 		Use:   "operator",
 		Short: "Start Kubernetes operator",
@@ -51,12 +59,17 @@ func (a *App) Run() error {
 		},
 	}
 	rootCmd.AddCommand(a.cmdBackup)
+	rootCmd.AddCommand(a.cmdRestore)
 	rootCmd.AddCommand(a.cmdOperator)
 	a.Setup()
 	return rootCmd.Execute()
 }
 
 func (a *App) DoBackup() error {
+	return nil
+}
+
+func (a *App) DoRestore() error {
 	return nil
 }
 

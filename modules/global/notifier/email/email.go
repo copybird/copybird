@@ -6,11 +6,21 @@ import (
 	"net/smtp"
 )
 
+const GROUP_NAME = "global"
+const TYPE_NAME = "notifier"
 const MODULE_NAME = "email"
 
 type GlobalNotifierEmail struct {
 	core.Module
 	Config *Config
+}
+
+func (e *GlobalNotifierEmail) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (e *GlobalNotifierEmail) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (e *GlobalNotifierEmail) GetName() string {

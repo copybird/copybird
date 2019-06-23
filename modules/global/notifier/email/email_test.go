@@ -13,12 +13,13 @@ func TestSendEmail(t *testing.T) {
 		MailerPassword string
 		MailTo         string
 	}{
-		{"c0pybird0@gmail.com", "c0pybird-admin", "omuraliev.baurzhan@gmail.com"},
+		{"c0pybird0@gmail.com", "pas$$w0rd", "example.com"},
 	}
 
 	for _, tc := range testCase {
-		conf := GlobalNotifierEmail{Config: &Config{MailerUser: tc.MailerUser, MailerPassword: tc.MailerPassword, MailTo: tc.MailTo}}
-		err := SendEmail()
-		assert.Equal(t, nil, err)
+		g := &GlobalNotifierEmail{}
+		assert.NotNil(t, g.GetConfig())
+		assert.NoError(t, g.InitModule(&Config{MailerUser: tc.MailerUser, MailerPassword: tc.MailerPassword, MailTo: tc.MailTo}))
+		assert.Error(t, g.SendEmail())
 	}
 }

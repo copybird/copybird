@@ -3,12 +3,13 @@ package scp
 import (
 	"bufio"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/copybird/copybird/core"
 
 	"github.com/pkg/sftp"
 
@@ -99,7 +100,7 @@ func (m *BackupOutputScp) InitModule(_config interface{}) error {
 		}
 	}
 
-	conn, err := ssh.Dial("tcp", m.config.Addr+m.config.Port, clientConfig)
+	conn, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", m.config.Addr, m.config.Port), clientConfig)
 	if err != nil {
 		return fmt.Errorf("Failed to dial: " + err.Error())
 	}

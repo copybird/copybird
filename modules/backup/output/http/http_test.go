@@ -3,34 +3,33 @@ package http
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestGetName(t *testing.T) {
-	var http BackupOutputHttp
-	name := GetName()
-	require.Equal(t, "http", name)
+	h := &BackupOutputHttp{}
+	require.Equal(t, "http", h.GetName())
 }
 
 func TestGetConfig(t *testing.T) {
-	var http BackupOutputHttp
-	conf := GetConfig()
-	require.Equal(t, Config{}, conf)
+	h := &BackupOutputHttp{}
+	require.Equal(t, &Config{}, h.GetConfig())
 }
 
 func TestInitModule(t *testing.T) {
-	var http BackupOutputHttp
-	err := InitModule(Config{TargetUrl: "https://test.com"})
+	h := &BackupOutputHttp{}
+	err := h.InitModule(&Config{TargetUrl: "https://test.com"})
 	require.NoError(t, err, "should not be any error here")
 }
 
 func TestRun(t *testing.T) {
-	var http BackupOutputHttp
-	conf := Config{
+	h := &BackupOutputHttp{}
+	conf := &Config{
 		TargetUrl: "https://test.com",
 	}
-	err := InitModule(conf)
+	err := h.InitModule(conf)
 	require.NoError(t, err)
-	err = Run()
-	require.NoError(t, err)
+	err = h.Run()
+	assert.NoError(t, err)
 }

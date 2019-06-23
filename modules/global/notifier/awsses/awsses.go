@@ -10,6 +10,8 @@ import (
 )
 
 const (
+	GROUP_NAME = "global"
+	TYPE_NAME = "notifier"
 	MODULE_NAME = "awsses"
 )
 
@@ -20,6 +22,14 @@ type GlobalNotifierAwsses struct {
 	seInput *ses.SendEmailInput
 	reader  io.Reader
 	writer  io.Writer
+}
+
+func (m *GlobalNotifierAwsses) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierAwsses) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierAwsses) GetName() string {

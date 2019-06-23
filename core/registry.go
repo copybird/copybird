@@ -1,7 +1,6 @@
 package core
 
 import (
-	"log"
 	"sync"
 )
 
@@ -9,7 +8,6 @@ var _modules = []Module{}
 var _modulesMutex = sync.Mutex{}
 
 func RegisterModule(module Module) {
-	log.Printf("register module %s::%s::%s", module.GetGroup(), module.GetType(), module.GetName())
 	_modulesMutex.Lock()
 	_modules = append(_modules, module)
 	_modulesMutex.Unlock()

@@ -23,33 +23,37 @@ const authorsData = "(1,'Bradly','McLaughlin','purdy.richard@example.net','2001-
 
 func TestGetTables(t *testing.T) {
 	d := &BackupInputMysql{}
-	c := GetConfig().(*MySQLConfig)
-	DSN = "root:root@tcp(localhost:3306)/test"
+	c := d.GetConfig().(*MySQLConfig)
+	c.DSN = "root:root@tcp(localhost:3306)/test"
 
-	require.NoError(t, InitModule(c))
+	require.NoError(t, d.InitModule(c))
 	f, err := os.Create("dump.sql")
 	assert.NoError(t, err)
-	assert.NoError(t, InitPipe(f, nil))
-	tables, err := getTables()
+	assert.NoError(t, d.InitPipe(f, nil))
+	tables, err := d.getTables()
 	require.NoError(t, err)
 	assert.Equal(t, 2, len(tables))
 	assert.Equal(t, "authors", tables[0])
 	assert.Equal(t, "posts", tables[1])
-	tableSchema, err := getTableSchema(tables[0])
+	tableSchema, err := d.getTableSchema(tables[0])
 	assert.NoError(t, err)
 	assert.Equal(t, authorsSchema, tableSchema)
-	data, err := getTableData(tables[0])
+	data, err := d.getTableData(tables[0])
 	assert.NoError(t, err)
 	assert.Equal(t, authorsData, data)
-	err = Run()
+	err = d.Run()
 	assert.NoError(t, err)
 }
 
 func TestMysqlDump(t *testing.T) {
 	m := &BackupInputMysql{}
-	InitModule(GetConfig())
+
+	c := m.GetConfig().(*MySQLConfig)
+	c.DSN = "root:root@tcp(localhost:3306)/test"
+
+	m.InitModule(c)
 	buf := bytes.Buffer{}
-	InitPipe(&buf, nil)
-	assert.NoError(t, Run())
+	m.InitPipe(&buf, nil)
+	assert.NoError(t, m.Run())
 	t.Log(buf.String())
 }

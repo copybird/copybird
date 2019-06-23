@@ -7,12 +7,22 @@ import (
 	"github.com/sfreiberg/gotwilio"
 )
 
+const GROUP_NAME = "global"
+const TYPE_NAME = "notifier"
 const MODULE_NAME = "twillio"
 
 type GlobalNotifierTwillio struct {
 	core.Module
 	config *Config
 	client *gotwilio.Twilio
+}
+
+func (m *GlobalNotifierTwillio) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierTwillio) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (t *GlobalNotifierTwillio) GetName() string {

@@ -7,15 +7,15 @@ import (
 	"gotest.tools/assert"
 )
 
-func EncryptionAESGCMTest(t *testing.T) {
-	key := []byte("test")
-	enc := BackupEncryptAesgcm{}
+func TestEncryptionAESGCM(t *testing.T) {
+	key := []byte("testitnowpleasee")
+	enc := &BackupEncryptAesgcm{}
 
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	assert.Assert(t, GetConfig() != nil)
-	assert.NilError(t, InitPipe(bufOutput, bufInput))
-	assert.NilError(t, InitModule(&Config{Key: key}))
-	assert.NilError(t, Run())
-	assert.NilError(t, Close())
+	assert.Assert(t, enc.GetConfig() != nil)
+	assert.NilError(t, enc.InitPipe(bufOutput, bufInput))
+	assert.NilError(t, enc.InitModule(&Config{Key: key}))
+	assert.NilError(t, enc.Run())
+	assert.NilError(t, enc.Close())
 }
