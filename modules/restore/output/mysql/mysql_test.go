@@ -17,10 +17,9 @@ func TestRestoreOutputMysql_Run(t *testing.T) {
 	assert.Equal(t, err, nil)
 
 	// TODO: Need parse file, but after implement sql formatter
-	f, _ := os.Open("./samples/postgres.sql")
+	f, _ := os.Open("../../../..//samples/mysql.sql")
 	rs.reader = bufio.NewReader(f)
 
-	//rs.reader = bytes.NewReader([]byte("connect test \n "))
 	err = rs.Run()
 	if err != nil {
 		print(err.Error())

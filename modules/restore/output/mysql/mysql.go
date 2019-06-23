@@ -81,7 +81,7 @@ func (m *RestoreOutputMysql) RestoreDatabase() error {
 	reader := bufio.NewReader(m.reader)
 
 	// TODO: Need validate for SQL-like string here.
-	str, err := reader.ReadString('/')
+	str, err := reader.ReadString('\n')
 
 	// Start transaction
 	tx, err := m.conn.Begin()
