@@ -92,13 +92,13 @@ func loadModule(mGroup core.ModuleGroup, mType core.ModuleType, args string) (co
 	name, params := parseArgs(args)
 	module := core.GetModule(mGroup, mType, name)
 	if module == nil {
-		return nil, fmt.Errorf("module %s not found", name)
+		return nil, fmt.Errorf("module %s/%s not found", mType, name)
 	}
 	config := module.GetConfig()
 	loadConfig(config, params)
 	log.Printf("module %s/%s config: %+v", mType, name, config)
 	if err := module.InitModule(config); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("init module %s/%s err: %s", mType, name, err)
 	}
 	return module, nil
 }
