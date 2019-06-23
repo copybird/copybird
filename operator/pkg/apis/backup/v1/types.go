@@ -34,6 +34,7 @@ type Backup struct {
 // BackupSpec is the spec for a Backup resource
 type BackupSpec struct {
 	Name     string     `json:"name"`
+	Cron     string     `json:"cron"`
 	Input    Input      `json:"input"`
 	Compress Compress   `json:"compress"`
 	Output   []Output   `json:"output"`

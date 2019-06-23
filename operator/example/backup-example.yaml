@@ -4,6 +4,7 @@ metadata:
   name: sample-backup
 spec:
   name: sample-backup
+  cron: "*/1 * * * *"
   input:
     type: mysql
     config:

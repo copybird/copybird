@@ -8,6 +8,7 @@ import (
 	listers "github.com/copybird/copybird/operator/pkg/client/listers/backup/v1"
 	log "github.com/sirupsen/logrus"
 	v1 "k8s.io/api/batch/v1"
+	v1_beta1 "k8s.io/api/batch/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -162,48 +163,68 @@ func (c *Controller) syncHandler(key string) error {
 	// Get the Backup resource with this namespace/name
 	backup, err := c.backupLister.Backups(namespace).Get(name)
 	if err != nil {
-		// The Backup resource may no longer exist, in which case we stop
-		// processing.
 		if errors.IsNotFound(err) {
-			err := c.clientset.BatchV1().Jobs(namespace).Delete(name, &metav1.DeleteOptions{})
-			if errors.IsNotFound(err) {
-				return nil
-			}
-			if err != nil {
-				return err
-			}
-			log.Infof("Now job was deleted, %v", name)
+			utilruntime.HandleError(fmt.Errorf("backup '%s' in work queue no longer exists", key))
 			return nil
 		}
 
 		return nil
 	}
 
-	jobName := backup.Spec.Name
-	if jobName == "" {
-		// We choose to absorb the error here as the worker would requeue the
-		// resource otherwise. Instead, the next time the resource is updated
-		// the resource will be queued again.
+	if backup.Spec.Name == "" {
 		utilruntime.HandleError(fmt.Errorf("%s: job name must be specified", key))
 		return nil
 	}
 
+	if backup.Spec.Cron != "" {
+		err := c.ProceedToCronJob(backup)
+		return err
+	}
+
+	err = c.ProceedToJob(backup)
+	return err
+}
+
+func (c *Controller) ProceedToJob(backup *backupv1.Backup) error {
+	log.Info("Proceed to Job")
 	// Get the Job with the name specified in Backup.spec
-	job, err := c.clientset.BatchV1().Jobs(backup.Namespace).Get(jobName, metav1.GetOptions{})
+	job, err := c.clientset.BatchV1().Jobs(backup.Namespace).Get(backup.Spec.Name, metav1.GetOptions{})
+
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
-		job, err = c.clientset.BatchV1().Jobs(backup.Namespace).Create(NewJob(backup))
+		_, err = c.clientset.BatchV1().Jobs(backup.Namespace).Create(NewJob(backup))
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 
+	job, err = c.clientset.BatchV1().Jobs(backup.Namespace).Update(job)
 	if err != nil {
 		return err
 	}
+	return nil
+}
 
-	job, err = c.clientset.BatchV1().Jobs(namespace).Update(job)
+func (c *Controller) ProceedToCronJob(backup *backupv1.Backup) error {
+	log.Info("Proceed to CronJob")
+
+	// Get the Job with the name specified in Backup.spec
+	job, err := c.clientset.BatchV1beta1().CronJobs(backup.Namespace).Get(backup.Spec.Name, metav1.GetOptions{})
+
+	// If the resource doesn't exist, we'll create it
+	if errors.IsNotFound(err) {
+		_, err = c.clientset.BatchV1beta1().CronJobs(backup.Namespace).Create(NewCronJob(backup))
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	job, err = c.clientset.BatchV1beta1().CronJobs(backup.Namespace).Update(job)
 	if err != nil {
 		return err
 	}
-	log.Infof("Job was updated, %v", job.Name)
 	return nil
 }
 
@@ -223,6 +244,38 @@ func NewJob(backup *backupv1.Backup) *v1.Job {
 						corev1.Container{
 							Name:  "hello-world",
 							Image: "hello-world:latest",
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func NewCronJob(backup *backupv1.Backup) *v1_beta1.CronJob {
+	return &v1_beta1.CronJob{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: backup.Spec.Name,
+		},
+		Spec: v1_beta1.CronJobSpec{
+			Schedule: backup.Spec.Cron,
+			JobTemplate: v1_beta1.JobTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: backup.Name,
+				},
+				Spec: v1.JobSpec{
+					Template: corev1.PodTemplateSpec{
+						ObjectMeta: metav1.ObjectMeta{
+							Name: backup.Name,
+						},
+						Spec: corev1.PodSpec{
+							RestartPolicy: "OnFailure",
+							Containers: []corev1.Container{
+								corev1.Container{
+									Name:  "hello-world",
+									Image: "hello-world:latest",
+								},
+							},
 						},
 					},
 				},
