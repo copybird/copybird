@@ -2,27 +2,27 @@ package common
 
 import (
 	"fmt"
-	compress_gzip "github.com/copybird/copybird/compress/gzip"
+	compress_gzip "github.com/copybird/copybird/backup/compress/gzip"
+	"github.com/copybird/copybird/backup/encrypt/aesgcm"
+	"github.com/copybird/copybird/backup/input/mysql"
+	"github.com/copybird/copybird/backup/output/gcp"
+	"github.com/copybird/copybird/backup/output/http"
+	"github.com/copybird/copybird/backup/output/local"
+	"github.com/copybird/copybird/backup/output/s3"
+	"github.com/copybird/copybird/backup/output/scp"
 	connect_ssh "github.com/copybird/copybird/connect/ssh"
 	"github.com/copybird/copybird/core"
-	"github.com/copybird/copybird/encryption/aesgcm"
-	"github.com/copybird/copybird/input/mysql"
-	"github.com/copybird/copybird/notifier/awsses"
-	"github.com/copybird/copybird/notifier/email"
-	"github.com/copybird/copybird/notifier/kafka"
-	"github.com/copybird/copybird/notifier/nats"
-	"github.com/copybird/copybird/notifier/pagerduty"
-	"github.com/copybird/copybird/notifier/pushbullet"
-	"github.com/copybird/copybird/notifier/rabbitmq"
-	"github.com/copybird/copybird/notifier/slack"
-	"github.com/copybird/copybird/notifier/telegram"
-	"github.com/copybird/copybird/notifier/twillio"
-	"github.com/copybird/copybird/notifier/webcallback"
-	"github.com/copybird/copybird/output/gcp"
-	"github.com/copybird/copybird/output/http"
-	"github.com/copybird/copybird/output/local"
-	"github.com/copybird/copybird/output/s3"
-	"github.com/copybird/copybird/output/scp"
+	"github.com/copybird/copybird/notify/awsses"
+	"github.com/copybird/copybird/notify/email"
+	"github.com/copybird/copybird/notify/kafka"
+	"github.com/copybird/copybird/notify/nats"
+	"github.com/copybird/copybird/notify/pagerduty"
+	"github.com/copybird/copybird/notify/pushbullet"
+	"github.com/copybird/copybird/notify/rabbitmq"
+	"github.com/copybird/copybird/notify/slack"
+	"github.com/copybird/copybird/notify/telegram"
+	"github.com/copybird/copybird/notify/twillio"
+	"github.com/copybird/copybird/notify/webcallback"
 	"github.com/spf13/cobra"
 	"strings"
 
@@ -42,10 +42,10 @@ type ModuleType int
 
 const (
 	ModuleTypeConnect ModuleType = iota
-	ModuleTypeInput
-	ModuleTypeCompress
-	ModuleTypeEncryption
-	ModuleTypeOutput
+	ModuleBackupInput
+	ModuleBackupCompress
+	ModuleTypeBackupEncrypt
+	ModuleTypeBackupOutput
 	ModuleTypeNotify
 )
 
@@ -54,7 +54,7 @@ func (m ModuleType) String() string {
 		"connect",
 		"input",
 		"compress",
-		"encryption",
+		"encrypt",
 		"output",
 		"notify",
 	}[m]
@@ -85,17 +85,17 @@ func (a *App) addFlagBool(cmd *cobra.Command, name string, defaultValue bool) {
 func (a *App) RegisterModules() {
 	a.RegisterModule(ModuleTypeConnect, &connect_ssh.Ssh{})
 
-	a.RegisterModule(ModuleTypeInput, &mysql.MySQLDumper{})
+	a.RegisterModule(ModuleBackupInput, &mysql.MySQLDumper{})
 
-	a.RegisterModule(ModuleTypeCompress, &compress_gzip.Compress{})
+	a.RegisterModule(ModuleBackupCompress, &compress_gzip.Compress{})
 
-	a.RegisterModule(ModuleTypeEncryption, &aesgcm.EncryptionAESGCM{})
+	a.RegisterModule(ModuleTypeBackupEncrypt, &aesgcm.EncryptionAESGCM{})
 
-	a.RegisterModule(ModuleTypeOutput, &local.Local{})
-	a.RegisterModule(ModuleTypeOutput, &s3.S3{})
-	a.RegisterModule(ModuleTypeOutput, &gcp.GCP{})
-	a.RegisterModule(ModuleTypeOutput, &http.Http{})
-	a.RegisterModule(ModuleTypeOutput, &scp.SCP{})
+	a.RegisterModule(ModuleTypeBackupOutput, &local.Local{})
+	a.RegisterModule(ModuleTypeBackupOutput, &s3.S3{})
+	a.RegisterModule(ModuleTypeBackupOutput, &gcp.GCP{})
+	a.RegisterModule(ModuleTypeBackupOutput, &http.Http{})
+	a.RegisterModule(ModuleTypeBackupOutput, &scp.SCP{})
 
 	a.RegisterModule(ModuleTypeNotify, &awsses.AwsSes{})
 	a.RegisterModule(ModuleTypeNotify, &email.Email{})

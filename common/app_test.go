@@ -5,10 +5,10 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/copybird/copybird/compress/gzip"
-	"github.com/copybird/copybird/encryption/aesgcm"
-	"github.com/copybird/copybird/input/mysql"
-	"github.com/copybird/copybird/output/local"
+	"github.com/copybird/copybird/backup/compress/gzip"
+	"github.com/copybird/copybird/backup/encrypt/aesgcm"
+	"github.com/copybird/copybird/backup/input/mysql"
+	"github.com/copybird/copybird/backup/output/local"
 
 	"gotest.tools/assert"
 )

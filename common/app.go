@@ -74,18 +74,18 @@ func (a *App) DoBackup() error {
 	var err error
 	log.Printf("module output: %s", moduleNameOutput)
 	moduleInput := a.getModule("input_" + moduleNameInput)
-	moduleInputConfig := a.getModuleConfig(ModuleTypeInput, moduleInput)
+	moduleInputConfig := a.getModuleConfig(ModuleBackupInput, moduleInput)
 	if err := moduleInput.InitModule(moduleInputConfig); err != nil {
 		return err
 	}
-	moduleOutput := a.getModule("output_" + moduleNameOutput)
-	moduleOutputConfig := a.getModuleConfig(ModuleTypeOutput, moduleOutput)
-	if err := moduleOutput.InitModule(moduleOutputConfig); err != nil {
+	moduleStorage := a.getModule("output_" + moduleNameOutput)
+	moduleStorageConfig := a.getModuleConfig(ModuleTypeBackupOutput, moduleStorage)
+	if err := moduleStorage.InitModule(moduleStorageConfig); err != nil {
 		return err
 	}
 	inputReader, inputWriter := io.Pipe()
 	moduleInput.InitPipe(inputWriter, nil)
-	moduleOutput.InitPipe(nil, inputReader)
+	moduleStorage.InitPipe(nil, inputReader)
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	chanError := make(chan error, 1000)
@@ -99,7 +99,7 @@ func (a *App) DoBackup() error {
 	go func(wg *sync.WaitGroup, chErr chan error) {
 		defer wg.Done()
 		defer log.Printf("output done")
-		if err := moduleOutput.Run(); err != nil {
+		if err := moduleStorage.Run(); err != nil {
 			chanError <- err
 		}
 	}(&wg, chanError)

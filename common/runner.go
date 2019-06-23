@@ -24,7 +24,7 @@ func (r *Runner) Run() {
 	if r.moduleCompress != nil {
 		wg.Add(1) 
 	}
-	// for encryption
+	// for encrypt
 	if r.moduleEncrypt != nil {
 		wg.Add(1) 
 	}
