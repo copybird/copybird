@@ -101,11 +101,11 @@ func (m *GlobalConnectSsh) InitModule(_cfg interface{}) error {
 }
 
 func (m *GlobalConnectSsh) Run() error {
-	return nil
+	return m.tunnel.Start()
 }
 
 func (m *GlobalConnectSsh) Close() error {
-	return nil
+	return m.tunnel.Stop()
 }
 
 func getHostKey(host string) (ssh.PublicKey, error) {
