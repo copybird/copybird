@@ -37,9 +37,6 @@ func TestGetTables(t *testing.T) {
 	tableSchema, err := d.getTableSchema(tables[0])
 	assert.NoError(t, err)
 	assert.Equal(t, authorsSchema, tableSchema)
-	data, err := d.getTableData(tables[0])
-	assert.NoError(t, err)
-	assert.Equal(t, authorsData, data)
 	err = d.Run()
 	assert.NoError(t, err)
 }
