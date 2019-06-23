@@ -1,4 +1,5 @@
 [![GitHub release](https://img.shields.io/github/release/copybird/copybird/all.svg?style=flat-square)](https://github.com/copybird/copybird/releases)
+[![Docker image](https://dockerbuildbadges.quelltext.eu/status.svg?organization=copybird&repository=copybird)](https://hub.docker.com/r/copybird/copybird)
 
 # Copybird
 
