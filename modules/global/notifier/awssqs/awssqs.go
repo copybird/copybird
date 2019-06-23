@@ -51,6 +51,10 @@ func (m *GlobalNotifierAWSSQS) GetConfig() interface{} {
 	return &Config{}
 }
 
+func (m *GlobalNotifierAWSSQS) Close() error {
+	return nil
+}
+
 type Clients struct {
 	SQS         sqsiface.SQSAPI
 	CloudEvents *cloudevents.Client
