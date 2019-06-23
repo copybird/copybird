@@ -19,25 +19,25 @@ cd $GOPATH/src/k8s.io/code-generator
 ## Run localy 
 First create custom resource definition in your cluster: 
 ```
-kubectl apply -f crd/crd.yaml
+kubectl apply -f operator/crd/crd.yaml
 ```
 
 To run the controller:
 ``` 
-go build . 
-./operator
+go run main.go operator
 ```
 
 And then in a separate shell, create custom resource:
 ```
-kubectl create -f example/copybird-example.yaml
+kubectl create -f operator/example/backup-example.yaml
 ```
 
 As output you get the following logs when creating, updating or deleting custom resource:
 ```
 INFO[0000] Successfully constructed k8s client          
-INFO[0000] Controller.Run: initiating                   
-INFO[0001] Controller.Run: cache sync complete          
-INFO[0001] Controller.runWorker: starting                 
+INFO[0000] Starting Foo controller                      
+INFO[0000] Waiting for informer caches to sync          
+INFO[0001] Starting workers                             
+INFO[0001] Started workers               
 ```
 
