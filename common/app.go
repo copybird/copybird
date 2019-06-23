@@ -12,12 +12,12 @@ type App struct {
 	cmmRoot        *cobra.Command
 	cmdBackup      *cobra.Command
 	cmdOperator    *cobra.Command
-	vars           map[string]interface{}
+	//vars           map[string]interface{}
 }
 
 func NewApp() *App {
 	return &App{
-		vars:          make(map[string]interface{}),
+		//vars:          make(map[string]interface{}),
 	}
 }
 
@@ -39,6 +39,7 @@ func (a *App) Run() error {
 		},
 	}
 	rootCmd.AddCommand(a.cmdBackup)
+	rootCmd.AddCommand(a.cmdOperator)
 	a.Setup()
 	return rootCmd.Execute()
 }

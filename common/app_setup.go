@@ -1,18 +1,5 @@
 package common
 
-import (
-	"fmt"
-	"github.com/spf13/cobra"
-	"strings"
-
-	//"strings"
-
-	//"strings"
-
-	// lz4_compress "github.com/copybird/copybird/compress/lz4"
-	// lz4_decompress "github.com/copybird/copybird/decompress/lz4"
-)
-
 type ModuleType int
 
 func (m ModuleType) String() string {
@@ -28,26 +15,26 @@ func (m ModuleType) String() string {
 }
 
 func (a *App) Setup() error {
-	a.addFlagString(a.cmdBackup, "config", "")
-	a.addFlagString(a.cmdBackup, "input", "mysql")
-	a.addFlagString(a.cmdBackup, "compress", "")
-	a.addFlagString(a.cmdBackup, "encrypt", "")
-	a.addFlagString(a.cmdBackup, "output", "local")
-	a.addFlagString(a.cmdBackup, "notifier", "slack")
+	//a.addFlagString(a.cmdBackup, "config", "")
+	//a.addFlagString(a.cmdBackup, "input", "mysql")
+	//a.addFlagString(a.cmdBackup, "compress", "")
+	//a.addFlagString(a.cmdBackup, "encrypt", "")
+	//a.addFlagString(a.cmdBackup, "output", "local")
+	//a.addFlagString(a.cmdBackup, "notifier", "slack")
 	return nil
 }
 
-func (a *App) addFlagString(cmd *cobra.Command, name string, defaultValue string) {
-	a.vars[name] = cmd.Flags().String(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
-}
-
-func (a *App) addFlagInt64(cmd *cobra.Command, name string, defaultValue int64) {
-	a.vars[name] = cmd.Flags().Int64(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
-}
-
-func (a *App) addFlagBool(cmd *cobra.Command, name string, defaultValue bool) {
-	a.vars[name] = cmd.Flags().Bool(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
-}
+//func (a *App) addFlagString(cmd *cobra.Command, name string, defaultValue string) {
+//	a.vars[name] = cmd.Flags().String(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+//}
+//
+//func (a *App) addFlagInt64(cmd *cobra.Command, name string, defaultValue int64) {
+//	a.vars[name] = cmd.Flags().Int64(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+//}
+//
+//func (a *App) addFlagBool(cmd *cobra.Command, name string, defaultValue bool) {
+//	a.vars[name] = cmd.Flags().Bool(name, defaultValue, fmt.Sprintf("env %s", strings.ToUpper(name)))
+//}
 
 //func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
 //	moduleGlobalName := fmt.Sprintf("%s_%s", moduleType.String(), module.GetName())
