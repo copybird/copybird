@@ -14,6 +14,8 @@ var (
 	errNotCompressible = errors.New("is not compressible")
 )
 
+const GROUP_NAME = "backup"
+const TYPE_NAME = "compress"
 const MODULE_NAME = "lz4"
 
 // BackupCompressLz4 represents ...
@@ -22,6 +24,14 @@ type BackupCompressLz4 struct {
 	reader io.Reader
 	writer io.Writer
 	level  int
+}
+
+func (m *BackupCompressLz4) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupCompressLz4) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupCompressLz4) GetName() string {

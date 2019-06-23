@@ -8,6 +8,8 @@ import (
 	"io"
 )
 
+const GROUP_NAME = "backup"
+const TYPE_NAME = "compress"
 const MODULE_NAME = "gzip"
 
 type BackupCompressGzip struct {
@@ -15,6 +17,14 @@ type BackupCompressGzip struct {
 	reader io.Reader
 	writer io.Writer
 	level  int
+}
+
+func (m *BackupCompressGzip) GetGroup() string {
+	return GROUP_NAME
+}
+
+func (m *BackupCompressGzip) GetType() string {
+	return TYPE_NAME
 }
 
 func (m *BackupCompressGzip) GetName() string {
