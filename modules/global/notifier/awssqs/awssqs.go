@@ -82,9 +82,15 @@ func (c *Config) NotifyAWSSQS() error {
 
 	sqsClient := sqs.New(sess)
 
+	queueUrls, err := sqsClient.ListQueues(&sqs.ListQueuesInput{QueueNamePrefix: aws.String(c.Queues)})
+
+	if err != nil {
+		return err
+	}
+
 	sendMessage := &sqs.SendMessageInput{
 		MessageBody:  aws.String(c.MessageBody),
-		QueueUrl:     aws.String(c.QueueUrl),
+		QueueUrl:     queueUrls.QueueUrls[0],
 		DelaySeconds: aws.Int64(3),
 	}
 
