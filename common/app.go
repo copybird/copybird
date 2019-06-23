@@ -21,15 +21,15 @@ import (
 )
 
 type App struct {
-	cmmRoot        *cobra.Command
-	cmdBackup      *cobra.Command
-	cmdOperator    *cobra.Command
-	//vars           map[string]interface{}
+	cmmRoot     *cobra.Command
+	cmdBackup   *cobra.Command
+	cmdOperator *cobra.Command
+	vars        map[string]interface{}
 }
 
 func NewApp() *App {
 	return &App{
-		//vars:          make(map[string]interface{}),
+		vars: make(map[string]interface{}),
 	}
 }
 
