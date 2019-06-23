@@ -13,11 +13,11 @@ import (
 )
 
 // MODULE_NAME is name of module
-const MODULE_NAME = "mongo"
+const MODULE_NAME = "mongodb"
 
 type (
-	// MongoDumper represents struct for dumping mongo
-	MongoDumper struct {
+	// BackupInputMongodb represents struct for dumping mongo
+	BackupInputMongodb struct {
 		input2.Input
 		config *MongoConfig
 		reader io.Reader
@@ -27,51 +27,51 @@ type (
 )
 
 // GetName returns name
-func (d *MongoDumper) GetName() string {
+func (m *BackupInputMongodb) GetName() string {
 	return MODULE_NAME
 }
 
 // GetConfig returns config
-func (d *MongoDumper) GetConfig() interface{} {
+func (m *BackupInputMongodb) GetConfig() interface{} {
 	return &MongoConfig{}
 }
 
 // InitPipe initializes pipes
-func (d *MongoDumper) InitPipe(w io.Writer, r io.Reader) error {
-	d.reader = r
-	d.writer = w
+func (m *BackupInputMongodb) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
 // InitModule initializes module
-func (d *MongoDumper) InitModule(cfg interface{}) error {
-	d.config = cfg.(*MongoConfig)
+func (m *BackupInputMongodb) InitModule(cfg interface{}) error {
+	m.config = cfg.(*MongoConfig)
 	cO := options.Client().ApplyURI(DSN)
 	conn, err := mongo.Connect(context.TODO(), cO)
 	if err != nil {
 		return err
 	}
-	d.conn = conn
+	m.conn = conn
 	return nil
 }
 
 // Run runs module
-func (d *MongoDumper) Run() error {
+func (m *BackupInputMongodb) Run() error {
 	return nil
 }
 
 // Close closes
-func (d *MongoDumper) Close() error {
-	d.conn.Disconnect(context.TODO())
+func (m *BackupInputMongodb) Close() error {
+	m.conn.Disconnect(context.TODO())
 	return nil
 }
-func (d *MongoDumper) getDatabases() ([]string, error) {
-	return d.conn.ListDatabaseNames(context.TODO(), bsonx.Doc{})
+func (m *BackupInputMongodb) getDatabases() ([]string, error) {
+	return m.conn.ListDatabaseNames(context.TODO(), bsonx.Doc{})
 
 }
-func (d *MongoDumper) getCollections(dbName string) ([]string, error) {
+func (m *BackupInputMongodb) getCollections(dbName string) ([]string, error) {
 	var colls []string
-	collections, err := d.conn.Database(dbName).ListCollections(nil, bson.M{})
+	collections, err := m.conn.Database(dbName).ListCollections(nil, bson.M{})
 	if err != nil {
 		return colls, err
 	}

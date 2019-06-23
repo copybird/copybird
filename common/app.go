@@ -22,6 +22,7 @@ func NewApp() *App {
 }
 
 func (a *App) Run() error {
+	a.registerModules()
 	var rootCmd = &cobra.Command{Use: "copybird"}
 	a.cmdBackup = &cobra.Command{
 		Use:   "backup",
@@ -53,4 +54,7 @@ func cmdCallback(f func() error) func(cmd *cobra.Command, args []string) {
 			log.Printf("cmd err: %s", err)
 		}
 	}
+}
+
+func (a *App) registerModules() {
 }

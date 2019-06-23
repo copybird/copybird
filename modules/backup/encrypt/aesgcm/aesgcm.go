@@ -5,67 +5,67 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
-	encrypt2 "github.com/copybird/copybird/modules/backup/encrypt"
+	"github.com/copybird/copybird/core"
 	"io"
 )
 
 const MODULE_NAME = "aesgcm"
 
-type EncryptionAESGCM struct {
-	encrypt2.Encryption
+type BackupEncryptAesgcm struct {
+	core.Module
 	reader io.Reader
 	writer io.Writer
 	gcm    cipher.AEAD
 	nonce  []byte
 }
 
-func (e *EncryptionAESGCM) GetName() string {
+func (m *BackupEncryptAesgcm) GetName() string {
 	return MODULE_NAME
 }
 
-func (e *EncryptionAESGCM) GetConfig() interface{} {
+func (m *BackupEncryptAesgcm) GetConfig() interface{} {
 	return &Config{
 		Key: []byte("HELLOWORLD123"),
 	}
 }
 
-func (e *EncryptionAESGCM) InitPipe(w io.Writer, r io.Reader) error {
-	e.reader = r
-	e.writer = w
+func (m *BackupEncryptAesgcm) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (e *EncryptionAESGCM) InitModule(_cfg interface{}) error {
+func (m *BackupEncryptAesgcm) InitModule(_cfg interface{}) error {
 	cfg := _cfg.(*Config)
 
 	block, err := aes.NewCipher(cfg.Key)
 	if err != nil {
 		return fmt.Errorf("cipher init err: %s", err)
 	}
-	e.nonce = make([]byte, 12)
-	if _, err = io.ReadFull(rand.Reader, e.nonce); err != nil {
+	m.nonce = make([]byte, 12)
+	if _, err = io.ReadFull(rand.Reader, m.nonce); err != nil {
 		return fmt.Errorf("nonce generate err: %s", err)
 	}
-	e.gcm, err = cipher.NewGCM(block)
+	m.gcm, err = cipher.NewGCM(block)
 	if err != nil {
 		return fmt.Errorf("aes gcm init err: %s", err)
 	}
 	return nil
 }
 
-func (e *EncryptionAESGCM) Run() error {
+func (m *BackupEncryptAesgcm) Run() error {
 	var err error
 	buf := make([]byte, 12)
 	for {
-		_, err = e.reader.Read(buf)
+		_, err = m.reader.Read(buf)
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
 			return fmt.Errorf("read err: %s", err)
 		}
-		ciphertext := e.gcm.Seal(nil, e.nonce, buf, nil)
-		_, err = e.writer.Write(ciphertext)
+		ciphertext := m.gcm.Seal(nil, m.nonce, buf, nil)
+		_, err = m.writer.Write(ciphertext)
 		if err != nil {
 			return fmt.Errorf("write err: %s", err)
 		}
@@ -73,6 +73,6 @@ func (e *EncryptionAESGCM) Run() error {
 	return nil
 }
 
-func (e *EncryptionAESGCM) Close() error {
+func (m *BackupEncryptAesgcm) Close() error {
 	return nil
 }

@@ -14,7 +14,7 @@ create sequence public.authors_id_seq;`
 const authorsData = "(1,'test','test','te@asd.ru','2019-06-22T13:26:37.078767Z'),(2,'vanya','ivanov',NULL,'2019-06-22T14:45:54.81458Z')"
 
 func TestGetTables(t *testing.T) {
-	d := &PostgresDumper{}
+	d := &BackupInputPostgresql{}
 	c := GetConfig().(*Config)
 	DSN = "host=127.0.0.1 port=5432 user=kbereza password=1qazXSW@ dbname=copybird sslmode=disable"
 

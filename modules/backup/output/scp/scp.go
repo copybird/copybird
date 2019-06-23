@@ -3,7 +3,7 @@ package scp
 import (
 	"bufio"
 	"fmt"
-	"github.com/copybird/copybird/modules/backup/output"
+	"github.com/copybird/copybird/core"
 	"io"
 	"io/ioutil"
 	"os"
@@ -17,8 +17,8 @@ import (
 
 const MODULE_NAME = "scp"
 
-type SCP struct {
-	output.Output
+type BackupOutputScp struct {
+	core.Module
 	reader io.Reader
 	writer io.Writer
 	config *Config
@@ -26,21 +26,21 @@ type SCP struct {
 	client *sftp.Client
 }
 
-func (m *SCP) GetName() string {
+func (m *BackupOutputScp) GetName() string {
 	return MODULE_NAME
 }
 
-func (m *SCP) GetConfig() interface{} {
+func (m *BackupOutputScp) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (m *SCP) InitPipe(w io.Writer, r io.Reader) error {
+func (m *BackupOutputScp) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
 	return nil
 }
 
-func (m *SCP) InitModule(_config interface{}) error {
+func (m *BackupOutputScp) InitModule(_config interface{}) error {
 	m.config = _config.(*Config)
 
 	// get host public key
@@ -103,7 +103,7 @@ func (m *SCP) InitModule(_config interface{}) error {
 	return nil
 }
 
-func (m *SCP) Run() error {
+func (m *BackupOutputScp) Run() error {
 
 	// create destination file
 	dstFile, err := m.client.Create(m.config.FileName)
@@ -117,7 +117,7 @@ func (m *SCP) Run() error {
 	return err
 }
 
-func (m *SCP) Close() error {
+func (m *BackupOutputScp) Close() error {
 	m.client.Close()
 	return nil
 }

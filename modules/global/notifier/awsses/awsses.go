@@ -12,7 +12,7 @@ const (
 	MODULE_NAME = "awsses"
 )
 
-type AwsSes struct {
+type GlobalNotifierAwsses struct {
 	config  *Config
 	simem   *ses.SES // simple email service
 	seInput *ses.SendEmailInput
@@ -20,26 +20,26 @@ type AwsSes struct {
 	writer  io.Writer
 }
 
-func (n *AwsSes) GetName() string {
+func (m *GlobalNotifierAwsses) GetName() string {
 	return MODULE_NAME
 }
 
-func (n *AwsSes) GetConfig() interface{} {
+func (m *GlobalNotifierAwsses) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (c *AwsSes) InitPipe(w io.Writer, r io.Reader) error {
-	c.reader = r
-	c.writer = w
+func (m *GlobalNotifierAwsses) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (c *AwsSes) InitModule(_cfg interface{}) error {
-	c.config = _cfg.(*Config)
+func (m *GlobalNotifierAwsses) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 
 	// Create a new session in the config region.
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String(c.config.Region)},
+		Region: aws.String(m.config.Region)},
 	)
 	if err != nil {
 		return err
@@ -47,44 +47,44 @@ func (c *AwsSes) InitModule(_cfg interface{}) error {
 
 	// Create an SES session.
 	svc := ses.New(sess)
-	c.simem = svc
+	m.simem = svc
 
 	input := &ses.SendEmailInput{
 		Destination: &ses.Destination{
 			CcAddresses: []*string{},
 			ToAddresses: []*string{
-				aws.String(c.config.Recipient),
+				aws.String(m.config.Recipient),
 			},
 		},
 		Message: &ses.Message{
 			Body: &ses.Body{
 				Html: &ses.Content{
-					Charset: aws.String(c.config.Charset),
-					Data:    aws.String(c.config.HTMLbody),
+					Charset: aws.String(m.config.Charset),
+					Data:    aws.String(m.config.HTMLbody),
 				},
 				Text: &ses.Content{
-					Charset: aws.String(c.config.Charset),
-					Data:    aws.String(c.config.Textbody),
+					Charset: aws.String(m.config.Charset),
+					Data:    aws.String(m.config.Textbody),
 				},
 			},
 			Subject: &ses.Content{
-				Charset: aws.String(c.config.Charset),
-				Data:    aws.String(c.config.Subject),
+				Charset: aws.String(m.config.Charset),
+				Data:    aws.String(m.config.Subject),
 			},
 		},
-		Source: aws.String(c.config.Sender),
+		Source: aws.String(m.config.Sender),
 		// TODO: Uncomment to use a configuration set
 		//ConfigurationSetName: aws.String(ConfigurationSet),
 	}
-	c.seInput = input
+	m.seInput = input
 
 	return nil
 }
 
-func (c *AwsSes) Run() error {
+func (m *GlobalNotifierAwsses) Run() error {
 
 	// Attempt to send the email.
-	_, err := c.simem.SendEmail(c.seInput)
+	_, err := m.simem.SendEmail(m.seInput)
 
 	// Display error messages if they occur.
 	if err != nil {
@@ -95,6 +95,6 @@ func (c *AwsSes) Run() error {
 }
 
 // Close closes compressor
-func (c *AwsSes) Close() error {
+func (m *GlobalNotifierAwsses) Close() error {
 	return nil
 }

@@ -18,8 +18,8 @@ import (
 const MODULE_NAME = "mysql"
 
 type (
-	// MySQLDumper is struct storing inner properties for mysql backups
-	MySQLDumper struct {
+	// BackupInputMysql is struct storing inner properties for mysql backups
+	BackupInputMysql struct {
 		input2.Input
 		conn           *sql.DB
 		headerTemplate *template.Template
@@ -43,26 +43,26 @@ type (
 )
 
 // GetName returns name of module
-func (m *MySQLDumper) GetName() string {
+func (m *BackupInputMysql) GetName() string {
 	return MODULE_NAME
 }
 
 // GetConfig returns config of module
-func (m *MySQLDumper) GetConfig() interface{} {
+func (m *BackupInputMysql) GetConfig() interface{} {
 	return &MySQLConfig{
 		DSN: "root:root@tcp(localhost:3306)/test",
 	}
 }
 
 // InitPipe initializes pipe
-func (m *MySQLDumper) InitPipe(w io.Writer, r io.Reader) error {
+func (m *BackupInputMysql) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
 	return nil
 }
 
 // InitModule initializes module
-func (m *MySQLDumper) InitModule(cfg interface{}) error {
+func (m *BackupInputMysql) InitModule(cfg interface{}) error {
 	m.config = cfg.(*MySQLConfig)
 	conn, err := sql.Open("mysql", m.config.DSN)
 	if err != nil {
@@ -91,15 +91,15 @@ func (m *MySQLDumper) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (m *MySQLDumper) Run() error {
+func (m *BackupInputMysql) Run() error {
 	return m.dumpDatabase()
 }
 
 // Close closes ...
-func (m *MySQLDumper) Close() error {
+func (m *BackupInputMysql) Close() error {
 	return nil
 }
-func (m *MySQLDumper) getTables() ([]string, error) {
+func (m *BackupInputMysql) getTables() ([]string, error) {
 	tables := []string{}
 	rows, err := m.conn.Query("SHOW TABLES")
 	if err != nil {
@@ -115,7 +115,7 @@ func (m *MySQLDumper) getTables() ([]string, error) {
 	}
 	return tables, rows.Err()
 }
-func (m *MySQLDumper) getTableSchema(name string) (string, error) {
+func (m *BackupInputMysql) getTableSchema(name string) (string, error) {
 	q := fmt.Sprintf("SHOW CREATE TABLE %s", name)
 	var returnTable sql.NullString
 	var sqlTable sql.NullString
@@ -128,7 +128,7 @@ func (m *MySQLDumper) getTableSchema(name string) (string, error) {
 	return sqlTable.String, nil
 }
 
-func (m *MySQLDumper) getTableData(name string) (string, error) {
+func (m *BackupInputMysql) getTableData(name string) (string, error) {
 	q := fmt.Sprintf("SELECT * FROM %s", name)
 	rows, err := m.conn.Query(q)
 	if err != nil {
@@ -171,7 +171,7 @@ func (m *MySQLDumper) getTableData(name string) (string, error) {
 	return strings.Join(data, ","), rows.Err()
 
 }
-func (m *MySQLDumper) dumpDatabase() error {
+func (m *BackupInputMysql) dumpDatabase() error {
 	version, err := m.getServerVersion()
 	if err != nil {
 		return err
@@ -202,7 +202,7 @@ func (m *MySQLDumper) dumpDatabase() error {
 	}
 	return m.footerTemplate.Execute(m.writer, dumpFooter{EndTime: time.Now().String()})
 }
-func (m *MySQLDumper) getServerVersion() (string, error) {
+func (m *BackupInputMysql) getServerVersion() (string, error) {
 	var version sql.NullString
 	if err := m.conn.QueryRow("SELECT version()").Scan(&version); err != nil {
 		return version.String, nil

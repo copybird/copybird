@@ -1,6 +1,7 @@
 package kafka
 
 import (
+	"github.com/copybird/copybird/core"
 	"io"
 
 	"github.com/Shopify/sarama"
@@ -11,8 +12,9 @@ const (
 	MODULE_NAME = "kafka"
 )
 
-// Kafka represends ...
-type Kafka struct {
+// GlobalNotifieKafka represends ...
+type GlobalNotifieKafka struct {
+	core.Module
 	config *Config
 	conn   sarama.SyncProducer
 	reader io.Reader
@@ -20,50 +22,50 @@ type Kafka struct {
 }
 
 // GetName returns name of the module
-func (c *Kafka) GetName() string {
+func (m *GlobalNotifieKafka) GetName() string {
 	return MODULE_NAME
 }
 
 // GetConfig returns module config
-func (c *Kafka) GetConfig() interface{} {
+func (m *GlobalNotifieKafka) GetConfig() interface{} {
 	return &Config{}
 }
 
 // InitPipe initializes pipe
-func (c *Kafka) InitPipe(w io.Writer, r io.Reader) error {
-	c.reader = r
-	c.writer = w
+func (m *GlobalNotifieKafka) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
 // InitModule initializes module
-func (c *Kafka) InitModule(_cfg interface{}) error {
-	c.config = _cfg.(*Config)
+func (m *GlobalNotifieKafka) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll
-	config.Producer.Retry.Max = c.config.MaxRetry
+	config.Producer.Retry.Max = m.config.MaxRetry
 	config.Producer.Return.Successes = true
-	conn, err := sarama.NewSyncProducer(c.config.BrokerList, config)
+	conn, err := sarama.NewSyncProducer(m.config.BrokerList, config)
 	if err != nil {
 		return err
 	}
-	c.conn = conn
+	m.conn = conn
 
 	return nil
 }
 
 // Run runs module
-func (c *Kafka) Run() error {
+func (m *GlobalNotifieKafka) Run() error {
 	msg := &sarama.ProducerMessage{
-		Topic: c.config.Topic,
-		Value: sarama.StringEncoder(c.config.Message),
+		Topic: m.config.Topic,
+		Value: sarama.StringEncoder(m.config.Message),
 	}
-	_, _, err := c.conn.SendMessage(msg)
+	_, _, err := m.conn.SendMessage(msg)
 	return err
 
 }
 
 // Close closes compressor
-func (c *Kafka) Close() error {
+func (m *GlobalNotifieKafka) Close() error {
 	return nil
 }

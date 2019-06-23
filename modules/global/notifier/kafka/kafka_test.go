@@ -7,7 +7,7 @@ import (
 )
 
 func TestKafka(t *testing.T) {
-	k := &Kafka{}
+	k := &GlobalNotifieKafka{}
 	c := GetConfig().(*Config)
 	assert.NotNil(t, c)
 	BrokerList = []string{"localhost:9092", "localhost:9092"}

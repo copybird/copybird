@@ -1,42 +1,42 @@
 package http
 
 import (
-	"github.com/copybird/copybird/modules/backup/output"
+	"github.com/copybird/copybird/core"
 	"io"
 	"net/http"
 )
 
 const MODULE_NAME = "http"
 
-type Http struct {
-	output.Output
+type BackupOutputHttp struct {
+	core.Module
 	reader io.Reader
 	writer io.Writer
 	config *Config
 }
 
-func (m *Http) GetName() string {
+func (m *BackupOutputHttp) GetName() string {
 	return MODULE_NAME
 }
 
-func (m *Http) GetConfig() interface{} {
+func (m *BackupOutputHttp) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (m *Http) InitPipe(w io.Writer, r io.Reader) error {
+func (m *BackupOutputHttp) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
 	return nil
 }
 
-func (m *Http) InitModule(_config interface{}) error {
+func (m *BackupOutputHttp) InitModule(_config interface{}) error {
 	config := _config.(Config)
 	m.config = &config
 
 	return nil
 }
 
-func (m *Http) Run() error {
+func (m *BackupOutputHttp) Run() error {
 	resp, err := http.Post(m.config.TargetUrl, "application/json", m.reader)
 	if err != nil {
 		return err
@@ -47,6 +47,6 @@ func (m *Http) Run() error {
 	return nil
 }
 
-func (m *Http) Close() error {
+func (m *BackupOutputHttp) Close() error {
 	return nil
 }

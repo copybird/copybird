@@ -9,13 +9,13 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var loc Local
+	var loc BackupOutputLocal
 	name := GetName()
 	require.Equal(t, "local", name)
 }
 
 func TestGetConfig(t *testing.T) {
-	var loc Local
+	var loc BackupOutputLocal
 	conf := GetConfig()
 	require.Equal(t, Config{
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
@@ -24,14 +24,14 @@ func TestGetConfig(t *testing.T) {
 }
 
 func TestInitPipe(t *testing.T) {
-	var loc Local
+	var loc BackupOutputLocal
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, InitPipe(bufOutput, bufInput))
 }
 
 func TestRun(t *testing.T) {
-	var loc Local
+	var loc BackupOutputLocal
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, InitPipe(bufOutput, bufInput))
@@ -47,7 +47,7 @@ func TestRun(t *testing.T) {
 }
 
 func TestInitModule(t *testing.T) {
-	var loc Local
+	var loc BackupOutputLocal
 	err := InitModule(Config{FileName: "test.sql"})
 	require.NoError(t, err, "should not be any error here")
 }

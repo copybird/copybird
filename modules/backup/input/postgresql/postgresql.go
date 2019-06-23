@@ -17,9 +17,9 @@ import (
 const moduleName = "postgresql"
 
 type (
-	// PostgresDumper is struct storing inner properties for mysql backups
-	PostgresDumper struct {
-		core.PipeComponent
+	// BackupInputPostgresql is struct storing inner properties for mysql backups
+	BackupInputPostgresql struct {
+		core.Module
 		conn     *sql.DB
 		data     dbDump
 		template *template.Template
@@ -43,43 +43,43 @@ type (
 )
 
 // GetName returns name of module
-func (d *PostgresDumper) GetName() string {
+func (m *BackupInputPostgresql) GetName() string {
 	return moduleName
 }
 
 // GetConfig returns Config of module
-func (d *PostgresDumper) GetConfig() interface{} {
+func (m *BackupInputPostgresql) GetConfig() interface{} {
 	return &Config{}
 }
 
 // InitPipe initializes pipe
-func (d *PostgresDumper) InitPipe(w io.Writer, r io.Reader, cfg interface{}) error {
-	d.reader = r
-	d.writer = w
+func (m *BackupInputPostgresql) InitPipe(w io.Writer, r io.Reader, cfg interface{}) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
 // InitModule initializes module
-func (d *PostgresDumper) InitModule(cfg interface{}) error {
-	d.config = cfg.(*Config)
-	conn, err := sql.Open("postgres", DSN)
+func (m *BackupInputPostgresql) InitModule(cfg interface{}) error {
+	m.config = cfg.(*Config)
+	conn, err := sql.Open("postgres", m.config.DSN)
 	if err != nil {
 		return err
 	}
 	if err := conn.Ping(); err != nil {
 		return err
 	}
-	d.conn = conn
+	m.conn = conn
 	return nil
 }
 
 // Run dumps database
-func (d *PostgresDumper) Run() error {
+func (m *BackupInputPostgresql) Run() error {
 	/*
-		if err := d.dumpDatabase(); err != nil {
+		if err := m.dumpDatabase(); err != nil {
 			return err
 		}
-		if err := d.template.Execute(d.writer, d.data); err != nil {
+		if err := m.template.Execute(m.writer, m.data); err != nil {
 			return err
 		}
 	*/
@@ -87,15 +87,15 @@ func (d *PostgresDumper) Run() error {
 }
 
 // Close closes ...
-func (d *PostgresDumper) Close() error {
+func (m *BackupInputPostgresql) Close() error {
 	return nil
 }
-func (d *PostgresDumper) getTables() ([]string, error) {
+func (m *BackupInputPostgresql) getTables() ([]string, error) {
 	var (
 		tables    []string
 		tableType = "BASE TABLE"
 	)
-	rows, err := d.conn.Query(fmt.Sprintf("SELECT table_name FROM information_schema.tables WHERE table_schema='%s' AND table_type='%s'", defaultSchemaName, tableType))
+	rows, err := m.conn.Query(fmt.Sprintf("SELECT table_name FROM information_schema.tables WHERE table_schema='%s' AND table_type='%s'", defaultSchemaName, tableType))
 	if err != nil {
 		return tables, err
 	}
@@ -112,7 +112,7 @@ func (d *PostgresDumper) getTables() ([]string, error) {
 }
 
 /*
-func (d *PostgresDumper) getTableSchema(tableName string) ([]tableScheme, []sequenceScheme, error) {
+func (d *BackupInputPostgresql) getTableSchema(tableName string) ([]tableScheme, []sequenceScheme, error) {
 
 	var (
 		columns  []tableScheme
@@ -163,7 +163,7 @@ func (d *PostgresDumper) getTableSchema(tableName string) ([]tableScheme, []sequ
 	return columns, sequence, nil
 }
 
-func (d *PostgresDumper) tableSequenceDump(tableName string, schemas []sequenceScheme) string {
+func (d *BackupInputPostgresql) tableSequenceDump(tableName string, schemas []sequenceScheme) string {
 	var sequence []string
 	for _, schema := range schemas {
 		if schema.name != "" {
@@ -173,7 +173,7 @@ func (d *PostgresDumper) tableSequenceDump(tableName string, schemas []sequenceS
 	return fmt.Sprintf(strings.Join(sequence, ";"))
 }
 
-func (d *PostgresDumper) tableSchemeDump(tableName string, schemas []tableScheme) string {
+func (d *BackupInputPostgresql) tableSchemeDump(tableName string, schemas []tableScheme) string {
 
 	var tableColumns []string
 	for _, schema := range schemas {
@@ -200,7 +200,7 @@ func (d *PostgresDumper) tableSchemeDump(tableName string, schemas []tableScheme
 	return fmt.Sprintf("CREATE TABLE %s (%s);", tableName, strings.Join(tableColumns, ","))
 }
 
-func (d *PostgresDumper) getTableData(name string) (string, error) {
+func (d *BackupInputPostgresql) getTableData(name string) (string, error) {
 
 	rows, err := d.conn.Query(fmt.Sprintf(`SELECT * FROM %s`, name))
 	if err != nil {
@@ -251,7 +251,7 @@ func (d *PostgresDumper) getTableData(name string) (string, error) {
 	return strings.Join(data, ","), rows.Err()
 
 }
-func (d *PostgresDumper) dumpDatabase() error {
+func (d *BackupInputPostgresql) dumpDatabase() error {
 	var dump dbDump
 	version, err := d.getServerVersion()
 	if err != nil {
@@ -299,7 +299,7 @@ func (d *PostgresDumper) dumpDatabase() error {
 	return nil
 
 }
-func (d *PostgresDumper) getServerVersion() (string, error) {
+func (d *BackupInputPostgresql) getServerVersion() (string, error) {
 	var version sql.NullString
 	if err := d.conn.QueryRow("SELECT version()").Scan(&version); err != nil {
 		return version.String, nil

@@ -2,7 +2,7 @@ package gcp
 
 import (
 	"context"
-	"github.com/copybird/copybird/modules/backup/output"
+	"github.com/copybird/copybird/core"
 	"io"
 
 	"cloud.google.com/go/storage"
@@ -11,8 +11,8 @@ import (
 
 const MODULE_NAME = "gcp"
 
-type GCP struct {
-	output.Output
+type BackupOutputGcp struct {
+	core.Module
 	ctx        context.Context
 	reader     io.Reader
 	writer     io.Writer
@@ -22,21 +22,21 @@ type GCP struct {
 	config     *Config
 }
 
-func (m *GCP) GetName() string {
+func (m *BackupOutputGcp) GetName() string {
 	return MODULE_NAME
 }
 
-func (m *GCP) GetConfig() interface{} {
+func (m *BackupOutputGcp) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (m *GCP) InitPipe(w io.Writer, r io.Reader) error {
+func (m *BackupOutputGcp) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
 	return nil
 }
 
-func (m *GCP) InitModule(_config interface{}) error {
+func (m *BackupOutputGcp) InitModule(_config interface{}) error {
 	m.config = _config.(*Config)
 	m.ctx = context.Background()
 
@@ -64,7 +64,7 @@ func (m *GCP) InitModule(_config interface{}) error {
 	return nil
 }
 
-func (m *GCP) Run() error {
+func (m *BackupOutputGcp) Run() error {
 
 	obj := m.bucket.Object(m.config.AWSFileName)
 	w := obj.NewWriter(m.ctx)
@@ -80,7 +80,7 @@ func (m *GCP) Run() error {
 	return err
 }
 
-func (m *GCP) Close() error {
+func (m *BackupOutputGcp) Close() error {
 	m.client.Close()
 	return nil
 }

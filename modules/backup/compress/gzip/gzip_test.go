@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var compressor Compress
+var compressor BackupCompressGzip
 var cfg Config
 
 func TestCompress_InitCompress_Default_Compress(t *testing.T) {

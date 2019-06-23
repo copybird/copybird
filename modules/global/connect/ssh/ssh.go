@@ -12,54 +12,54 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-const MODULE_NAME = "connect"
+const MODULE_NAME = "ssh"
 
-type Ssh struct {
+type GlobalConnectSsh struct {
 	reader io.Reader
 	writer io.Writer
 	config *Config
 	tunnel *SSHtunnel
 }
 
-func (c *Ssh) GetName() string {
+func (m *GlobalConnectSsh) GetName() string {
 	return MODULE_NAME
 }
 
-func (c *Ssh) GetConfig() interface{} {
+func (m *GlobalConnectSsh) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (c *Ssh) InitPipe(w io.Writer, r io.Reader) error {
-	c.reader = r
-	c.writer = w
+func (m *GlobalConnectSsh) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (c *Ssh) InitModule(_cfg interface{}) error {
-	c.config = _cfg.(*Config)
+func (m *GlobalConnectSsh) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 
 	localEndpoint := &Endpoint{
-		Host: c.config.LocalEndpointHost,
-		Port: c.config.LocalEndpointPort,
+		Host: m.config.LocalEndpointHost,
+		Port: m.config.LocalEndpointPort,
 	}
 
 	serverEndpoint := &Endpoint{
-		Host: c.config.ServerEndpointHost,
-		Port: c.config.ServerEndpointPort,
+		Host: m.config.ServerEndpointHost,
+		Port: m.config.ServerEndpointPort,
 	}
 
 	remoteEndpoint := &Endpoint{
-		Host: c.config.RemoteEndpointHost,
-		Port: c.config.RemoteEndpointPort,
+		Host: m.config.RemoteEndpointHost,
+		Port: m.config.RemoteEndpointPort,
 	}
 
 	// get host public key
-	hostKey, err := getHostKey(c.config.ServerEndpointHost)
+	hostKey, err := getHostKey(m.config.ServerEndpointHost)
 	if err != nil {
 		return err
 	}
 
-	key, err := ioutil.ReadFile(c.config.KeyPath)
+	key, err := ioutil.ReadFile(m.config.KeyPath)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (c *Ssh) InitModule(_cfg interface{}) error {
 	}
 
 	sshConfig := &ssh.ClientConfig{
-		User: c.config.RemoteUser,
+		User: m.config.RemoteUser,
 		Auth: []ssh.AuthMethod{
 			ssh.PublicKeys(signer),
 		},
@@ -83,16 +83,16 @@ func (c *Ssh) InitModule(_cfg interface{}) error {
 		Server: serverEndpoint,
 		Remote: remoteEndpoint,
 	}
-	c.tunnel = tunnel
+	m.tunnel = tunnel
 
 	return nil
 }
 
-func (c *Ssh) Run() error {
+func (m *GlobalConnectSsh) Run() error {
 	return nil
 }
 
-func (c *Ssh) Close() error {
+func (m *GlobalConnectSsh) Close() error {
 	return nil
 }
 

@@ -8,26 +8,26 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var gcp GCP
+	var gcp BackupOutputGcp
 	name := GetName()
 	require.Equal(t, "gcp", name)
 }
 
 func TestGetConfig(t *testing.T) {
-	var gcp GCP
+	var gcp BackupOutputGcp
 	conf := GetConfig()
 	require.Equal(t, Config{}, conf)
 }
 
 func TestInitPipe(t *testing.T) {
-	var gcp GCP
+	var gcp BackupOutputGcp
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
 	require.NoError(t, InitPipe(bufOutput, bufInput))
 }
 func TestInitModule(t *testing.T) {
 
-	var gcp GCP
+	var gcp BackupOutputGcp
 
 	err := InitModule(Config{CredentialsFilePath: ""})
 	require.Error(t, err, "Should fail to find credentials")

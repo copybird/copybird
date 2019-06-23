@@ -13,7 +13,7 @@ func TestNats_InvalidConn(t *testing.T) {
 		Msg:     "Test",
 	}
 
-	nats := Nats{}
+	nats := GlobalNotifierNats{}
 	assert.Assert(t, GetConfig() != nil)
 	err := InitModule(&conf)
 	assert.Error(t, err, "nats: no servers available for connection")
@@ -26,7 +26,7 @@ func TestNats_ValidConn(t *testing.T) {
 		Msg:     "Test",
 	}
 
-	nats := Nats{}
+	nats := GlobalNotifierNats{}
 	assert.Assert(t, GetConfig() != nil)
 	err := InitModule(&conf)
 	if err != nil {

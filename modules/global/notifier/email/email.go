@@ -8,25 +8,25 @@ import (
 
 const MODULE_NAME = "email"
 
-type Email struct {
+type GlobalNotifierEmail struct {
 	core.Module
 	Config *Config
 }
 
-func (e *Email) GetName() string {
+func (e *GlobalNotifierEmail) GetName() string {
 	return MODULE_NAME
 }
 
-func (e *Email) GetConfig() interface{} {
+func (e *GlobalNotifierEmail) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (e *Email) InitModule(_cfg interface{}) error {
+func (e *GlobalNotifierEmail) InitModule(_cfg interface{}) error {
 	e.Config = _cfg.(*Config)
 	return nil
 }
 
-func (e *Email) Run() error {
+func (e *GlobalNotifierEmail) Run() error {
 	if err := e.SendEmail(); err != nil {
 		return err
 	}
@@ -34,11 +34,11 @@ func (e *Email) Run() error {
 	return nil
 }
 
-func (e *Email) Close() error {
+func (e *GlobalNotifierEmail) Close() error {
 	return nil
 }
 
-func (e *Email) SendEmail() error {
+func (e *GlobalNotifierEmail) SendEmail() error {
 
 	from := e.Config.MailerUser
 	pass := e.Config.MailerPassword

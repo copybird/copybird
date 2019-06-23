@@ -1,7 +1,7 @@
 package s3
 
 import (
-	"github.com/copybird/copybird/modules/backup/output"
+	"github.com/copybird/copybird/core"
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -12,50 +12,50 @@ import (
 
 const MODULE_NAME = "s3"
 
-type S3 struct {
-	output.Output
+type BackupOutputS3 struct {
+	core.Module
 	reader  io.Reader
 	writer  io.Writer
 	session *session.Session
 	config  *Config
 }
 
-func (s *S3) GetName() string {
+func (m *BackupOutputS3) GetName() string {
 	return MODULE_NAME
 }
 
-func (s *S3) GetConfig() interface{} {
+func (m *BackupOutputS3) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (s *S3) InitPipe(w io.Writer, r io.Reader) error {
-	s.reader = r
-	s.writer = w
+func (m *BackupOutputS3) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (s *S3) InitModule(_config interface{}) error {
-	s.config = _config.(*Config)
+func (m *BackupOutputS3) InitModule(_config interface{}) error {
+	m.config = _config.(*Config)
 	session, err := session.NewSession(&aws.Config{
-		Region:      aws.String(s.config.Region),
-		Credentials: credentials.NewStaticCredentials(s.config.AccessKeyID, s.config.SecretAccessKey, ""),
+		Region:      aws.String(m.config.Region),
+		Credentials: credentials.NewStaticCredentials(m.config.AccessKeyID, m.config.SecretAccessKey, ""),
 	})
 	if err != nil {
 		return err
 	}
 
-	s.session = session
+	m.session = session
 	return nil
 }
 
-func (s *S3) Run() error {
+func (m *BackupOutputS3) Run() error {
 
-	svc := s3manager.NewUploader(s.session)
+	svc := s3manager.NewUploader(m.session)
 
 	input := &s3manager.UploadInput{
-		Bucket: aws.String(s.config.Bucket),
-		Key:    aws.String(s.config.FileName),
-		Body:   s.reader,
+		Bucket: aws.String(m.config.Bucket),
+		Key:    aws.String(m.config.FileName),
+		Body:   m.reader,
 	}
 
 	_, err := svc.Upload(input)
@@ -65,6 +65,6 @@ func (s *S3) Run() error {
 	return nil
 }
 
-func (s *S3) Close() error {
+func (m *BackupOutputS3) Close() error {
 	return nil
 }

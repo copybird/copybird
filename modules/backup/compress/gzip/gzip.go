@@ -5,63 +5,58 @@ import (
 	"errors"
 	"fmt"
 	"github.com/copybird/copybird/core"
-	compress2 "github.com/copybird/copybird/modules/backup/compress"
 	"io"
 )
 
 const MODULE_NAME = "gzip"
 
-func init() {
-	core.RegisterModuleBackup("compress_gzip", &Compress{})
-}
-
-type Compress struct {
-	compress2.Output
+type BackupCompressGzip struct {
+	core.Module
 	reader io.Reader
 	writer io.Writer
 	level  int
 }
 
-func (c *Compress) GetName() string {
+func (m *BackupCompressGzip) GetName() string {
 	return MODULE_NAME
 }
 
-func (c *Compress) GetConfig() interface{} {
+func (m *BackupCompressGzip) GetConfig() interface{} {
 	return &Config{
 		Level: 3,
 	}
 }
 
-func (c *Compress) InitPipe(w io.Writer, r io.Reader) error {
-	c.reader = r
-	c.writer = w
+func (m *BackupCompressGzip) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (c *Compress) InitModule(_cfg interface{}) error {
+func (m *BackupCompressGzip) InitModule(_cfg interface{}) error {
 	cfg := _cfg.(Config)
 	level := cfg.Level
 	if level < -1 || level > 9 {
 		return errors.New("compression level must be between -1 and 9")
 	}
-	c.level = level
+	m.level = level
 	return nil
 }
 
-func (c *Compress) Run() error {
-	gw, err := gzip.NewWriterLevel(c.writer, c.level)
+func (m *BackupCompressGzip) Run() error {
+	gw, err := gzip.NewWriterLevel(m.writer, m.level)
 	if err != nil {
 		return fmt.Errorf("cant start gzip writer with error: %s", err)
 	}
 	defer gw.Close()
 
-	_, err = io.Copy(gw, c.reader)
+	_, err = io.Copy(gw, m.reader)
 	if err != nil {
 		return fmt.Errorf("copy error: %s", err)
 	}
 	return nil
 }
 
-func (c *Compress) Close() error {
+func (m *BackupCompressGzip) Close() error {
 	return nil
 }

@@ -7,28 +7,28 @@ import (
 
 const MODULE_NAME = "pagerduty"
 
-type PagerDuty struct {
+type GlobalNotifierPagerDuty struct {
 	core.Module
 	config *Config
 	client *pagerduty.Client
 }
 
-func (m *PagerDuty) GetName() string {
+func (m *GlobalNotifierPagerDuty) GetName() string {
 	return MODULE_NAME
 }
 
-func (m *PagerDuty) GetConfig() interface{} {
+func (m *GlobalNotifierPagerDuty) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (m *PagerDuty) InitModule(_conf interface{}) error {
+func (m *GlobalNotifierPagerDuty) InitModule(_conf interface{}) error {
 	conf := _conf.(Config)
 	m.config = &conf
 	m.client = pagerduty.NewClient(m.config.AuthToken)
 	return nil
 }
 
-func (m *PagerDuty) Run() error {
+func (m *GlobalNotifierPagerDuty) Run() error {
 	_, err := m.client.CreateIncident(m.config.From, &pagerduty.CreateIncident{Incident: pagerduty.CreateIncidentOptions{
 		Type:  "dump creation status",
 		Title: "Test",
@@ -44,6 +44,6 @@ func (m *PagerDuty) Run() error {
 	return err
 }
 
-func (m *PagerDuty) Close() error {
+func (m *GlobalNotifierPagerDuty) Close() error {
 	return nil
 }

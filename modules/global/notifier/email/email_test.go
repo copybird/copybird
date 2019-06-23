@@ -17,7 +17,7 @@ func TestSendEmail(t *testing.T) {
 	}
 
 	for _, tc := range testCase {
-		conf := Email{Config: &Config{MailerUser: tc.MailerUser, MailerPassword: tc.MailerPassword, MailTo: tc.MailTo}}
+		conf := GlobalNotifierEmail{Config: &Config{MailerUser: tc.MailerUser, MailerPassword: tc.MailerPassword, MailTo: tc.MailTo}}
 		err := SendEmail()
 		assert.Equal(t, nil, err)
 	}

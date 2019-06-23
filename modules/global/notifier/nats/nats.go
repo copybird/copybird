@@ -16,49 +16,49 @@ var (
 	errNatsEmptyTopic = errors.New("NATS empty topic")
 )
 
-type Nats struct {
+type GlobalNotifierNats struct {
 	config *Config
 	conn   *nats.Conn
 	reader io.Reader
 	writer io.Writer
 }
 
-func (n *Nats) GetName() string {
+func (m *GlobalNotifierNats) GetName() string {
 	return MODULE_NAME
 }
 
-func (n *Nats) GetConfig() interface{} {
+func (m *GlobalNotifierNats) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (c *Nats) InitPipe(w io.Writer, r io.Reader) error {
-	c.reader = r
-	c.writer = w
+func (m *GlobalNotifierNats) InitPipe(w io.Writer, r io.Reader) error {
+	m.reader = r
+	m.writer = w
 	return nil
 }
 
-func (c *Nats) InitModule(_cfg interface{}) error {
-	c.config = _cfg.(*Config)
+func (m *GlobalNotifierNats) InitModule(_cfg interface{}) error {
+	m.config = _cfg.(*Config)
 
-	if c.config.Topic == "" {
+	if m.config.Topic == "" {
 		return errNatsEmptyTopic
 	}
 
-	natsConn, err := nats.Connect(c.config.NATSURL)
+	natsConn, err := nats.Connect(m.config.NATSURL)
 	if err != nil {
 		return err
 	}
-	c.conn = natsConn
+	m.conn = natsConn
 
 	return nil
 }
 
-func (c *Nats) Run() error {
-	return c.conn.Publish(c.config.Topic, []byte(c.config.Msg))
+func (m *GlobalNotifierNats) Run() error {
+	return m.conn.Publish(m.config.Topic, []byte(m.config.Msg))
 }
 
 // Close closes compressor
-func (c *Nats) Close() error {
-	c.conn.Close()
+func (m *GlobalNotifierNats) Close() error {
+	m.conn.Close()
 	return nil
 }

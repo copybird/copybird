@@ -14,25 +14,25 @@ import (
 )
 
 func TestAppRun(t *testing.T) {
-	modMysql := new(mysql.MySQLDumper)
+	modMysql := new(mysql.BackupInputMysql)
 	modMysqlCfg := modMysql.GetConfig()
 	assert.Assert(t, modMysqlCfg != nil)
 	assert.Assert(t, modMysql.GetConfig() != modMysql.GetConfig())
 	assert.NilError(t, modMysql.InitModule(modMysqlCfg))
 
-	modGzip := new(gzip.Compress)
+	modGzip := new(gzip.BackupCompressGzip)
 	modGzipCfg := modGzip.GetConfig()
 	assert.Assert(t, modGzipCfg != nil)
 	assert.Assert(t, modGzip.GetConfig() != modGzip.GetConfig())
 	assert.NilError(t, modMysql.InitModule(modGzipCfg))
 
-	modAesgcm := new(aesgcm.EncryptionAESGCM)
+	modAesgcm := new(aesgcm.BackupEncryptAesgcm)
 	modAesgcmCfg := modAesgcm.GetConfig()
 	assert.Assert(t, modAesgcm != nil)
 	assert.Assert(t, modAesgcm.GetConfig() != modAesgcm.GetConfig())
 	assert.NilError(t, modAesgcm.InitModule(modAesgcmCfg))
 
-	modOutput := new(local.Local)
+	modOutput := new(local.BackupOutputLocal)
 	modOutputCfg := modOutput.GetConfig()
 	assert.Assert(t, modOutput != nil)
 	assert.Assert(t, modOutput.GetConfig() != modOutput.GetConfig())

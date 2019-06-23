@@ -36,7 +36,7 @@ func TestCompressLZ4(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			comp := CompressLZ4{}
+			comp := BackupCompressLz4{}
 
 			rb := bytes.NewReader([]byte("hello, world."))
 			wb := new(bytes.Buffer)
@@ -45,7 +45,7 @@ func TestCompressLZ4(t *testing.T) {
 			assert.NilError(t, InitPipe(wb, rb))
 			err := InitModule(&Config{Level: tt.args.level})
 			if !tt.wantErr && err != nil {
-				t.Errorf("Compress.CompressLZ4() result = %v, want result %v", err, tt.wantErr)
+				t.Errorf("Compress.BackupCompressLz4() result = %v, want result %v", err, tt.wantErr)
 				return
 			}
 

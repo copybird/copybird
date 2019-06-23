@@ -9,7 +9,7 @@ import (
 
 func EncryptionAESGCMTest(t *testing.T) {
 	key := []byte("test")
-	enc := EncryptionAESGCM{}
+	enc := BackupEncryptAesgcm{}
 
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
