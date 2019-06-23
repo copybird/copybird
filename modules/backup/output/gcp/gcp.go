@@ -21,7 +21,6 @@ type BackupOutputGcp struct {
 	reader     io.Reader
 	writer     io.Writer
 	client     *storage.Client
-	bucketName string
 	bucket     *storage.BucketHandle
 	config     *Config
 }
@@ -54,6 +53,9 @@ func (m *BackupOutputGcp) InitModule(_config interface{}) error {
 	if m.config.AuthFile == "" {
 		return errors.New("need auth_file")
 	}
+	if m.config.Bucket == "" {
+		return errors.New("need bucker")
+	}
 	if m.config.File == "" {
 		return errors.New("need file")
 	}
@@ -75,7 +77,7 @@ func (m *BackupOutputGcp) InitModule(_config interface{}) error {
 		m.client = client
 	}
 
-	m.bucket = m.client.Bucket(m.bucketName)
+	m.bucket = m.client.Bucket(m.config.Bucket)
 	// check if the bucket exists
 	if _, err := m.bucket.Attrs(m.ctx); err != nil {
 		return err
