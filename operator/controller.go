@@ -360,6 +360,7 @@ func (c *Controller) proceedToCronJob(backup *backupv1.Backup) error {
 }
 
 func newJob(backup *backupv1.Backup) *v1.Job {
+
 	return &v1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      backup.Spec.Name,
@@ -377,8 +378,10 @@ func newJob(backup *backupv1.Backup) *v1.Job {
 					RestartPolicy: "OnFailure",
 					Containers: []corev1.Container{
 						corev1.Container{
-							Name:  "hello-world",
-							Image: "hello-world:latest",
+							Name:    backup.Name,
+							Image:   "copybird/copybird:latest",
+							Command: []string{backup.Spec.Type},
+							Args:    backup.ConstrucArguments(),
 						},
 					},
 				},
@@ -411,8 +414,10 @@ func newCronJob(backup *backupv1.Backup) *v1_beta1.CronJob {
 							RestartPolicy: "OnFailure",
 							Containers: []corev1.Container{
 								corev1.Container{
-									Name:  "hello-world",
-									Image: "hello-world:latest",
+									Name:    backup.Name,
+									Image:   "copybird/copybird:latest",
+									Command: []string{backup.Spec.Type},
+									Args:    backup.ConstrucArguments(),
 								},
 							},
 						},
