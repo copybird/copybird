@@ -15,11 +15,6 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- Name: test; Type: DATABASE; Schema: -; Owner: -
---
-
-CREATE DATABASE test WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'ru-RU@icu' LC_CTYPE = 'ru-RU';
 
 
 \connect test
