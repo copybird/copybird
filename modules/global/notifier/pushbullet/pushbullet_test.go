@@ -9,24 +9,22 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var local GlobalNotifierPushbuller
-	name := GetName()
-	require.Equal(t, MODULE_NAME, name)
+	n := GlobalNotifierPushbullet{}
+	require.Equal(t, MODULE_NAME, n.GetName())
 }
 
 func TestGetConfig(t *testing.T) {
-	var local GlobalNotifierPushbuller
-	config := GetConfig()
-	require.Equal(t, Config{}, config)
+	n := GlobalNotifierPushbullet{}
+	require.Equal(t, &Config{}, n.GetConfig())
 }
 func TestClose(t *testing.T) {
-	var local GlobalNotifierPushbuller
-	assert.Equal(t, nil, Close())
+	n := GlobalNotifierPushbullet{}
+	assert.Equal(t, nil, n.Close())
 }
 
 func TestInitPipe(t *testing.T) {
-	var local GlobalNotifierPushbuller
+	n := GlobalNotifierPushbullet{}
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, InitPipe(bufOutput, bufInput))
+	require.NoError(t, n.InitPipe(bufOutput, bufInput))
 }

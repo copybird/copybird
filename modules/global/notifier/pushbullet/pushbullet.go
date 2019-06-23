@@ -1,8 +1,9 @@
 package pushbullet
 
 import (
-	"github.com/copybird/copybird/core"
 	"io"
+
+	"github.com/copybird/copybird/core"
 
 	"github.com/xconstruct/go-pushbullet"
 )
@@ -11,7 +12,7 @@ const GROUP_NAME = "global"
 const TYPE_NAME = "notifier"
 const MODULE_NAME = "pushbullet"
 
-type GlobalNotifierPushbuller struct {
+type GlobalNotifierPushbullet struct {
 	core.Module
 	config *Config
 	reader io.Reader
@@ -22,41 +23,41 @@ type Message struct {
 	Text string `json:"text"`
 }
 
-func (m *GlobalNotifierPushbuller) GetGroup() core.ModuleGroup {
+func (m *GlobalNotifierPushbullet) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *GlobalNotifierPushbuller) GetType() core.ModuleType {
+func (m *GlobalNotifierPushbullet) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 
-func (m *GlobalNotifierPushbuller) GetName() string {
+func (m *GlobalNotifierPushbullet) GetName() string {
 	return MODULE_NAME
 }
 
-func (m *GlobalNotifierPushbuller) InitPipe(w io.Writer, r io.Reader) error {
+func (m *GlobalNotifierPushbullet) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
 	return nil
 }
 
-func (m *GlobalNotifierPushbuller) InitModule(_cfg interface{}) error {
+func (m *GlobalNotifierPushbullet) InitModule(_cfg interface{}) error {
 	m.config = _cfg.(*Config)
 	return nil
 }
 
-func (m *GlobalNotifierPushbuller) Run() error {
+func (m *GlobalNotifierPushbullet) Run() error {
 	if err := m.config.NotifyPushbulletChannel(); err != nil {
 		return err
 	}
 
 	return nil
 }
-func (m *GlobalNotifierPushbuller) GetConfig() interface{} {
+func (m *GlobalNotifierPushbullet) GetConfig() interface{} {
 	return &Config{}
 }
 
-func (m *GlobalNotifierPushbuller) Close() error {
+func (m *GlobalNotifierPushbullet) Close() error {
 	return nil
 }
 
