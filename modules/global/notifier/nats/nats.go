@@ -9,6 +9,8 @@ import (
 )
 
 const (
+	GROUP_NAME = "global"
+	TYPE_NAME = "notifier"
 	MODULE_NAME = "nats"
 )
 
@@ -23,6 +25,14 @@ type GlobalNotifierNats struct {
 	conn   *nats.Conn
 	reader io.Reader
 	writer io.Writer
+}
+
+func (m *GlobalNotifierNats) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierNats) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierNats) GetName() string {

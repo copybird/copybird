@@ -5,12 +5,22 @@ import (
 	"github.com/copybird/copybird/core"
 )
 
+const GROUP_NAME = "global"
+const TYPE_NAME = "notifier"
 const MODULE_NAME = "pagerduty"
 
 type GlobalNotifierPagerDuty struct {
 	core.Module
 	config *Config
 	client *pagerduty.Client
+}
+
+func (m *GlobalNotifierPagerDuty) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierPagerDuty) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierPagerDuty) GetName() string {

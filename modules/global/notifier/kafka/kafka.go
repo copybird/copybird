@@ -8,7 +8,8 @@ import (
 )
 
 const (
-	// MODULE_NAME is name of a module
+	GROUP_NAME = "global"
+	TYPE_NAME = "notifier"
 	MODULE_NAME = "kafka"
 )
 
@@ -19,6 +20,16 @@ type GlobalNotifieKafka struct {
 	conn   sarama.SyncProducer
 	reader io.Reader
 	writer io.Writer
+}
+
+// GetGroup returns group of the module
+func (m *GlobalNotifieKafka) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+// GetType returns group of the module
+func (m *GlobalNotifieKafka) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 // GetName returns name of the module

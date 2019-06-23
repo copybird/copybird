@@ -5,8 +5,9 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
+
+	"github.com/copybird/copybird/core"
 )
 
 const GROUP_NAME = "backup"
