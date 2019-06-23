@@ -28,8 +28,7 @@ import (
 type Backup struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec BackupSpec `json:"spec"`
+	Spec              BackupSpec `json:"spec"`
 }
 
 // BackupSpec is the spec for a Backup resource

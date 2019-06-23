@@ -166,6 +166,9 @@ func (c *Controller) syncHandler(key string) error {
 		// processing.
 		if errors.IsNotFound(err) {
 			err := c.clientset.BatchV1().Jobs(namespace).Delete(name, &metav1.DeleteOptions{})
+			if errors.IsNotFound(err) {
+				return nil
+			}
 			if err != nil {
 				return err
 			}
@@ -189,7 +192,6 @@ func (c *Controller) syncHandler(key string) error {
 	job, err := c.clientset.BatchV1().Jobs(backup.Namespace).Get(jobName, metav1.GetOptions{})
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
-		log.Error(err)
 		job, err = c.clientset.BatchV1().Jobs(backup.Namespace).Create(NewJob(backup))
 	}
 
@@ -219,14 +221,8 @@ func NewJob(backup *backupv1.Backup) *v1.Job {
 					RestartPolicy: "OnFailure",
 					Containers: []corev1.Container{
 						corev1.Container{
-							Name:  backup.Name,
-							Image: "registry.hub.docker.com/copybird/copybird:latest",
-							Env: []corev1.EnvVar{
-								corev1.EnvVar{
-									Name:  "test",
-									Value: "testValue",
-								},
-							},
+							Name:  "hello-world",
+							Image: "hello-world:latest",
 						},
 					},
 				},
