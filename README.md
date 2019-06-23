@@ -4,6 +4,7 @@
 
 # Copybird
 
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![](https://images.microbadger.com/badges/version/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
 [![](https://images.microbadger.com/badges/image/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
 [![](https://godoc.org/github.com/copybird/copybird?status.svg)](http://godoc.org/github.com/copybird/copybird)
@@ -16,7 +17,7 @@
 
 ## About
 
-Copybird is open-source **cloud-native** universal backup tool for databases and files.
+Copybird is open-source **cloud-native** universal backup tool for databases and files. 
 
 It allows you to:
 1. Create database backup
@@ -26,7 +27,7 @@ It allows you to:
 5. Get notification about backup status in messagers and notification services
 6. Enjoy simple backup as a service with k8s backup controller
 
-learn more at [copybird.org](https://copybird.org)
+learn more at [copybird.org](https://copybird.org). Note that this repository is in Work in Progress status. Feel free to contribure. Read more about contributing below.
 
 ## Databases
 Currently Copybird supports the following databases:
