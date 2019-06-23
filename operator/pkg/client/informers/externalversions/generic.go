@@ -22,8 +22,8 @@ import (
 	"fmt"
 
 	v1 "github.com/copybird/copybird/operator/pkg/apis/copybird/v1"
-	schema "k8s.io/apimachinery/pkg/runtime/schema"
-	cache "k8s.io/client-go/tools/cache"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/tools/cache"
 )
 
 // GenericInformer is type of SharedIndexInformer which will locate and delegate to other

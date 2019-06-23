@@ -1,7 +1,7 @@
 package email
 
 type Config struct {
-	MailerUser    string
+	MailerUser     string
 	MailerPassword string
-	MailTo string
+	MailTo         string
 }

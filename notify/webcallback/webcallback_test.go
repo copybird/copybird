@@ -19,9 +19,9 @@ func TestSendNotification(t *testing.T) {
 		Responder  httpmock.Responder
 		TargetUrl  string
 		SuccessMsg string
-		FailMsg	   string
+		FailMsg    string
 		Success    bool
-		Error     error
+		Error      error
 	}{
 		{httpmock.NewStringResponder(200, "{}"), "google.com", "Succes", "Fail", true, nil},
 		{httpmock.NewStringResponder(400, "{}"), "google.com", "Succces", "Fail", false, errors.New("StatusCode: 400")},

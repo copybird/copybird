@@ -1,7 +1,7 @@
 package pagerduty
 
 import (
-	pagerduty "github.com/PagerDuty/go-pagerduty"
+	"github.com/PagerDuty/go-pagerduty"
 	"github.com/copybird/copybird/core"
 )
 

@@ -33,7 +33,6 @@ import (
 	//"strings"
 
 	"github.com/iancoleman/strcase"
-
 	// lz4_compress "github.com/copybird/copybird/compress/lz4"
 	// lz4_decompress "github.com/copybird/copybird/decompress/lz4"
 )
@@ -120,7 +119,7 @@ func (a *App) RegisterModule(moduleType ModuleType, module core.Module) error {
 		field := cfgType.Field(i)
 		name := strcase.ToSnake(field.Name)
 		argName := fmt.Sprintf("%s_%s", moduleGlobalName, name)
-		switch (field.Type.Kind()) {
+		switch field.Type.Kind() {
 		case reflect.Int:
 			a.addFlagInt64(a.cmdBackup, argName, cfgValue.Field(i).Int())
 		case reflect.String:

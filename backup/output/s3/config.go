@@ -1,9 +1,9 @@
 package s3
 
 type Config struct {
-	Region string
-	AccessKeyID string
+	Region          string
+	AccessKeyID     string
 	SecretAccessKey string
-	Bucket string
-	FileName string
+	Bucket          string
+	FileName        string
 }

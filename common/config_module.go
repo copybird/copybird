@@ -1,7 +1,6 @@
 package common
 
-type ModuleConfig struct {
+type ConfigModule struct {
 	Name   string
 	Config interface{}
 }
-

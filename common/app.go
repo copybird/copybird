@@ -6,11 +6,9 @@ import (
 	"sync"
 
 	"github.com/copybird/copybird/core"
-	"github.com/spf13/cobra"
 	"github.com/copybird/copybird/operator"
-
+	"github.com/spf13/cobra"
 	//"log"
-
 	//"github.com/spf13/cobra"
 )
 
@@ -38,10 +36,10 @@ func (a *App) Run() error {
 		Args:  cobra.MinimumNArgs(0),
 		Run:   cmdCallback(a.DoBackup),
 	}
-	a.cmdOperator = &cobra.Command {
-		Use: "operator",
+	a.cmdOperator = &cobra.Command{
+		Use:   "operator",
 		Short: "Start Kubernetes operator",
-		Run:   func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, args []string) {
 			operator.Run()
 		},
 	}

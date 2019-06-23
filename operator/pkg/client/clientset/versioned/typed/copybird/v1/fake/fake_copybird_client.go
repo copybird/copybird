@@ -20,8 +20,8 @@ package fake
 
 import (
 	v1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/copybird/v1"
-	rest "k8s.io/client-go/rest"
-	testing "k8s.io/client-go/testing"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/testing"
 )
 
 type FakeCopybirdsV1 struct {

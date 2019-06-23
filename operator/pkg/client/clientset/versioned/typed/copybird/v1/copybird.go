@@ -22,11 +22,11 @@ import (
 	"time"
 
 	v1 "github.com/copybird/copybird/operator/pkg/apis/copybird/v1"
-	scheme "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/scheme"
+	"github.com/copybird/copybird/operator/pkg/client/clientset/versioned/scheme"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	types "k8s.io/apimachinery/pkg/types"
-	watch "k8s.io/apimachinery/pkg/watch"
-	rest "k8s.io/client-go/rest"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/watch"
+	"k8s.io/client-go/rest"
 )
 
 // CopyBirdsGetter has a method to return a CopyBirdInterface.

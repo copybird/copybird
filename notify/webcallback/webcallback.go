@@ -1,20 +1,20 @@
 package webcallback
 
 import (
+	"errors"
 	"fmt"
 	"github.com/copybird/copybird/core"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
-	"errors"
 )
 
 const MODULE_NAME = "webcallback"
 
-type Callback struct{
+type Callback struct {
 	core.Module
-	Config     *Config
+	Config *Config
 }
 
 func (c *Callback) GetName() string {
@@ -42,7 +42,7 @@ func (c *Callback) Close() error {
 	return nil
 }
 
-func (c *Callback) SendNotification () error{
+func (c *Callback) SendNotification() error {
 
 	//Set request body params
 	data := url.Values{}
@@ -60,7 +60,7 @@ func (c *Callback) SendNotification () error{
 	client := &http.Client{Timeout: time.Second * 10}
 
 	// Send request
-	resp , err := client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}

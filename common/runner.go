@@ -1,32 +1,32 @@
 package common
 
 import (
-	"sync"
 	"io"
 	"log"
+	"sync"
 
 	"github.com/copybird/copybird/core"
 )
 
 type Runner struct {
-	moduleInput core.Module
-	moduleCompress core.Module
-	moduleEncrypt core.Module
-	moduleOutput core.Module
+	moduleInput     core.Module
+	moduleCompress  core.Module
+	moduleEncrypt   core.Module
+	moduleOutput    core.Module
 	moduleNotifiers []core.Module
 }
 
 func (r *Runner) Run() {
 	wg := sync.WaitGroup{}
 	// for input and output
-	wg.Add(2) 
+	wg.Add(2)
 	// for compress
 	if r.moduleCompress != nil {
-		wg.Add(1) 
+		wg.Add(1)
 	}
 	// for encrypt
 	if r.moduleEncrypt != nil {
-		wg.Add(1) 
+		wg.Add(1)
 	}
 	chanError := make(chan error, 1000)
 	nextReader, nextWriter := io.Pipe()
@@ -44,7 +44,7 @@ func (r *Runner) Run() {
 	go r.runModule(r.moduleOutput, nil, nextReader, &wg, chanError)
 	wg.Wait()
 	for {
-		err, ok := <- chanError
+		err, ok := <-chanError
 		if !ok {
 			break
 		}

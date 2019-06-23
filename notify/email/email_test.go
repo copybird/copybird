@@ -8,12 +8,10 @@ import (
 
 func TestSendEmail(t *testing.T) {
 
-
-
 	testCase := []struct {
-		MailerUser       string
-		MailerPassword   string
-		MailTo           string
+		MailerUser     string
+		MailerPassword string
+		MailTo         string
 	}{
 		{"c0pybird0@gmail.com", "c0pybird-admin", "omuraliev.baurzhan@gmail.com"},
 	}

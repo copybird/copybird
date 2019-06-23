@@ -18,9 +18,9 @@ func (endpoint *Endpoint) String() string {
 }
 
 type SSHtunnel struct {
-	Local  *Endpoint
-	Server *Endpoint
-	Remote *Endpoint
+	Local    *Endpoint
+	Server   *Endpoint
+	Remote   *Endpoint
 	Listener net.Listener
 
 	Config *ssh.ClientConfig
@@ -68,6 +68,6 @@ func (tunnel *SSHtunnel) forward(localConn net.Conn) {
 	go copyConn(remoteConn, localConn)
 }
 
-func (tunnel *SSHtunnel) Stop() error  {
+func (tunnel *SSHtunnel) Stop() error {
 	return tunnel.Listener.Close()
 }

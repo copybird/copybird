@@ -20,7 +20,7 @@ package copybirds
 
 import (
 	v1 "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/copybird/v1"
-	internalinterfaces "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/internalinterfaces"
+	"github.com/copybird/copybird/operator/pkg/client/informers/externalversions/internalinterfaces"
 )
 
 // Interface provides access to each of this group's versions.

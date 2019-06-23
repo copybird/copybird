@@ -76,12 +76,12 @@ func (d *PostgresDumper) InitModule(cfg interface{}) error {
 // Run dumps database
 func (d *PostgresDumper) Run() error {
 	/*
-	if err := d.dumpDatabase(); err != nil {
-		return err
-	}
-	if err := d.template.Execute(d.writer, d.data); err != nil {
-		return err
-	}
+		if err := d.dumpDatabase(); err != nil {
+			return err
+		}
+		if err := d.template.Execute(d.writer, d.data); err != nil {
+			return err
+		}
 	*/
 	return nil
 }

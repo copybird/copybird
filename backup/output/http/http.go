@@ -50,4 +50,3 @@ func (h *Http) Run() error {
 func (h *Http) Close() error {
 	return nil
 }
-

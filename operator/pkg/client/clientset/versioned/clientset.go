@@ -20,9 +20,9 @@ package versioned
 
 import (
 	copybirdsv1 "github.com/copybird/copybird/operator/pkg/client/clientset/versioned/typed/copybird/v1"
-	discovery "k8s.io/client-go/discovery"
-	rest "k8s.io/client-go/rest"
-	flowcontrol "k8s.io/client-go/util/flowcontrol"
+	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/util/flowcontrol"
 )
 
 type Interface interface {

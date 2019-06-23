@@ -21,7 +21,7 @@ func (loc *Local) GetName() string {
 
 func (loc *Local) GetConfig() interface{} {
 	return &Config{
-		FileName: "output",
+		FileName:    "output",
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
 	}
 }

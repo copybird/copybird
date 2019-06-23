@@ -7,4 +7,3 @@ import (
 type notifier interface {
 	core.Module
 }
-

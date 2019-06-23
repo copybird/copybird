@@ -19,16 +19,16 @@ limitations under the License.
 package v1
 
 import (
-	time "time"
+	"time"
 
 	copybirdv1 "github.com/copybird/copybird/operator/pkg/apis/copybird/v1"
-	versioned "github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
-	internalinterfaces "github.com/copybird/copybird/operator/pkg/client/informers/externalversions/internalinterfaces"
+	"github.com/copybird/copybird/operator/pkg/client/clientset/versioned"
+	"github.com/copybird/copybird/operator/pkg/client/informers/externalversions/internalinterfaces"
 	v1 "github.com/copybird/copybird/operator/pkg/client/listers/copybird/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	runtime "k8s.io/apimachinery/pkg/runtime"
-	watch "k8s.io/apimachinery/pkg/watch"
-	cache "k8s.io/client-go/tools/cache"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/watch"
+	"k8s.io/client-go/tools/cache"
 )
 
 // CopyBirdInformer provides access to a shared informer and lister for

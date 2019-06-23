@@ -3,7 +3,7 @@ language: go
 sudo: false
 
 os:
-- linux
+  - linux
 
 env:
   global:
@@ -11,23 +11,23 @@ env:
     - PRODUCT=copybird
 
 go:
-- 1.12.x
+  - 1.12.x
 
 install:
 # - make deps
 
 script:
-- go build -o bin/$PRODUCT main.go
+  - go build -o bin/$PRODUCT main.go
 
 before_deploy:
-- tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
+  - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
 
 deploy:
-- provider: releases
-  api_key: $GITHUB_OAUTH_TOKEN
-  file:
-  - build/$PRODUCT-$TRAVIS_TAG.linux-$ARCH.tar.gz
-  - build/$PRODUCT-$TRAVIS_TAG.osx-$ARCH.tar.gz
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: releases
+    api_key: $GITHUB_OAUTH_TOKEN
+    file:
+      - build/$PRODUCT-$TRAVIS_TAG.linux-$ARCH.tar.gz
+      - build/$PRODUCT-$TRAVIS_TAG.osx-$ARCH.tar.gz
+    skip_cleanup: true
+    on:
+      tags: true

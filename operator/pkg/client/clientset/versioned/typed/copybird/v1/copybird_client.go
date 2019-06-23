@@ -21,7 +21,7 @@ package v1
 import (
 	v1 "github.com/copybird/copybird/operator/pkg/apis/copybird/v1"
 	"github.com/copybird/copybird/operator/pkg/client/clientset/versioned/scheme"
-	rest "k8s.io/client-go/rest"
+	"k8s.io/client-go/rest"
 )
 
 type CopybirdsV1Interface interface {
