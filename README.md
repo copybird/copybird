@@ -3,6 +3,11 @@
 [![](https://godoc.org/github.com/copybird/copybird?status.svg)](http://godoc.org/github.com/copybird/copybird)
 [![GitHub release](https://img.shields.io/github/release/copybird/copybird/all.svg?style=flat-square)](https://github.com/copybird/copybird/releases)
 
+![](https://travis-ci.org/copybird/copybird.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/copybird/copybird/badge.svg)](https://coveralls.io/github/copybird/copybird)
+[![Go Report Card](https://goreportcard.com/badge/github.com/copybird/copybird)](https://goreportcard.com/report/github.com/copybird/copybird)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 
 # Copybird
 
