@@ -79,3 +79,8 @@ docker run copybird/copybird
 kubectl apply -f your-backup-manifest.yaml
 ```
 
+<div align="center">
+    <a href="https://maddevs.io"><img style="width: 300px" src ="docs/md-logo.png" /></a>
+    Built by Mad Devs for the rest community
+</div>
+
