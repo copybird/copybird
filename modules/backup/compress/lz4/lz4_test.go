@@ -41,15 +41,15 @@ func TestCompressLZ4(t *testing.T) {
 			rb := bytes.NewReader([]byte("hello, world."))
 			wb := new(bytes.Buffer)
 
-			assert.Assert(t, GetConfig() != nil)
-			assert.NilError(t, InitPipe(wb, rb))
-			err := InitModule(&Config{Level: tt.args.level})
+			assert.Assert(t, comp.GetConfig() != nil)
+			assert.NilError(t, comp.InitPipe(wb, rb))
+			err := comp.InitModule(&Config{Level: tt.args.level})
 			if !tt.wantErr && err != nil {
 				t.Errorf("Compress.BackupCompressLz4() result = %v, want result %v", err, tt.wantErr)
 				return
 			}
 
-			err = Run()
+			err = comp.Run()
 			if err != nil {
 				panic(err)
 			}
@@ -60,7 +60,7 @@ func TestCompressLZ4(t *testing.T) {
 			assert.Equal(t, err, nil)
 			assert.Equal(t, buff2.String(), "hello, world.")
 
-			assert.NilError(t, Close())
+			assert.NilError(t, comp.Close())
 		})
 	}
 }
