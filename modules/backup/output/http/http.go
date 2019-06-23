@@ -1,9 +1,10 @@
 package http
 
 import (
-	"github.com/copybird/copybird/core"
 	"io"
 	"net/http"
+
+	"github.com/copybird/copybird/core"
 )
 
 // Module Constants
@@ -40,9 +41,8 @@ func (m *BackupOutputHttp) InitPipe(w io.Writer, r io.Reader) error {
 	return nil
 }
 
-func (m *BackupOutputHttp) InitModule(_config interface{}) error {
-	config := _config.(Config)
-	m.config = &config
+func (m *BackupOutputHttp) InitModule(cfg interface{}) error {
+	m.config = cfg.(*Config)
 
 	return nil
 }

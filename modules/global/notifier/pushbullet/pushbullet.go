@@ -7,6 +7,10 @@ import (
 	"github.com/xconstruct/go-pushbullet"
 )
 
+const GROUP_NAME = "global"
+const TYPE_NAME = "notifier"
+const MODULE_NAME = "pushbullet"
+
 type GlobalNotifierPushbuller struct {
 	core.Module
 	config *Config
@@ -16,6 +20,14 @@ type GlobalNotifierPushbuller struct {
 
 type Message struct {
 	Text string `json:"text"`
+}
+
+func (m *GlobalNotifierPushbuller) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierPushbuller) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierPushbuller) GetName() string {
@@ -47,8 +59,6 @@ func (m *GlobalNotifierPushbuller) GetConfig() interface{} {
 func (m *GlobalNotifierPushbuller) Close() error {
 	return nil
 }
-
-const MODULE_NAME = "pushbullet"
 
 func (c *Config) NotifyPushbulletChannel() error {
 	pb := pushbullet.New(c.APIKey)

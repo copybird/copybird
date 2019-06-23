@@ -10,6 +10,15 @@ import (
 	"net/http"
 )
 
+const (
+	GROUP_NAME = "global"
+	TYPE_NAME = "notifier"
+	MODULE_NAME         = "slack"
+	SlackHookSite       = "https://hooks.slack.com/services"
+	HeaderContentType   = "Content-Type"
+	MIMEApplicationJSON = "application/json"
+)
+
 type GlobalNotifierSlack struct {
 	core.Module
 	config *Config
@@ -19,6 +28,14 @@ type GlobalNotifierSlack struct {
 
 type SlackMessage struct {
 	Text string `json:"text"`
+}
+
+func (m *GlobalNotifierSlack) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierSlack) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierSlack) GetName() string {
@@ -50,13 +67,6 @@ func (m *GlobalNotifierSlack) GetConfig() interface{} {
 func (m *GlobalNotifierSlack) Close() error {
 	return nil
 }
-
-const (
-	MODULE_NAME         = "slack"
-	SlackHookSite       = "https://hooks.slack.com/services"
-	HeaderContentType   = "Content-Type"
-	MIMEApplicationJSON = "application/json"
-)
 
 func (c *Config) NotifySlackChannel() error {
 

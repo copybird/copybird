@@ -15,11 +15,11 @@ type GlobalNotifierEmail struct {
 	Config *Config
 }
 
-func (m *GlobalNotifierEmail) GetGroup() core.ModuleGroup {
+func (e *GlobalNotifierEmail) GetGroup() core.ModuleGroup {
 	return GROUP_NAME
 }
 
-func (m *GlobalNotifierEmail) GetType() core.ModuleType {
+func (e *GlobalNotifierEmail) GetType() core.ModuleType {
 	return TYPE_NAME
 }
 

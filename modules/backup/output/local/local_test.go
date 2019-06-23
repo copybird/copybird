@@ -9,45 +9,44 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var loc BackupOutputLocal
-	name := GetName()
-	require.Equal(t, "local", name)
+	l := &BackupOutputLocal{}
+	require.Equal(t, "local", l.GetName())
 }
 
 func TestGetConfig(t *testing.T) {
-	var loc BackupOutputLocal
-	conf := GetConfig()
-	require.Equal(t, Config{
+	l := &BackupOutputLocal{}
+	conf := l.GetConfig()
+	require.Equal(t, &Config{
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
-		FileName:    "test.txt",
+		FileName:    "output",
 	}, conf)
 }
 
 func TestInitPipe(t *testing.T) {
-	var loc BackupOutputLocal
+	l := &BackupOutputLocal{}
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, InitPipe(bufOutput, bufInput))
+	require.NoError(t, l.InitPipe(bufOutput, bufInput))
 }
 
 func TestRun(t *testing.T) {
-	var loc BackupOutputLocal
+	l := &BackupOutputLocal{}
 	bufInput := bytes.NewBuffer([]byte("hello world"))
 	bufOutput := &bytes.Buffer{}
-	require.NoError(t, InitPipe(bufOutput, bufInput))
-	conf := Config{
+	require.NoError(t, l.InitPipe(bufOutput, bufInput))
+	conf := &Config{
 		DefaultMask: os.O_APPEND | os.O_CREATE | os.O_WRONLY,
 		FileName:    "test.txt",
 	}
-	err := InitModule(conf)
+	err := l.InitModule(conf)
 	require.NoError(t, err)
-	err = Run()
+	err = l.Run()
 	require.NoError(t, err)
 	os.Remove("test.txt")
 }
 
 func TestInitModule(t *testing.T) {
-	var loc BackupOutputLocal
-	err := InitModule(Config{FileName: "test.sql"})
+	l := &BackupOutputLocal{}
+	err := l.InitModule(&Config{FileName: "test.sql"})
 	require.NoError(t, err, "should not be any error here")
 }

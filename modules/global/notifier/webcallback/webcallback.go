@@ -10,11 +10,21 @@ import (
 	"time"
 )
 
+const GROUP_NAME = "global"
+const TYPE_NAME = "notifier"
 const MODULE_NAME = "webcallback"
 
 type GlobalNotifierWebcallback struct {
 	core.Module
 	config *Config
+}
+
+func (m *GlobalNotifierWebcallback) GetGroup() core.ModuleGroup {
+	return GROUP_NAME
+}
+
+func (m *GlobalNotifierWebcallback) GetType() core.ModuleType {
+	return TYPE_NAME
 }
 
 func (m *GlobalNotifierWebcallback) GetName() string {
