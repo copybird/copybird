@@ -16,7 +16,6 @@ dist: xenial
 
 install:
   # Core testing install
-  - docker-compose -f docker-compose-etcd.yml up -d
   - docker-compose build
   - docker-compose up -d
 
