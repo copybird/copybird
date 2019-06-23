@@ -71,7 +71,6 @@ func (m *BackupInputPostgresql) GetConfig() interface{} {
 func (m *BackupInputPostgresql) InitPipe(w io.Writer, r io.Reader) error {
 	m.reader = r
 	m.writer = w
-	m.config = cfg.(*Config)
 	return nil
 }
 
