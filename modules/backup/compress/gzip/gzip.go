@@ -39,7 +39,7 @@ func (m *BackupCompressGzip) GetConfig() interface{} {
 }
 
 func (m *BackupCompressGzip) InitModule(_cfg interface{}) error {
-	cfg := _cfg.(Config)
+	cfg := _cfg.(*Config)
 	level := cfg.Level
 	if level < -1 || level > 9 {
 		return errors.New("compression level must be between -1 and 9")
