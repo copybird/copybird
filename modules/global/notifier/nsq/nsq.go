@@ -60,6 +60,14 @@ func (m *GlobalNotifierNSQ) Run() error {
 	return nil
 }
 
+func (m *GlobalNotifierNSQ) GetConfig() interface{} {
+	return &Config{}
+}
+
+func (m *GlobalNotifierNSQ) Close() error {
+	return nil
+}
+
 type NSQMessage struct {
 	Message string `json:"message"`
 }
