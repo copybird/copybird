@@ -52,3 +52,14 @@ services:
     container_name: rabbitmq
     ports:
       - '5672:5672'
+
+  postgres:
+    image: library/postgres:11.4
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+     POSTGRES_PASSWORD: postgres
+     POSTGRES_DB: test
+    volumes:
+      - ./samples/postgres.sql:/docker-entrypoint-initdb.d/postgres.sql
