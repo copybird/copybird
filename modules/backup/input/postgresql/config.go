@@ -8,7 +8,10 @@ type (
 		DSN string
 	}
 
-	tableColumn struct {
+	tableScheme struct {
 		columnName, columnDefault, dataType, characterMaximumLength, isNullable, constraintName, constraintType, sequence string
+	}
+	sequenceScheme struct {
+		name string
 	}
 )
