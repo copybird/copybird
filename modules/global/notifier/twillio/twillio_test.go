@@ -7,19 +7,16 @@ import (
 )
 
 func TestGetName(t *testing.T) {
-	var twillio GlobalNotifierTwillio
-	name := GetName()
-	require.Equal(t, "twillio", name)
+	n := &GlobalNotifierTwilio{}
+	require.Equal(t, "twillio", n.GetName())
 }
 
 func TestGetConfig(t *testing.T) {
-	var twillio GlobalNotifierTwillio
-	conf := GetConfig()
-	require.Equal(t, Config{}, conf)
+	n := &GlobalNotifierTwilio{}
+	require.Equal(t, &Config{}, n.GetConfig())
 }
 
 func TestInitModule(t *testing.T) {
-	var twillio GlobalNotifierTwillio
-	err := InitModule(Config{})
-	require.NoError(t, err, "should not be any error here")
+	n := &GlobalNotifierTwilio{}
+	require.NoError(t, n.InitModule(&Config{}), "should not be any error here")
 }
