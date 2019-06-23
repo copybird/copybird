@@ -12,12 +12,19 @@ env:
 
 go:
   - 1.12.x
+dist: xenial
 
 install:
-# - make deps
+  # Core testing install
+  - docker-compose -f docker-compose-etcd.yml up
+  - docker-compose build
+  - docker-compose up -d
 
 script:
-  - go build -o bin/$PRODUCT main.go
+  - $HOME/gopath/bin/goveralls  -service=travis-ci
+
+before_install:
+  - go get github.com/mattn/goveralls
 
 before_deploy:
   - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
