@@ -28,9 +28,9 @@ func TestInitPipe(t *testing.T) {
 func TestInitModule(t *testing.T) {
 	gcp := &BackupOutputGcp{}
 
-	err := gcp.InitModule(&Config{CredentialsFilePath: ""})
+	err := gcp.InitModule(&Config{AuthFile: ""})
 	require.Error(t, err, "Should fail to find credentials")
 
-	err = gcp.InitModule(&Config{CredentialsFilePath: "creds.json"})
+	err = gcp.InitModule(&Config{AuthFile: "creds.json"})
 	require.Error(t, err, "credentials file is missing")
 }

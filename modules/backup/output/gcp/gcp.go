@@ -1,6 +1,7 @@
 package gcp
 
 import (
+	"errors"
 	"context"
 	"github.com/copybird/copybird/core"
 	"io"
@@ -49,11 +50,19 @@ func (m *BackupOutputGcp) InitPipe(w io.Writer, r io.Reader) error {
 
 func (m *BackupOutputGcp) InitModule(_config interface{}) error {
 	m.config = _config.(*Config)
+
+	if m.config.AuthFile == "" {
+		return errors.New("need auth_file")
+	}
+	if m.config.File == "" {
+		return errors.New("need file")
+	}
+
 	m.ctx = context.Background()
 
 	switch {
-	case m.config.CredentialsFilePath != "":
-		client, err := storage.NewClient(m.ctx, option.WithCredentialsFile(m.config.CredentialsFilePath))
+	case m.config.AuthFile != "":
+		client, err := storage.NewClient(m.ctx, option.WithCredentialsFile(m.config.AuthFile))
 		if err != nil {
 			return err
 		}
@@ -77,7 +86,7 @@ func (m *BackupOutputGcp) InitModule(_config interface{}) error {
 
 func (m *BackupOutputGcp) Run() error {
 
-	obj := m.bucket.Object(m.config.AWSFileName)
+	obj := m.bucket.Object(m.config.File)
 	w := obj.NewWriter(m.ctx)
 	if _, err := io.Copy(w, m.reader); err != nil {
 		return err
