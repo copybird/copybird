@@ -1,0 +1,19 @@
+apiVersion: copybird.org/v1
+kind: Backup
+metadata:
+  name: sample-backup
+spec:
+  input:
+    type: mysql
+    config:
+      dsn: root:root@tcp(localhost:3306)/test
+  compress:
+    type: gzip
+    config:
+      level: 1
+  output:
+    - type: local
+      config:
+        file: dump.sql.gz
+  notifier:
+    - type: stdout
