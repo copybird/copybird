@@ -17,6 +17,8 @@ limitations under the License.
 package v1
 
 import (
+	"fmt"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -28,17 +30,56 @@ import (
 type Backup struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec BackupSpec `json:"spec"`
+	Spec              BackupSpec `json:"spec"`
 }
 
 // BackupSpec is the spec for a Backup resource
 type BackupSpec struct {
 	Name     string     `json:"name"`
+	Cron     string     `json:"cron"`
+	Type     string     `json:"type"`
 	Input    Input      `json:"input"`
 	Compress Compress   `json:"compress"`
 	Output   []Output   `json:"output"`
 	Notifier []Notifier `json:"notifier"`
+}
+
+func (b Backup) ConstrucArguments() []string {
+	var args []string
+
+	if b.Spec.Input.Type != "" {
+		for key, value := range b.Spec.Input.Config {
+			args = append(args, fmt.Sprintf("-i %s::%s=%s ", b.Spec.Input.Type, key, value))
+		}
+	}
+
+	for _, output := range b.Spec.Output {
+		var arg string
+		if output.Type != "" {
+			for key, value := range output.Config {
+				arg = fmt.Sprintf("-o %s::%s=%s ", output.Type, key, value)
+			}
+		}
+		args = append(args, arg)
+	}
+
+	if b.Spec.Compress.Type != "" {
+		for key, value := range b.Spec.Compress.Config {
+			args = append(args, fmt.Sprintf("-z %s::%s=%v ", b.Spec.Compress.Type, key, value))
+		}
+	}
+
+	for _, notifier := range b.Spec.Notifier {
+		var arg string
+		if notifier.Type != "" {
+			for key, value := range notifier.Config {
+				arg = fmt.Sprintf("-n %s::%s=%s ", notifier.Type, key, value)
+			}
+		}
+		args = append(args, arg)
+	}
+
+	return args
 }
 
 type Input struct {

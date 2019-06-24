@@ -1,18 +1,20 @@
 package mysql
 
 import (
-	"bytes"
 	"database/sql"
-	"github.com/copybird/copybird/core"
 	"io"
+
+	"github.com/copybird/copybird/core"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/xwb1989/sqlparser"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // Module Constants
 const (
-	GROUP_NAME = "restore"
-	TYPE_NAME = "output"
+	GROUP_NAME  = "restore"
+	TYPE_NAME   = "output"
 	MODULE_NAME = "mysql"
 )
 
@@ -20,10 +22,10 @@ type (
 	// RestoreOutputMysql is struct storing inner properties for mysql backups
 	RestoreOutputMysql struct {
 		core.Module
-		conn           *sql.DB
-		config         *MySQLConfig
-		reader         io.Reader
-		writer         io.Writer
+		conn   *sql.DB
+		config *MySQLConfig
+		reader io.Reader
+		writer io.Writer
 	}
 )
 
@@ -76,15 +78,37 @@ func (m *RestoreOutputMysql) Run() error {
 	return m.RestoreDatabase()
 }
 
-// Close closes ...
+// RestoreDatabase restores db
+func (m *RestoreOutputMysql) RestoreDatabase() error {
+	tokenizer := sqlparser.NewTokenizer(m.reader)
+
+	for {
+		stmt, err := sqlparser.ParseNext(tokenizer)
+		if err != nil {
+			spew.Dump(err)
+		}
+		if err == io.EOF {
+			break
+		}
+		switch stmt.(type) {
+		case *sqlparser.Select, *sqlparser.Insert, *sqlparser.DBDDL, *sqlparser.DDL:
+			if _, err := m.conn.Exec(sqlparser.String(stmt)); err != nil {
+				return err
+			}
+		default:
+			continue
+		}
+
+	}
+	return nil
+}
+
+// Close connection to DB.
 func (m *RestoreOutputMysql) Close() error {
 	return m.conn.Close()
 }
 
-// RestoreDatabase restores db
-func (m *RestoreOutputMysql) RestoreDatabase() error {
-	str := StreamToString(m.reader)
-
+func (m *RestoreOutputMysql) execute(line string) error {
 	// Start transaction
 	tx, err := m.conn.Begin()
 	if err != nil {
@@ -92,22 +116,16 @@ func (m *RestoreOutputMysql) RestoreDatabase() error {
 	}
 
 	// Execute transaction
-	res, err := tx.Exec(str)
+	_, err = tx.Exec(line)
 	if err != nil {
 		return err
 	}
-	print(res)
+
 	// Commit transaction
 	err = tx.Commit()
 	if err != nil {
-		return nil
+		return err
 	}
 
 	return nil
-}
-
-func StreamToString(stream io.Reader) string {
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(stream)
-	return buf.String()
 }

@@ -12,12 +12,20 @@ env:
 
 go:
   - 1.12.x
+dist: xenial
 
 install:
-# - make deps
+  # Core testing install
+  - docker-compose build
+  - docker-compose up -d
 
 script:
-  - go build -o bin/$PRODUCT main.go
+  - go test -v -covermode=count -coverprofile=coverage.out ./...
+  - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+
+before_install:
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/mattn/goveralls
 
 before_deploy:
   - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT

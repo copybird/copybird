@@ -5,32 +5,34 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
 	"strconv"
 	"strings"
 	"text/template"
 	"time"
 
+	"github.com/copybird/copybird/core"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 // Module Constants
-const GROUP_NAME = "backup"
-const TYPE_NAME = "input"
-const MODULE_NAME = "mysql"
+const GroupName = "backup"
+const TypeName = "input"
+const ModuleName = "mysql"
 
 type (
 	// BackupInputMysql is struct storing inner properties for mysql backups
 	BackupInputMysql struct {
 		core.Module
-		conn           *sql.DB
-		headerTemplate *template.Template
-		footerTemplate *template.Template
-		tableTemplate  *template.Template
-		config         *MySQLConfig
-		reader         io.Reader
-		writer         io.Writer
+		conn             *sql.Tx
+		headerTemplate   *template.Template
+		footerTemplate   *template.Template
+		tableTemplate    *template.Template
+		endTableTemplate *template.Template
+		config           *MySQLConfig
+		reader           io.Reader
+		writer           io.Writer
 	}
 	dumpHeader struct {
 		Version string
@@ -47,17 +49,17 @@ type (
 
 // GetGroup returns group
 func (m *BackupInputMysql) GetGroup() core.ModuleGroup {
-	return GROUP_NAME
+	return GroupName
 }
 
 // GetType returns type
 func (m *BackupInputMysql) GetType() core.ModuleType {
-	return TYPE_NAME
+	return TypeName
 }
 
 // GetName returns name of module
 func (m *BackupInputMysql) GetName() string {
-	return MODULE_NAME
+	return ModuleName
 }
 
 // GetConfig returns config of module
@@ -84,7 +86,11 @@ func (m *BackupInputMysql) InitModule(cfg interface{}) error {
 	if err := conn.Ping(); err != nil {
 		return err
 	}
-	m.conn = conn
+	tx, err := conn.Begin()
+	if err != nil {
+		return err
+	}
+	m.conn = tx
 	t, err := template.New("headerTemplate").Parse(headerTemplate)
 	if err != nil {
 		return err
@@ -100,6 +106,11 @@ func (m *BackupInputMysql) InitModule(cfg interface{}) error {
 		return err
 	}
 	m.tableTemplate = t
+	t, err = template.New("endTableTemplate").Parse(endTableTemplate)
+	if err != nil {
+		return err
+	}
+	m.endTableTemplate = t
 	return nil
 }
 
@@ -141,29 +152,45 @@ func (m *BackupInputMysql) getTableSchema(name string) (string, error) {
 	return sqlTable.String, nil
 }
 
-func (m *BackupInputMysql) getTableData(name string) (string, error) {
+func (m *BackupInputMysql) writeTableData(name string) error {
 	q := fmt.Sprintf("SELECT * FROM %s", name)
 	rows, err := m.conn.Query(q)
 	if err != nil {
-		return "", err
+		return err
+	}
+	defer rows.Close()
+	rowsCount := 0
+	for rows.Next() {
+		rowsCount++
+	}
+	if rowsCount == 0 {
+		return nil
+	}
+	rows, err = m.conn.Query(q)
+	if err != nil {
+		return err
 	}
 	defer rows.Close()
 	columns, err := rows.Columns()
 	if err != nil {
-		return "", err
+		return err
 	}
 	if len(columns) == 0 {
-		return "", fmt.Errorf("no columns in table %s", name)
+		return fmt.Errorf("no columns in table %s", name)
 	}
-	var data []string
+	if _, err := io.WriteString(m.writer, fmt.Sprintf("INSERT INTO `%s` VALUES ", name)); err != nil {
+		return err
+	}
+	currCount := 0
 	for rows.Next() {
+		currCount++
 		scanData := make([]sql.RawBytes, len(columns))
 		pointers := make([]interface{}, len(columns))
 		for i := range scanData {
 			pointers[i] = &scanData[i]
 		}
 		if err := rows.Scan(pointers...); err != nil {
-			return "", err
+			return err
 		}
 		rowData := make([]string, len(columns))
 		for i, v := range scanData {
@@ -178,10 +205,22 @@ func (m *BackupInputMysql) getTableData(name string) (string, error) {
 			}
 			json.Unmarshal(v, pointers)
 		}
-		data = append(data, fmt.Sprintf("(%s)", strings.Join(rowData, ",")))
+		_, err = io.WriteString(m.writer, fmt.Sprintf("(%s)", strings.Join(rowData, ",")))
+		if err != nil {
+			return err
+		}
+		if currCount == rowsCount {
+			if _, err := io.WriteString(m.writer, ";"); err != nil {
+				return err
+			}
+		} else {
+			if _, err := io.WriteString(m.writer, ","); err != nil {
+				return err
+			}
+		}
 
 	}
-	return strings.Join(data, ","), rows.Err()
+	return rows.Err()
 
 }
 func (m *BackupInputMysql) dumpDatabase() error {
@@ -204,12 +243,14 @@ func (m *BackupInputMysql) dumpDatabase() error {
 			return err
 		}
 		table.Schema = schema
-		data, err := m.getTableData(tableName)
-		if err != nil {
+		if err := m.tableTemplate.Execute(m.writer, table); err != nil {
 			return err
 		}
-		table.Data = data
-		if err := m.tableTemplate.Execute(m.writer, table); err != nil {
+		if err := m.writeTableData(tableName); err != nil {
+			return err
+		}
+
+		if err := m.endTableTemplate.Execute(m.writer, table); err != nil {
 			return err
 		}
 	}

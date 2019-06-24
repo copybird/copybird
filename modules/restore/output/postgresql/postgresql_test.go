@@ -1,9 +1,8 @@
 package postgres
 
 import (
-	"bufio"
+	"bytes"
 	"gotest.tools/assert"
-	"os"
 	"testing"
 )
 
@@ -17,13 +16,15 @@ func TestRestoreOutputPostgresql_Run(t *testing.T) {
 	assert.Equal(t, err, nil)
 
 	// TODO: Need parse file, but after implement sql formatter
-	f, _ := os.Open("./samples/postgres.sql")
-	rs.reader = bufio.NewReader(f)
+	//f, err := os.Open("../../../../samples/postgres.sql")
+	//assert.Equal(t, err, nil)
+	//rs.reader = bufio.NewReader(f)
 
-	//rs.reader = bytes.NewReader([]byte("connect test \n "))
+	rs.reader = bytes.NewReader([]byte(
+		"SELECT schemaname, relname, last_analyze \n " +
+			"FROM pg_stat_all_tables \n " +
+			"WHERE relname = 'city';",
+	))
 	err = rs.Run()
-	if err != nil {
-		print(err.Error())
-	}
 	assert.Equal(t, err, nil)
 }

@@ -1,4 +1,4 @@
-package etcd
+package etcdv3
 
 type Config struct {
 	Endpoints []string

@@ -4,6 +4,8 @@ metadata:
   name: sample-backup
 spec:
   name: sample-backup
+  type: "backup"
+  cron: "*/1 * * * *"
   input:
     type: mysql
     config:
@@ -11,7 +13,7 @@ spec:
   compress:
     type: gzip
     config:
-      level: 1
+      level: 2
   output:
     - type: local
       config:

@@ -14,14 +14,14 @@ var cfg Config
 
 func TestCompress_InitCompress_Default_Compress(t *testing.T) {
 	cfg.Level = -1
-	err := compressor.InitModule(cfg)
+	err := compressor.InitModule(&cfg)
 	assert.Equal(t, err, nil)
 	assert.Equal(t, compressor.level, -1)
 }
 
 func TestCompress_InitCompress_Compress_Level_Out_Of_range(t *testing.T) {
 	cfg.Level = 10
-	err := compressor.InitModule(cfg)
+	err := compressor.InitModule(&cfg)
 	assert.NotEqual(t, err, nil)
 }
 
@@ -31,7 +31,7 @@ func TestCompress_Run_Success_Compress(t *testing.T) {
 	rb := bytes.NewReader([]byte("hello, world."))
 	wb := new(bytes.Buffer)
 
-	_ = compressor.InitModule(cfg)
+	_ = compressor.InitModule(&cfg)
 	_ = compressor.InitPipe(wb, rb)
 	err := compressor.Run()
 	assert.Equal(t, err, nil)

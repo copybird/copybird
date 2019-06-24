@@ -1,20 +1,20 @@
-package etcd
+package etcdv3
 
 import (
 	"context"
 	"encoding/json"
 	"io"
-	"sort"
 
 	"github.com/copybird/copybird/core"
-	"github.com/etcd-io/etcd/client"
+	"github.com/coreos/etcd/clientv3"
+	"github.com/davecgh/go-spew/spew"
 )
 
 // Module Constants
 const (
 	GroupName  = "backup"
 	TypeName   = "input"
-	ModuleName = "etcd"
+	ModuleName = "etcdv3"
 )
 
 type (
@@ -24,7 +24,7 @@ type (
 		reader io.Reader
 		writer io.Writer
 		config *Config
-		api    client.KeysAPI
+		api    clientv3.KV
 	}
 )
 
@@ -58,25 +58,25 @@ func (b *BackupInputEtcd) InitPipe(w io.Writer, r io.Reader) error {
 // InitModule initializes module
 func (b *BackupInputEtcd) InitModule(cfg interface{}) error {
 	b.config = cfg.(*Config)
-	c, err := client.New(client.Config{
+	c, err := clientv3.New(clientv3.Config{
 		Endpoints: b.config.Endpoints,
 	})
 	if err != nil {
 		return err
 	}
-	b.api = client.NewKeysAPI(c)
+	b.api = clientv3.NewKV(c)
 	return nil
 }
 
 // Run dumps database
 func (b *BackupInputEtcd) Run() error {
-	resp, err := b.api.Get(context.TODO(), b.config.Key, &client.GetOptions{Recursive: true})
+	resp, err := b.api.Get(context.TODO(), b.config.Key)
 	if err != nil {
 		return err
 	}
-	sort.Sort(resp.Node.Nodes)
+	spew.Dump(resp.Kvs)
 	j := json.NewEncoder(b.writer)
-	return j.Encode(resp.Node.Nodes)
+	return j.Encode(resp.Kvs)
 }
 
 // Close closes ...

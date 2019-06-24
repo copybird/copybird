@@ -3,9 +3,11 @@ package postgres
 import (
 	"bufio"
 	"database/sql"
+	"io"
+	"strings"
+
 	"github.com/copybird/copybird/core"
 	_ "github.com/lib/pq"
-	"io"
 )
 
 // Module Constants
@@ -17,10 +19,10 @@ type (
 	// BackupInputPostgresql is struct storing inner properties for mysql backups
 	RestoreOutputPostgresql struct {
 		core.Module
-		reader   io.Reader
-		writer   io.Writer
-		conn     *sql.DB
-		config   *Config
+		reader io.Reader
+		writer io.Writer
+		conn   *sql.DB
+		config *Config
 	}
 )
 
@@ -69,9 +71,54 @@ func (r *RestoreOutputPostgresql) InitModule(cfg interface{}) error {
 func (r *RestoreOutputPostgresql) Run() error {
 	reader := bufio.NewReader(r.reader)
 
+	var lines []string
 	// TODO: Need validate for SQL-like string here.
-	str, err := reader.ReadString('\n')
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return err
+		}
 
+		// Comment protection
+		if strings.HasPrefix(line, "--") {
+			continue
+		}
+		if strings.HasPrefix(line, "/*") {
+			continue
+		}
+
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		if !strings.HasSuffix(line, ";") {
+			lines = append(lines, line)
+			continue
+		}
+
+		if len(lines) > 1 {
+			lines = append(lines, line)
+			line = strings.Join(lines, " ")
+		}
+
+		err = r.execute(line)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Close connection to DB.
+func (r *RestoreOutputPostgresql) Close() error {
+	return r.conn.Close()
+}
+
+func (r *RestoreOutputPostgresql) execute(line string) error {
 	// Start transaction
 	tx, err := r.conn.Begin()
 	if err != nil {
@@ -79,21 +126,15 @@ func (r *RestoreOutputPostgresql) Run() error {
 	}
 
 	// Execute transaction
-	res, err := tx.Exec(str)
+	_, err = tx.Exec(line)
 	if err != nil {
 		return err
 	}
-	print(res)
+
 	// Commit transaction
 	err = tx.Commit()
 	if err != nil {
-		return nil
+		return err
 	}
-
 	return nil
-}
-
-// Close connection to DB.
-func (r *RestoreOutputPostgresql) Close() error {
-	return r.conn.Close()
 }
