@@ -1,9 +1,10 @@
 package postgres
 
 import (
-	"bytes"
-	"gotest.tools/assert"
+	"os"
 	"testing"
+
+	"gotest.tools/assert"
 )
 
 var rs RestoreOutputPostgresql
@@ -20,11 +21,8 @@ func TestRestoreOutputPostgresql_Run(t *testing.T) {
 	//assert.Equal(t, err, nil)
 	//rs.reader = bufio.NewReader(f)
 
-	rs.reader = bytes.NewReader([]byte(
-		"SELECT schemaname, relname, last_analyze \n " +
-			"FROM pg_stat_all_tables \n " +
-			"WHERE relname = 'city';",
-	))
+	f, _ := os.Open("../../../../samples/postgres.sql")
+	rs.InitPipe(nil, f)
 	err = rs.Run()
 	assert.Equal(t, err, nil)
 }

@@ -1,13 +1,13 @@
 package postgres
 
 import (
-	"bufio"
 	"database/sql"
 	"io"
-	"strings"
 
 	"github.com/copybird/copybird/core"
+	"github.com/davecgh/go-spew/spew"
 	_ "github.com/lib/pq"
+	"github.com/xwb1989/sqlparser"
 )
 
 // Module Constants
@@ -69,46 +69,27 @@ func (r *RestoreOutputPostgresql) InitModule(cfg interface{}) error {
 
 // Run dumps database
 func (r *RestoreOutputPostgresql) Run() error {
-	reader := bufio.NewReader(r.reader)
+	tokenizer := sqlparser.NewTokenizer(r.reader)
 
-	var lines []string
-	// TODO: Need validate for SQL-like string here.
 	for {
-		line, err := reader.ReadString('\n')
+		stmt, err := sqlparser.ParseNext(tokenizer)
 		if err != nil {
-			if err == io.EOF {
-				break
+			spew.Dump(err)
+		}
+		if err == io.EOF {
+			break
+		}
+		spew.Dump(stmt)
+		spew.Dump(sqlparser.String(stmt))
+		switch stmt.(type) {
+		case *sqlparser.Select, *sqlparser.Insert, *sqlparser.DBDDL, *sqlparser.DDL:
+			if _, err := r.conn.Exec(sqlparser.String(stmt)); err != nil {
+				return err
 			}
-			return err
-		}
-
-		// Comment protection
-		if strings.HasPrefix(line, "--") {
-			continue
-		}
-		if strings.HasPrefix(line, "/*") {
+		default:
 			continue
 		}
 
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-
-		if !strings.HasSuffix(line, ";") {
-			lines = append(lines, line)
-			continue
-		}
-
-		if len(lines) > 1 {
-			lines = append(lines, line)
-			line = strings.Join(lines, " ")
-		}
-
-		err = r.execute(line)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }
