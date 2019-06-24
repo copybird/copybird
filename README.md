@@ -21,11 +21,13 @@ Copybird is open-source **cloud-native** universal backup tool for databases and
 
 It allows you to:
 1. Create database backup
-2. Compress backup file
-3. Encrypt backup file
+2. Compress backup stream
+3. Encrypt backup stream
 4. Send it to various destinations fast and secure
 5. Get notification about backup status in messagers and notification services
 6. Enjoy simple backup as a service with k8s backup controller
+
+Backup process not using local storage for temp files.
 
 learn more at [copybird.org](https://copybird.org). Note that this repository is in Work in Progress status. Feel free to contribure. Read more about contributing below.
 
