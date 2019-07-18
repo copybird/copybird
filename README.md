@@ -120,16 +120,29 @@ You can modify example file as you wish to get proper configuration for your job
 
 To run tests against MySQL module proceed with the following commands: 
 ```
-docker run --name test_db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=test -d percona:latest
-docker exec -i test_db mysql -uroot -proot test < samples/mysql.sql
+docker run --name test_mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=test -d percona:latest
+docker exec -i test_mysql mysql -uroot -proot test < samples/mysql.sql
 cd modules/backup/input/mysql/
 go test -v -cover
 ```
 To clean up after you finish with tests: 
 ```
-docker kill test_db
-docker rm test_db
+docker kill test_mysql
+docker rm test_mysql
 ```
+To run tests against Postgres module proceed with the following commands: 
+```
+docker run --name test_postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=test -d postgres:latest
+docker exec -i test_postgres psql -U postgres test < samples/postgres.sql
+cd modules/backup/input/postgresql/
+go test -v -cover
+```
+To clean up after you finish with tests: 
+```
+docker kill test_postgres
+docker rm test_postgres
+```
+
 
 ## Contributing
 Pull requests are more than welcomed. For major changes, please open an issue first to discuss what you would like to change. 

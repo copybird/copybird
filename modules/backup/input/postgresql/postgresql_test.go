@@ -43,4 +43,6 @@ func TestGetTables(t *testing.T) {
 	assert.NoError(t, d.dumpDatabase())
 
 	assert.NoError(t, d.Run())
+
+	assert.NoError(t, os.Remove("dump.sql"))
 }

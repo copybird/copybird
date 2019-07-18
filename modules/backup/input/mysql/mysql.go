@@ -139,6 +139,7 @@ func (m *BackupInputMysql) getTables() ([]string, error) {
 	}
 	return tables, rows.Err()
 }
+
 func (m *BackupInputMysql) getTableSchema(name string) (string, error) {
 	q := fmt.Sprintf("SHOW CREATE TABLE %s", name)
 	var returnTable sql.NullString
