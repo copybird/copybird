@@ -4,6 +4,7 @@
 
 # Copybird
 
+[![Developed by Mad Devs](https://maddevs.io/badge-dark.svg)](https://maddevs.io/)
 [![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![](https://images.microbadger.com/badges/version/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
 [![](https://images.microbadger.com/badges/image/copybird/copybird.svg)](https://microbadger.com/images/copybird/copybird)
@@ -114,6 +115,21 @@ INFO[0001] Starting workers
 INFO[0001] Started workers               
 ```
 You can modify example file as you wish to get proper configuration for your jobs
+
+## Tests 
+
+To run tests against MySQL module proceed with the following commands: 
+```
+docker run --name test_db -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=test -d percona:latest
+docker exec -i test_db mysql -uroot -proot test < samples/mysql.sql
+cd modules/backup/input/mysql/
+go test -v -cover
+```
+To clean up after you finish with tests: 
+```
+docker kill test_db
+docker rm test_db
+```
 
 ## Contributing
 Pull requests are more than welcomed. For major changes, please open an issue first to discuss what you would like to change. 
