@@ -13,7 +13,6 @@ import (
 	"github.com/copybird/copybird/modules/backup/output/local"
 	"github.com/copybird/copybird/modules/backup/output/s3"
 	"github.com/copybird/copybird/modules/backup/output/scp"
-	"github.com/copybird/copybird/operator"
 	"github.com/spf13/cobra"
 	"log"
 	//"log"
@@ -21,11 +20,10 @@ import (
 )
 
 type App struct {
-	cmmRoot     *cobra.Command
-	cmdBackup   *cobra.Command
-	cmdRestore  *cobra.Command
-	cmdOperator *cobra.Command
-	vars        map[string]interface{}
+	cmmRoot    *cobra.Command
+	cmdBackup  *cobra.Command
+	cmdRestore *cobra.Command
+	vars       map[string]interface{}
 }
 
 func NewApp() *App {
@@ -51,16 +49,8 @@ func (a *App) Run() error {
 		Args:  cobra.MinimumNArgs(0),
 		Run:   cmdCallback(a.DoRestore),
 	}
-	a.cmdOperator = &cobra.Command{
-		Use:   "operator",
-		Short: "Start Kubernetes operator",
-		Run: func(cmd *cobra.Command, args []string) {
-			operator.Run()
-		},
-	}
 	rootCmd.AddCommand(a.cmdBackup)
 	rootCmd.AddCommand(a.cmdRestore)
-	rootCmd.AddCommand(a.cmdOperator)
 	a.Setup()
 	return rootCmd.Execute()
 }
@@ -95,7 +85,7 @@ func (a *App) Setup() error {
 	a.addFlagString(a.cmdBackup, "input", "i", "", "(required)")
 	a.addFlagString(a.cmdBackup, "compress", "z", "", "")
 	a.addFlagString(a.cmdBackup, "encrypt", "e", "", "")
-	a.addFlagString(a.cmdBackup, "output", "o", "","(required)")
+	a.addFlagString(a.cmdBackup, "output", "o", "", "(required)")
 	a.addFlagStrings(a.cmdBackup, "notifier", "n", "")
 
 	a.addFlagString(a.cmdRestore, "config", "f", "", "")
@@ -103,7 +93,7 @@ func (a *App) Setup() error {
 	a.addFlagString(a.cmdRestore, "input", "i", "", "(required)")
 	a.addFlagString(a.cmdRestore, "decompress", "z", "", "")
 	a.addFlagString(a.cmdRestore, "decrypt", "e", "", "")
-	a.addFlagString(a.cmdRestore, "output", "o", "","(required)")
+	a.addFlagString(a.cmdRestore, "output", "o", "", "(required)")
 	a.addFlagStrings(a.cmdRestore, "notifier", "n", "")
 
 	return nil
