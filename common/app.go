@@ -7,6 +7,7 @@ import (
 	"github.com/copybird/copybird/modules/backup/encrypt/aesgcm"
 	"github.com/copybird/copybird/modules/backup/input/mongodb"
 	"github.com/copybird/copybird/modules/backup/input/mysql"
+	"github.com/copybird/copybird/modules/backup/input/mysqldump"
 	postgres "github.com/copybird/copybird/modules/backup/input/postgresql"
 	"github.com/copybird/copybird/modules/backup/output/gcp"
 	"github.com/copybird/copybird/modules/backup/output/http"
@@ -66,6 +67,7 @@ func cmdCallback(f func() error) func(cmd *cobra.Command, args []string) {
 
 func (a *App) registerModules() {
 	core.RegisterModule(&mysql.BackupInputMysql{})
+	core.RegisterModule(&mysqldump.BackupInputMysqlDump{})
 	core.RegisterModule(&postgres.BackupInputPostgresql{})
 	core.RegisterModule(&mongodb.BackupInputMongodb{})
 	core.RegisterModule(&gzip.BackupCompressGzip{})
