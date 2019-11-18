@@ -85,6 +85,11 @@ func (m *BackupInputMysqlDump) InitModule(cfg interface{}) error {
 		fmt.Sprintf("-P%s", m.config.Port),
 		fmt.Sprintf("-u%s", m.config.Username),
 		fmt.Sprintf("-p%s", m.config.Password),
+		"--column-statistics=0",
+		"--single-transaction",
+		"--triggers",
+		"--routines",
+		"--events",
 		m.config.Database,
 	}
 
