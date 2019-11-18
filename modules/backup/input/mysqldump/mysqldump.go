@@ -57,11 +57,16 @@ func (m *BackupInputMysqlDump) GetName() string {
 // GetConfig returns config of module
 func (m *BackupInputMysqlDump) GetConfig() interface{} {
 	return &MySQLDumpConfig{
-		Host:     "127.0.0.1",
-		Port:     "3306",
-		Username: "root",
-		Password: "root",
-		Database: "test",
+		Host:              "127.0.0.1",
+		Port:              "3306",
+		Username:          "root",
+		Password:          "root",
+		Database:          "test",
+		Routines:          true,
+		Events:            true,
+		Triggers:          true,
+		SingleTransaction: true,
+		ColumnStatistics:  false,
 	}
 }
 
@@ -85,11 +90,11 @@ func (m *BackupInputMysqlDump) InitModule(cfg interface{}) error {
 		fmt.Sprintf("-P%s", m.config.Port),
 		fmt.Sprintf("-u%s", m.config.Username),
 		fmt.Sprintf("-p%s", m.config.Password),
-		"--column-statistics=0",
-		"--single-transaction",
-		"--triggers",
-		"--routines",
-		"--events",
+		fmt.Sprintf("--triggers=%t", m.config.Triggers),
+		fmt.Sprintf("--routines=%t", m.config.Routines),
+		fmt.Sprintf("--events=%t", m.config.Events),
+		fmt.Sprintf("--single-transaction=%t", m.config.SingleTransaction),
+		fmt.Sprintf("--column-statistics=%t", m.config.ColumnStatistics),
 		m.config.Database,
 	}
 
