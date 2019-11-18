@@ -1,18 +1,19 @@
 package common
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/iancoleman/strcase"
 	"io"
 	"log"
 	"reflect"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/copybird/copybird/core"
+	"github.com/iancoleman/strcase"
+	"golang.org/x/sync/errgroup"
 )
 
 func (a *App) DoBackup() error {
@@ -52,12 +53,12 @@ func (a *App) DoBackup() error {
 		return err
 	}
 
-	wg := sync.WaitGroup{}
-	wg.Add(2)
+	// TODO: add context handling inside modules
+	eg, _ := errgroup.WithContext(context.Background())
 
 	nextReader, nextWriter := io.Pipe()
 
-	go runModule(mInput, nextWriter, nil, &wg)
+	eg.Go(runModule(mInput, nextWriter, nil))
 
 	if mCompressArgs != nil && mCompressArgs.Value.String() != "" {
 		mCompress, err := loadModule(core.ModuleGroupBackup, core.ModuleTypeCompress, mCompressArgs.Value.String())
@@ -65,8 +66,7 @@ func (a *App) DoBackup() error {
 			return err
 		}
 		_nextReader, _nextWriter := io.Pipe()
-		wg.Add(1)
-		go runModule(mCompress, _nextWriter, nextReader, &wg)
+		eg.Go(runModule(mCompress, _nextWriter, nextReader))
 		nextReader = _nextReader
 	}
 
@@ -76,16 +76,13 @@ func (a *App) DoBackup() error {
 			return err
 		}
 		_nextReader, _nextWriter := io.Pipe()
-		wg.Add(1)
-		go runModule(mEncrypt, _nextWriter, nextReader, &wg)
+		eg.Go(runModule(mEncrypt, _nextWriter, nextReader))
 		nextReader = _nextReader
 	}
 
-	go runModule(mOutput, nil, nextReader, &wg)
+	eg.Go(runModule(mOutput, nil, nextReader))
 
-	wg.Wait()
-
-	return nil
+	return eg.Wait()
 }
 
 func loadModule(mGroup core.ModuleGroup, mType core.ModuleType, args string) (core.Module, error) {
@@ -138,27 +135,27 @@ func loadConfig(cfg interface{}, params map[string]string) error {
 	return nil
 }
 
-func runModule(module core.Module, writer io.WriteCloser, reader io.ReadCloser, wg *sync.WaitGroup) {
-	defer func(t time.Time) {
-		if writer != nil {
-			writer.Close()
+func runModule(module core.Module, writer io.WriteCloser, reader io.ReadCloser) func() error {
+	return func() error {
+		defer func() {
+			if writer != nil {
+				writer.Close()
+			}
+			if reader != nil {
+				reader.Close()
+			}
+		}()
+		t := time.Now()
+		err := module.InitPipe(writer, reader)
+		if err != nil {
+			return fmt.Errorf("module %s/%s pipe initialization err: %s", module.GetType(), module.GetName(), err)
 		}
-		if reader != nil {
-			reader.Close()
-		}
-		wg.Done()
-		if err := recover(); err != nil {
-			log.Printf("module %s/%s err: %s", module.GetType(), module.GetName(), err)
+		err = module.Run()
+		if err != nil {
+			return fmt.Errorf("module %s/%s execution err: %s", module.GetType(), module.GetName(), err)
 		}
 		log.Printf("module %s/%s done by %.2fms", module.GetType(), module.GetName(), time.Since(t).Seconds()*1000)
-	}(time.Now())
-	err := module.InitPipe(writer, reader)
-	if err != nil {
-		panic(err)
-	}
-	err = module.Run()
-	if err != nil {
-		panic(err)
+		return nil
 	}
 }
 
