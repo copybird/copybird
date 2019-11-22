@@ -130,6 +130,19 @@ To clean up after you finish with tests:
 docker kill test_mysql
 docker rm test_mysql
 ```
+To run tests against MySQLDump module, first make sure that you have `mysqldump` binary
+available in `$PATH` and then proceed with the following commands: 
+```
+docker run --name test_mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=test -d percona:latest
+docker exec -i test_mysql mysql -hlocalhost -uroot -proot test < samples/mysql.sql
+cd modules/backup/input/mysqldump/
+go test -v -cover
+```
+To clean up after you finish with tests: 
+```
+docker kill test_mysql
+docker rm test_mysql
+```
 To run tests against Postgres module proceed with the following commands: 
 ```
 docker run --name test_postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=test -d postgres:latest
