@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -42,7 +43,7 @@ func TestGetTables(t *testing.T) {
 
 	assert.NoError(t, d.dumpDatabase())
 
-	assert.NoError(t, d.Run())
+	assert.NoError(t, d.Run(context.TODO()))
 
 	assert.NoError(t, os.Remove("dump.sql"))
 }

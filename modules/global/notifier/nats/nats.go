@@ -1,6 +1,7 @@
 package nats
 
 import (
+	"context"
 	"errors"
 	"github.com/copybird/copybird/core"
 	"io"
@@ -9,8 +10,8 @@ import (
 )
 
 const (
-	GROUP_NAME = "global"
-	TYPE_NAME = "notifier"
+	GROUP_NAME  = "global"
+	TYPE_NAME   = "notifier"
 	MODULE_NAME = "nats"
 )
 
@@ -65,7 +66,7 @@ func (m *GlobalNotifierNats) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierNats) Run() error {
+func (m *GlobalNotifierNats) Run(ctx context.Context) error {
 	return m.conn.Publish(m.config.Topic, []byte(m.config.Msg))
 }
 

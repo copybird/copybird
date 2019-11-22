@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -115,7 +116,7 @@ func (m *BackupInputMysql) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (m *BackupInputMysql) Run() error {
+func (m *BackupInputMysql) Run(ctx context.Context) error {
 	return m.dumpDatabase()
 }
 

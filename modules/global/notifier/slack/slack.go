@@ -2,17 +2,19 @@ package slack
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
 	"net/http"
+
+	"github.com/copybird/copybird/core"
 )
 
 const (
-	GROUP_NAME = "global"
-	TYPE_NAME = "notifier"
+	GROUP_NAME          = "global"
+	TYPE_NAME           = "notifier"
 	MODULE_NAME         = "slack"
 	SlackHookSite       = "https://hooks.slack.com/services"
 	HeaderContentType   = "Content-Type"
@@ -53,7 +55,7 @@ func (m *GlobalNotifierSlack) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierSlack) Run() error {
+func (m *GlobalNotifierSlack) Run(ctx context.Context) error {
 	if err := m.config.NotifySlackChannel(); err != nil {
 		return err
 	}

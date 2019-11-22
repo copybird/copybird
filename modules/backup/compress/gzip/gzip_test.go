@@ -3,6 +3,7 @@ package gzip
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"io"
 	"testing"
 
@@ -33,7 +34,7 @@ func TestCompress_Run_Success_Compress(t *testing.T) {
 
 	_ = compressor.InitModule(&cfg)
 	_ = compressor.InitPipe(wb, rb)
-	err := compressor.Run()
+	err := compressor.Run(context.TODO())
 	assert.Equal(t, err, nil)
 
 	var buff2 = new(bytes.Buffer)

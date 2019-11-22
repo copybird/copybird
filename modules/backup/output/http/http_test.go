@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,6 +31,6 @@ func TestRun(t *testing.T) {
 	}
 	err := h.InitModule(conf)
 	require.NoError(t, err)
-	err = h.Run()
+	err = h.Run(context.TODO())
 	assert.NoError(t, err)
 }

@@ -2,6 +2,7 @@ package local
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"testing"
 
@@ -40,7 +41,7 @@ func TestRun(t *testing.T) {
 	}
 	err := l.InitModule(conf)
 	require.NoError(t, err)
-	err = l.Run()
+	err = l.Run(context.TODO())
 	require.NoError(t, err)
 	os.Remove("test.txt")
 }

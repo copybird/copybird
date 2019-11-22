@@ -23,7 +23,7 @@ func TestEtcdBackup(t *testing.T) {
 	a.Put(context.TODO(), conf.Key+"/test", "World")
 	a.Put(context.TODO(), conf.Key+"/dir", "Hey")
 	a.Put(context.TODO(), conf.Key+"/dir/name", "Value")
-	assert.NoError(t, b.Run())
+	assert.NoError(t, b.Run(context.TODO()))
 	a.Delete(context.TODO(), conf.Key, clientv3.WithPrefix())
 
 }

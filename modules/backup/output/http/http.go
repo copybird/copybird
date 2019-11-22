@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"io"
 	"net/http"
 
@@ -47,7 +48,7 @@ func (m *BackupOutputHttp) InitModule(cfg interface{}) error {
 	return nil
 }
 
-func (m *BackupOutputHttp) Run() error {
+func (m *BackupOutputHttp) Run(ctx context.Context) error {
 	resp, err := http.Post(m.config.TargetUrl, "application/json", m.reader)
 	if err != nil {
 		return err

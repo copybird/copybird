@@ -1,8 +1,8 @@
 package gcp
 
 import (
-	"errors"
 	"context"
+	"errors"
 	"github.com/copybird/copybird/core"
 	"io"
 
@@ -17,12 +17,12 @@ const MODULE_NAME = "gcp"
 
 type BackupOutputGcp struct {
 	core.Module
-	ctx        context.Context
-	reader     io.Reader
-	writer     io.Writer
-	client     *storage.Client
-	bucket     *storage.BucketHandle
-	config     *Config
+	ctx    context.Context
+	reader io.Reader
+	writer io.Writer
+	client *storage.Client
+	bucket *storage.BucketHandle
+	config *Config
 }
 
 func (m *BackupOutputGcp) GetGroup() core.ModuleGroup {
@@ -86,7 +86,7 @@ func (m *BackupOutputGcp) InitModule(_config interface{}) error {
 	return nil
 }
 
-func (m *BackupOutputGcp) Run() error {
+func (m *BackupOutputGcp) Run(ctx context.Context) error {
 
 	obj := m.bucket.Object(m.config.File)
 	w := obj.NewWriter(m.ctx)

@@ -2,6 +2,7 @@ package tar
 
 import (
 	"archive/tar"
+	"context"
 	"io"
 	"os"
 	"path/filepath"
@@ -62,7 +63,7 @@ func (b *BackupInputTar) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (b *BackupInputTar) Run() error {
+func (b *BackupInputTar) Run(ctx context.Context) error {
 	if _, err := os.Stat(b.config.DirectoryPath); err != nil {
 		return err
 	}

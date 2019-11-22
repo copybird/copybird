@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -23,6 +24,6 @@ func TestRestoreOutputPostgresql_Run(t *testing.T) {
 
 	f, _ := os.Open("../../../../samples/postgres.sql")
 	rs.InitPipe(nil, f)
-	err = rs.Run()
+	err = rs.Run(context.TODO())
 	assert.Equal(t, err, nil)
 }

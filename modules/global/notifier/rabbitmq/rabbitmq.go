@@ -1,15 +1,16 @@
 package rabbitmq
 
 import (
-	"github.com/copybird/copybird/core"
+	"context"
 	"io"
 
+	"github.com/copybird/copybird/core"
 	"github.com/streadway/amqp"
 )
 
 const (
-	GROUP_NAME = "global"
-	TYPE_NAME = "notifier"
+	GROUP_NAME  = "global"
+	TYPE_NAME   = "notifier"
 	MODULE_NAME = "rabbitmq"
 )
 
@@ -87,7 +88,7 @@ func (m *GlobalNotifierRabbitmq) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierRabbitmq) Run() error {
+func (m *GlobalNotifierRabbitmq) Run(ctx context.Context) error {
 	err := m.channel.Publish(
 		m.config.PublishExchange,  // exchange
 		m.config.PublishKey,       // routing key

@@ -1,6 +1,7 @@
 package aesgcm
 
 import (
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -71,7 +72,7 @@ func (m *RestoreDecryptAesgcm) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *RestoreDecryptAesgcm) Run() error {
+func (m *RestoreDecryptAesgcm) Run(ctx context.Context) error {
 	var err error
 	buf := make([]byte, 16)
 	bufOut := make([]byte, 16)

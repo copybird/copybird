@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"bytes"
+	"context"
 	"os"
 	"testing"
 
@@ -36,7 +37,7 @@ func TestGetTables(t *testing.T) {
 	tableSchema, err := m.getTableSchema(tables[0])
 	assert.NoError(t, err)
 	assert.Equal(t, authorsSchema, tableSchema)
-	err = m.Run()
+	err = m.Run(context.TODO())
 	assert.NoError(t, err)
 	assert.NoError(t, os.Remove("dump.sql"))
 }
@@ -50,6 +51,6 @@ func TestMysqlDump(t *testing.T) {
 	require.NoError(t, m.InitModule(c))
 	buf := bytes.Buffer{}
 	require.NoError(t, m.InitPipe(&buf, nil))
-	assert.NoError(t, m.Run())
+	assert.NoError(t, m.Run(context.TODO()))
 	t.Log(buf.String())
 }

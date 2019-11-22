@@ -1,13 +1,15 @@
 package webcallback
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/copybird/copybird/core"
 )
 
 const GROUP_NAME = "global"
@@ -40,7 +42,7 @@ func (m *GlobalNotifierWebcallback) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierWebcallback) Run() error {
+func (m *GlobalNotifierWebcallback) Run(ctx context.Context) error {
 	if err := m.SendNotification(); err != nil {
 		return err
 	}

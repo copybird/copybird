@@ -57,7 +57,7 @@ func (b *BackupInputConsul) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (b *BackupInputConsul) Run() error {
+func (b *BackupInputConsul) Run(ctx context.Context) error {
 	return nil
 }
 

@@ -1,12 +1,12 @@
 package lz4
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
 
-	// "os"
+	"github.com/copybird/copybird/core"
 
 	"github.com/pierrec/lz4"
 )
@@ -53,7 +53,7 @@ func (m *RestoreDecompressLz4) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *RestoreDecompressLz4) Run() error {
+func (m *RestoreDecompressLz4) Run(ctx context.Context) error {
 	// make a buffer to keep chunks that are read
 	lr := lz4.NewReader(m.reader)
 

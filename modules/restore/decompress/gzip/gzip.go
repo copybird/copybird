@@ -2,9 +2,11 @@ package gzip
 
 import (
 	"compress/gzip"
+	"context"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
+
+	"github.com/copybird/copybird/core"
 )
 
 const GROUP_NAME = "restore"
@@ -43,7 +45,7 @@ func (m *RestoreDecompressGzip) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *RestoreDecompressGzip) Run() error {
+func (m *RestoreDecompressGzip) Run(ctx context.Context) error {
 	gr, err := gzip.NewReader(m.reader)
 	if err != nil {
 		return fmt.Errorf("cant start gzip reader with error: %s", err)

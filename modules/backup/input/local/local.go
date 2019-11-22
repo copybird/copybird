@@ -1,6 +1,7 @@
 package local
 
 import (
+	"context"
 	"io"
 	"os"
 
@@ -58,7 +59,7 @@ func (b *BackupInputLocal) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (b *BackupInputLocal) Run() error {
+func (b *BackupInputLocal) Run(ctx context.Context) error {
 	f, err := os.Open(b.config.Filename)
 	if err != nil {
 		return err

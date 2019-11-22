@@ -1,17 +1,18 @@
 package awsses
 
 import (
-	"github.com/copybird/copybird/core"
+	"context"
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
+	"github.com/copybird/copybird/core"
 )
 
 const (
-	GROUP_NAME = "global"
-	TYPE_NAME = "notifier"
+	GROUP_NAME  = "global"
+	TYPE_NAME   = "notifier"
 	MODULE_NAME = "awsses"
 )
 
@@ -93,7 +94,7 @@ func (m *GlobalNotifierAwsses) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierAwsses) Run() error {
+func (m *GlobalNotifierAwsses) Run(ctx context.Context) error {
 
 	// Attempt to send the email.
 	_, err := m.simem.SendEmail(m.seInput)

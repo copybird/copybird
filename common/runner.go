@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"io"
 	"log"
 	"sync"
@@ -59,7 +60,7 @@ func (r *Runner) runModule(module core.Module, writer io.Writer, reader io.Reade
 		chanError <- &core.ModuleError{Module: module, Err: err}
 		return
 	}
-	err = module.Run()
+	err = module.Run(context.TODO())
 	if err != nil {
 		chanError <- &core.ModuleError{Module: module, Err: err}
 	}

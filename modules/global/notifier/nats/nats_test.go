@@ -1,6 +1,7 @@
 package nats
 
 import (
+	"context"
 	"testing"
 
 	"gotest.tools/assert"
@@ -33,7 +34,7 @@ func TestNats_ValidConn(t *testing.T) {
 		t.Errorf("TestNats: %v", err)
 	}
 
-	err = n.Run()
+	err = n.Run(context.TODO())
 	if err != nil {
 		t.Errorf("TestNats: %v", err)
 	}

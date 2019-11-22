@@ -2,6 +2,7 @@ package slack
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"testing"
@@ -54,7 +55,7 @@ func TestNotifySlackChannel(t *testing.T) {
 		urls := fmt.Sprintf("%s/%s", SlackHookSite, tt.Hook)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
 		assert.NoError(t, n.InitModule(&Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}))
-		err := n.Run()
+		err := n.Run(context.TODO())
 		assert.Equal(t, tt.Error, err)
 	}
 }
@@ -80,7 +81,7 @@ func TestRun(t *testing.T) {
 		urls := fmt.Sprintf("%s/%s", SlackHookSite, tt.Hook)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
 		assert.NoError(t, n.InitModule(&Config{Hook: tt.Hook, MessageSuccess: tt.Message, Success: tt.Success}))
-		err := n.Run()
+		err := n.Run(context.TODO())
 		assert.Equal(t, tt.Error, err)
 	}
 }

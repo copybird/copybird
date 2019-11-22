@@ -2,6 +2,7 @@ package nsq
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"testing"
@@ -52,7 +53,7 @@ func TestNotifySlackChannel(t *testing.T) {
 		urls := fmt.Sprintf("%s=%s", NSQUrlSite, tt.TopicName)
 		httpmock.RegisterResponder("POST", urls, tt.Responder)
 		assert.NoError(t, n.InitModule(&Config{TopicName: tt.TopicName, Message: tt.Message}))
-		err := n.Run()
+		err := n.Run(context.TODO())
 		assert.Equal(t, tt.Error, err)
 	}
 }

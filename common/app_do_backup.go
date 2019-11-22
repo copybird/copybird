@@ -54,11 +54,11 @@ func (a *App) DoBackup() error {
 	}
 
 	// TODO: add context handling inside modules
-	eg, _ := errgroup.WithContext(context.Background())
+	eg, ctx := errgroup.WithContext(context.Background())
 
 	nextReader, nextWriter := io.Pipe()
 
-	eg.Go(runModule(mInput, nextWriter, nil))
+	eg.Go(runModule(ctx, mInput, nextWriter, nil))
 
 	if mCompressArgs != nil && mCompressArgs.Value.String() != "" {
 		mCompress, err := loadModule(core.ModuleGroupBackup, core.ModuleTypeCompress, mCompressArgs.Value.String())
@@ -66,7 +66,7 @@ func (a *App) DoBackup() error {
 			return err
 		}
 		_nextReader, _nextWriter := io.Pipe()
-		eg.Go(runModule(mCompress, _nextWriter, nextReader))
+		eg.Go(runModule(ctx, mCompress, _nextWriter, nextReader))
 		nextReader = _nextReader
 	}
 
@@ -76,11 +76,11 @@ func (a *App) DoBackup() error {
 			return err
 		}
 		_nextReader, _nextWriter := io.Pipe()
-		eg.Go(runModule(mEncrypt, _nextWriter, nextReader))
+		eg.Go(runModule(ctx, mEncrypt, _nextWriter, nextReader))
 		nextReader = _nextReader
 	}
 
-	eg.Go(runModule(mOutput, nil, nextReader))
+	eg.Go(runModule(ctx, mOutput, nil, nextReader))
 
 	return eg.Wait()
 }
@@ -135,7 +135,7 @@ func loadConfig(cfg interface{}, params map[string]string) error {
 	return nil
 }
 
-func runModule(module core.Module, writer io.WriteCloser, reader io.ReadCloser) func() error {
+func runModule(ctx context.Context, module core.Module, writer io.WriteCloser, reader io.ReadCloser) func() error {
 	return func() error {
 		defer func() {
 			if writer != nil {
@@ -150,7 +150,7 @@ func runModule(module core.Module, writer io.WriteCloser, reader io.ReadCloser) 
 		if err != nil {
 			return fmt.Errorf("module %s/%s pipe initialization err: %s", module.GetType(), module.GetName(), err)
 		}
-		err = module.Run()
+		err = module.Run(ctx)
 		if err != nil {
 			return fmt.Errorf("module %s/%s execution err: %s", module.GetType(), module.GetName(), err)
 		}

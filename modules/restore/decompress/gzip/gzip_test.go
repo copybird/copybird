@@ -2,6 +2,7 @@ package gzip
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +28,7 @@ func TestCompress_Unzip_Success_Unzip(t *testing.T) {
 
 	_ = decompressor.InitModule(nil)
 	_ = decompressor.InitPipe(&wr, rd)
-	err := decompressor.Run()
+	err := decompressor.Run(context.TODO())
 	assert.Equal(t, err, nil)
 	assert.Equal(t, wr.String(), "hello world\n")
 }
@@ -38,7 +39,7 @@ func TestCompress_Unzip_Unsuccess_Unzip(t *testing.T) {
 
 	_ = decompressor.InitModule(nil)
 	_ = decompressor.InitPipe(&wr, rd)
-	err := decompressor.Run()
+	err := decompressor.Run(context.TODO())
 	assert.NotEqual(t, err, nil)
 	assert.Equal(t, wr.String(), "")
 }

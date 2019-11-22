@@ -1,6 +1,7 @@
 package awssqs
 
 import (
+	"context"
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -48,7 +49,7 @@ func (m *GlobalNotifierAWSSQS) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierAWSSQS) Run() error {
+func (m *GlobalNotifierAWSSQS) Run(ctx context.Context) error {
 	if err := m.config.NotifyAWSSQS(); err != nil {
 		return err
 	}

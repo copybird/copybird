@@ -1,10 +1,12 @@
 package kafka
 
 import (
-	"github.com/copybird/copybird/core"
 	"io"
-
+	"context"
+	
 	"github.com/Shopify/sarama"
+
+	"github.com/copybird/copybird/core"
 )
 
 const (
@@ -66,7 +68,7 @@ func (m *GlobalNotifieKafka) InitModule(_cfg interface{}) error {
 }
 
 // Run runs module
-func (m *GlobalNotifieKafka) Run() error {
+func (m *GlobalNotifieKafka) Run(ctx context.Context) error {
 	msg := &sarama.ProducerMessage{
 		Topic: m.config.Topic,
 		Value: sarama.StringEncoder(m.config.Message),
