@@ -55,6 +55,7 @@ require (
 	go.mongodb.org/mongo-driver v1.0.3
 	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	google.golang.org/api v0.6.0
 	google.golang.org/appengine v1.6.1 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20190502103701-55513cacd4ae

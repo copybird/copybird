@@ -14,7 +14,6 @@ import (
 	"github.com/copybird/copybird/modules/backup/output/s3"
 	"github.com/copybird/copybird/modules/backup/output/scp"
 	"github.com/spf13/cobra"
-	"log"
 	//"log"
 	//"github.com/spf13/cobra"
 )
@@ -34,20 +33,23 @@ func NewApp() *App {
 
 func (a *App) Run() error {
 	a.registerModules()
-	var rootCmd = &cobra.Command{Use: "copybird"}
+	var rootCmd = &cobra.Command{
+		Use:          "copybird",
+		SilenceUsage: true,
+	}
 	a.cmdBackup = &cobra.Command{
 		Use:   "backup",
 		Short: "Start new backup",
 		Long:  ``,
 		Args:  cobra.MinimumNArgs(0),
-		Run:   cmdCallback(a.DoBackup),
+		RunE:  cmdCallback(a.DoBackup),
 	}
 	a.cmdRestore = &cobra.Command{
 		Use:   "restore",
 		Short: "Start new restore",
 		Long:  ``,
 		Args:  cobra.MinimumNArgs(0),
-		Run:   cmdCallback(a.DoRestore),
+		RunE:  cmdCallback(a.DoRestore),
 	}
 	rootCmd.AddCommand(a.cmdBackup)
 	rootCmd.AddCommand(a.cmdRestore)
@@ -55,12 +57,9 @@ func (a *App) Run() error {
 	return rootCmd.Execute()
 }
 
-func cmdCallback(f func() error) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
-		err := f()
-		if err != nil {
-			log.Printf("cmd err: %s", err)
-		}
+func cmdCallback(f func() error) func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
+		return f()
 	}
 }
 
