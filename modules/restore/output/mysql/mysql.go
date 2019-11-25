@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"database/sql"
 	"io"
 
@@ -74,7 +75,7 @@ func (m *RestoreOutputMysql) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (m *RestoreOutputMysql) Run() error {
+func (m *RestoreOutputMysql) Run(ctx context.Context) error {
 	return m.RestoreDatabase()
 }
 

@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"os"
 	"testing"
 
@@ -20,7 +21,7 @@ func TestRestoreOutputMysql_Run(t *testing.T) {
 	f, _ := os.Open("../../../../samples/mysql.sql")
 	rs.InitPipe(nil, f)
 
-	err = rs.Run()
+	err = rs.Run(context.TODO())
 	if err != nil {
 		print(err.Error())
 	}

@@ -1,6 +1,7 @@
 package twillio
 
 import (
+	"context"
 	"errors"
 
 	"github.com/copybird/copybird/core"
@@ -40,7 +41,7 @@ func (t *GlobalNotifierTwilio) InitModule(_conf interface{}) error {
 	return nil
 }
 
-func (t *GlobalNotifierTwilio) Run() error {
+func (t *GlobalNotifierTwilio) Run(ctx context.Context) error {
 
 	_, exception, err := t.client.SendSMS(t.config.From, t.config.To, "Dump created successfully", "", "")
 	if err != nil {

@@ -2,6 +2,7 @@ package scp
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,7 +13,6 @@ import (
 	"github.com/copybird/copybird/core"
 
 	"github.com/pkg/sftp"
-
 	"golang.org/x/crypto/ssh"
 )
 
@@ -115,7 +115,7 @@ func (m *BackupOutputScp) InitModule(_config interface{}) error {
 	return nil
 }
 
-func (m *BackupOutputScp) Run() error {
+func (m *BackupOutputScp) Run(ctx context.Context) error {
 
 	// create destination file
 	dstFile, err := m.client.Create(m.config.FileName)

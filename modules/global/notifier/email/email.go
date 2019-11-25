@@ -1,9 +1,11 @@
 package email
 
 import (
+	"context"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"net/smtp"
+
+	"github.com/copybird/copybird/core"
 )
 
 const GROUP_NAME = "global"
@@ -36,7 +38,7 @@ func (e *GlobalNotifierEmail) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (e *GlobalNotifierEmail) Run() error {
+func (e *GlobalNotifierEmail) Run(ctx context.Context) error {
 	if err := e.SendEmail(); err != nil {
 		return err
 	}

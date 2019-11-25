@@ -1,11 +1,13 @@
 package telegram
 
 import (
-	"github.com/copybird/copybird/core"
+	"context"
 	"io"
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+
+	"github.com/copybird/copybird/core"
 )
 
 const GROUP_NAME = "global"
@@ -42,7 +44,7 @@ func (m *GlobalNotifierTelegram) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierTelegram) Run() error {
+func (m *GlobalNotifierTelegram) Run(ctx context.Context) error {
 	if err := m.config.NotifyTelegramChannel(); err != nil {
 		return err
 	}

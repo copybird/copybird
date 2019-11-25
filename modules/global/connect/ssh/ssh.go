@@ -100,7 +100,7 @@ func (m *GlobalConnectSsh) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalConnectSsh) Run() error {
+func (m *GlobalConnectSsh) Run(ctx context.Context) error {
 	return m.tunnel.Start()
 }
 

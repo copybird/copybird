@@ -24,7 +24,7 @@ func TestEtcdBackup(t *testing.T) {
 	a.Set(context.TODO(), conf.Key+"/test", "World", nil)
 	a.Set(context.TODO(), conf.Key+"/dir", "Hey", &o)
 	a.Set(context.TODO(), conf.Key+"/dir/name", "Value", nil)
-	assert.NoError(t, b.Run())
+	assert.NoError(t, b.Run(context.TODO()))
 	a.Delete(context.TODO(), conf.Key, &client.DeleteOptions{Recursive: true})
 
 }

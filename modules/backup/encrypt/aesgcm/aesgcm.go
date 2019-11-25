@@ -2,6 +2,7 @@ package aesgcm
 
 import (
 	"bufio"
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -72,14 +73,14 @@ func (m *BackupEncryptAesgcm) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *BackupEncryptAesgcm) Run() error {
+func (m *BackupEncryptAesgcm) Run(ctx context.Context) error {
 	var err error
 	var n int
 
 	nonce := make([]byte, 12)
 
 	originaData := make([]byte, BUF_SIZE)
-	encryptedData := make([]byte, BUF_SIZE +  m.gcm.Overhead())
+	encryptedData := make([]byte, BUF_SIZE+m.gcm.Overhead())
 
 	for {
 		n, err = m.reader.Read(originaData)

@@ -1,10 +1,12 @@
 package lz4
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/copybird/copybird/core"
 	"io"
+
+	"github.com/copybird/copybird/core"
 
 	"github.com/pierrec/lz4"
 )
@@ -57,7 +59,7 @@ func (m *BackupCompressLz4) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *BackupCompressLz4) Run() error {
+func (m *BackupCompressLz4) Run(ctx context.Context) error {
 	lw := lz4.NewWriter(m.writer)
 	lw.Header = lz4.Header{CompressionLevel: m.level}
 	defer lw.Close()

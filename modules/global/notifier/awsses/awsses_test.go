@@ -1,6 +1,7 @@
 package awsses
 
 import (
+	"context"
 	"testing"
 
 	"gotest.tools/assert"
@@ -18,7 +19,7 @@ func TestAwsSes_NoCredentialProvErrs(t *testing.T) {
 	as := &GlobalNotifierAwsses{}
 	assert.Assert(t, as.GetConfig() != nil)
 	assert.NilError(t, as.InitModule(conf))
-	err := as.Run()
+	err := as.Run(context.TODO())
 	assert.Error(t, err, noCredErr)
 }
 
@@ -36,6 +37,6 @@ func TestAwsSes_WithCredential(t *testing.T) {
 	as := &GlobalNotifierAwsses{}
 	assert.Assert(t, as.GetConfig() != nil)
 	assert.NilError(t, as.InitModule(conf))
-	err := as.Run()
+	err := as.Run(context.TODO())
 	assert.Error(t, err, noCredErr)
 }

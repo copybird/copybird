@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"io"
 
@@ -68,7 +69,7 @@ func (r *RestoreOutputPostgresql) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (r *RestoreOutputPostgresql) Run() error {
+func (r *RestoreOutputPostgresql) Run(ctx context.Context) error {
 	tokenizer := sqlparser.NewTokenizer(r.reader)
 
 	for {

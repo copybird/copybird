@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"strconv"
@@ -89,7 +90,7 @@ func (m *BackupInputPostgresql) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (m *BackupInputPostgresql) Run() error {
+func (m *BackupInputPostgresql) Run(ctx context.Context) error {
 
 	if err := m.dumpDatabase(); err != nil {
 		return err

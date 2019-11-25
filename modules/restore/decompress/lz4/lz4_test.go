@@ -2,6 +2,7 @@ package lz4
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"strings"
 	"testing"
@@ -40,7 +41,7 @@ Wu got it locked, performin' live on your hottest block`
 
 	assert.NoError(t, decompressor.InitModule(nil))
 	assert.NoError(t, decompressor.InitPipe(wr, rd))
-	assert.NoError(t, decompressor.Run())
+	assert.NoError(t, decompressor.Run(context.TODO()))
 	spew.Dump(wr)
 
 	assert.Equal(t, wr.String(), "hello world")

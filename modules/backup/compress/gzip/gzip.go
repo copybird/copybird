@@ -2,6 +2,7 @@ package gzip
 
 import (
 	"compress/gzip"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -48,7 +49,7 @@ func (m *BackupCompressGzip) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *BackupCompressGzip) Run() error {
+func (m *BackupCompressGzip) Run(ctx context.Context) error {
 	gw, err := gzip.NewWriterLevel(m.writer, m.level)
 	if err != nil {
 		return fmt.Errorf("cant start gzip writer with error: %s", err)

@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"testing"
+	"context"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -14,5 +15,5 @@ func TestKafka(t *testing.T) {
 	c.Topic = "hello"
 	c.Message = "world"
 	assert.NoError(t, k.InitModule(c))
-	assert.NoError(t, k.Run())
+	assert.NoError(t, k.Run(context.TODO()))
 }

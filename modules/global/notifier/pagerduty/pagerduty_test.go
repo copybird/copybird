@@ -1,6 +1,7 @@
 package pagerduty
 
 import (
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -29,7 +30,7 @@ func TestRun(t *testing.T) {
 		From:      "example@example.com",
 	})
 	require.NoError(t, err, "should not be any error here")
-	err = n.Run()
+	err = n.Run(context.TODO())
 	require.Error(t, err)
 
 }

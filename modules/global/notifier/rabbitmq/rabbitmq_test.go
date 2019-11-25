@@ -1,6 +1,7 @@
 package rabbitmq
 
 import (
+	"context"
 	"testing"
 
 	"gotest.tools/assert"
@@ -39,7 +40,7 @@ func TestRabbitMQ_ValidConn(t *testing.T) {
 		t.Errorf("TestRabbitMQ: %v", err)
 	}
 
-	err = rmq.Run()
+	err = rmq.Run(context.TODO())
 	if err != nil {
 		t.Errorf("TestRabbitMQ: %v", err)
 	}

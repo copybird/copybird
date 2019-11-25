@@ -69,7 +69,7 @@ func (b *BackupInputEtcd) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (b *BackupInputEtcd) Run() error {
+func (b *BackupInputEtcd) Run(ctx context.Context) error {
 	resp, err := b.api.Get(context.TODO(), b.config.Key, &client.GetOptions{Recursive: true})
 	if err != nil {
 		return err

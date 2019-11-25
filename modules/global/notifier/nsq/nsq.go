@@ -2,6 +2,7 @@ package nsq
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -52,7 +53,7 @@ func (m *GlobalNotifierNSQ) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierNSQ) Run() error {
+func (m *GlobalNotifierNSQ) Run(ctx context.Context) error {
 	if err := m.config.NotifyNSQ(); err != nil {
 		return err
 	}

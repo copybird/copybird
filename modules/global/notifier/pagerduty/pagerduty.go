@@ -1,6 +1,8 @@
 package pagerduty
 
 import (
+	"context"
+
 	"github.com/PagerDuty/go-pagerduty"
 	"github.com/copybird/copybird/core"
 )
@@ -38,7 +40,7 @@ func (m *GlobalNotifierPagerDuty) InitModule(_conf interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierPagerDuty) Run() error {
+func (m *GlobalNotifierPagerDuty) Run(ctx context.Context) error {
 	_, err := m.client.CreateIncident(m.config.From, &pagerduty.CreateIncident{Incident: pagerduty.CreateIncidentOptions{
 		Type:  "dump creation status",
 		Title: "Test",

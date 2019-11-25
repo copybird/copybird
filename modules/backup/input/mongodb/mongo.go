@@ -84,7 +84,7 @@ func (m *BackupInputMongodb) InitModule(cfg interface{}) error {
 }
 
 // Run runs module
-func (m *BackupInputMongodb) Run() error {
+func (m *BackupInputMongodb) Run(ctx context.Context) error {
 	m.startTimestamp = time.Now()
 
 	dbs, err := m.getDatabases(m.rootCtx)

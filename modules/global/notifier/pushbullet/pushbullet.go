@@ -1,6 +1,7 @@
 package pushbullet
 
 import (
+	"context"
 	"io"
 
 	"github.com/copybird/copybird/core"
@@ -46,7 +47,7 @@ func (m *GlobalNotifierPushbullet) InitModule(_cfg interface{}) error {
 	return nil
 }
 
-func (m *GlobalNotifierPushbullet) Run() error {
+func (m *GlobalNotifierPushbullet) Run(ctx context.Context) error {
 	if err := m.config.NotifyPushbulletChannel(); err != nil {
 		return err
 	}

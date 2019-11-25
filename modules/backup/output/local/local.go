@@ -1,9 +1,11 @@
 package local
 
 import (
-	"github.com/copybird/copybird/core"
+	"context"
 	"io"
 	"os"
+
+	"github.com/copybird/copybird/core"
 )
 
 // Module Constants
@@ -48,7 +50,7 @@ func (m *BackupOutputLocal) InitModule(_config interface{}) error {
 	return nil
 }
 
-func (m *BackupOutputLocal) Run() error {
+func (m *BackupOutputLocal) Run(ctx context.Context) error {
 
 	// If the file doesn't exist, create it, or append to the file
 	f, err := os.OpenFile(m.config.File, m.config.DefaultMask, 0644)

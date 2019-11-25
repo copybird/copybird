@@ -2,6 +2,7 @@ package lz4
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"testing"
 
@@ -49,7 +50,7 @@ func TestCompressLZ4(t *testing.T) {
 				return
 			}
 
-			err = comp.Run()
+			err = comp.Run(context.TODO())
 			if err != nil {
 				panic(err)
 			}
