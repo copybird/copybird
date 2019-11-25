@@ -1,6 +1,7 @@
 package mysqldump
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -104,7 +105,7 @@ func (m *BackupInputMysqlDump) InitModule(cfg interface{}) error {
 }
 
 // Run dumps database
-func (m *BackupInputMysqlDump) Run() error {
+func (m *BackupInputMysqlDump) Run(ctx context.Context) error {
 	cmd := exec.Command(m.command, m.args...)
 	cmd.Stdout = m.writer
 	cmd.Stderr = os.Stderr
