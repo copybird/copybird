@@ -15,8 +15,6 @@ import (
 	"github.com/copybird/copybird/modules/backup/output/s3"
 	"github.com/copybird/copybird/modules/backup/output/scp"
 	"github.com/spf13/cobra"
-	//"log"
-	//"github.com/spf13/cobra"
 )
 
 type App struct {
