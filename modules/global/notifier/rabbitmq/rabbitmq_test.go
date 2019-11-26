@@ -1,4 +1,4 @@
-// +build external
+// +build disabled
 
 package rabbitmq
 
