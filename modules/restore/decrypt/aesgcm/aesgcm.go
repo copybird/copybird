@@ -61,13 +61,13 @@ func (m *RestoreDecryptAesgcm) InitModule(_cfg interface{}) error {
 	if err != nil {
 		return fmt.Errorf("cipher init err: %s", err)
 	}
-	m.nonce = make([]byte, 12)
-	if _, err = io.ReadFull(rand.Reader, m.nonce); err != nil {
-		return fmt.Errorf("nonce generate err: %s", err)
-	}
 	m.gcm, err = cipher.NewGCM(block)
 	if err != nil {
 		return fmt.Errorf("aes gcm init err: %s", err)
+	}
+	m.nonce = make([]byte, m.gcm.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, m.nonce); err != nil {
+		return fmt.Errorf("nonce generate err: %s", err)
 	}
 	return nil
 }

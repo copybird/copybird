@@ -1,3 +1,5 @@
+// +build external
+
 package etcd
 
 import (

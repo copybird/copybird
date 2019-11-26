@@ -2,6 +2,7 @@ package ssh
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"

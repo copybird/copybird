@@ -7,7 +7,6 @@ import (
 	"io"
 
 	"github.com/copybird/copybird/core"
-
 	"github.com/pierrec/lz4"
 )
 
