@@ -29,10 +29,10 @@ script:
 before_install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
-  - docker build -t copybird/copybird .
 
 before_deploy:
   - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
+  - docker build -t copybird/copybird:latest -t copybird/copybird:$TRAVIS_TAG .
 
 deploy:
   - provider: releases
@@ -46,4 +46,4 @@ deploy:
   - provider: script
     script: bash docker_push.sh
     on:
-      all_branches: true
+      tags: true
