@@ -25,21 +25,22 @@ install:
 script:
   - go test -v -covermode=count -coverprofile=coverage.out ./...
   - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - go build -o bin/$PRODUCT
 
 before_install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
 
 before_deploy:
-  - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
-  - docker build -t copybird/copybird:latest -t copybird/copybird:$TRAVIS_TAG .
+  - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$TRAVIS_CPU_ARCH.tar.gz bin/$PRODUCT
+  - docker build -t copybird/$PRODUCT:latest -t copybird/$PRODUCT:$TRAVIS_TAG .
 
 deploy:
   - provider: releases
     api_key: $GITHUB_OAUTH_TOKEN
     file:
-      - build/$PRODUCT-$TRAVIS_TAG.linux-$ARCH.tar.gz
-      - build/$PRODUCT-$TRAVIS_TAG.osx-$ARCH.tar.gz
+      - build/$PRODUCT-$TRAVIS_TAG.linux-$TRAVIS_CPU_ARCH.tar.gz
+      # - build/$PRODUCT-$TRAVIS_TAG.osx-$TRAVIS_CPU_ARCH.tar.gz
     skip_cleanup: true
     on:
       tags: true
