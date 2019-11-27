@@ -1,5 +1,8 @@
 language: go
 
+services:
+  - docker
+
 sudo: false
 
 os:
@@ -26,6 +29,7 @@ script:
 before_install:
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
+  - docker build -t copybird/copybird .
 
 before_deploy:
   - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$ARCH.tar.gz bin/$PRODUCT
@@ -39,3 +43,7 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
+  - provider: script
+    script: bash docker_push
+    # on:
+      # branch: master
