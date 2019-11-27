@@ -34,7 +34,7 @@ script:
   - docker build -t copybird/${PRODUCT}:latest .
 
 before_deploy:
-  - docker tag copybird/${PRODUCT}:latest copybird/${PRODUCT}:${TRAVIS_TAG} .
+  - docker tag copybird/${PRODUCT}:latest copybird/${PRODUCT}:${TRAVIS_TAG}
   # - tar czvf build/${PRODUCT}-${TRAVIS_TAG}.linux-${TRAVIS_CPU_ARCH}.tar.gz bin/${PRODUCT}
   # - tar czvf build/${PRODUCT}-${TRAVIS_TAG}.osx-${TRAVIS_CPU_ARCH}.tar.gz bin/${PRODUCT}_osx
 
