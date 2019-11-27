@@ -44,6 +44,6 @@ deploy:
     on:
       tags: true
   - provider: script
-    script: bash docker_push
-    # on:
-      # branch: master
+    script: bash docker_push.sh
+    on:
+      all_branches: true
