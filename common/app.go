@@ -18,7 +18,7 @@ import (
 )
 
 type App struct {
-	cmmRoot    *cobra.Command
+	cmdRoot    *cobra.Command
 	cmdBackup  *cobra.Command
 	cmdRestore *cobra.Command
 	vars       map[string]interface{}
@@ -26,7 +26,10 @@ type App struct {
 
 func NewApp() *App {
 	return &App{
-		vars: make(map[string]interface{}),
+		vars:       make(map[string]interface{}),
+		cmdRoot:    &cobra.Command{},
+		cmdBackup:  &cobra.Command{},
+		cmdRestore: &cobra.Command{},
 	}
 }
 

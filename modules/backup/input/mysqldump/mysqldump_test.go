@@ -2,6 +2,7 @@ package mysqldump
 
 import (
 	"bytes"
+	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,6 +21,6 @@ func TestMysqlDumpRun(t *testing.T) {
 	require.NoError(t, m.InitModule(c))
 	buf := bytes.Buffer{}
 	assert.NoError(t, m.InitPipe(&buf, nil))
-	assert.NoError(t, m.Run())
+	assert.NoError(t, m.Run(context.TODO()))
 	t.Log(buf.String())
 }

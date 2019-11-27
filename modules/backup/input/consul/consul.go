@@ -1,6 +1,7 @@
 package consul
 
 import (
+	"context"
 	"io"
 
 	"github.com/copybird/copybird/core"

@@ -95,7 +95,7 @@ func (m *BackupInputMysqlDump) InitModule(cfg interface{}) error {
 		fmt.Sprintf("--routines=%t", m.config.Routines),
 		fmt.Sprintf("--events=%t", m.config.Events),
 		fmt.Sprintf("--single-transaction=%t", m.config.SingleTransaction),
-		fmt.Sprintf("--column-statistics=%t", m.config.ColumnStatistics),
+		// fmt.Sprintf("--column-statistics=%t", m.config.ColumnStatistics),
 		m.config.Database,
 	}
 

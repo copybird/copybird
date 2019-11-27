@@ -1,3 +1,5 @@
+// +build disabled
+
 package pushbullet
 
 import (
