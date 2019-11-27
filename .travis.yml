@@ -31,9 +31,10 @@ script:
   - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
   - GOOS=linux GOARCH=${TRAVIS_CPU_ARCH} go build -o bin/${PRODUCT}-${TRAVIS_TAG}
   - GOOS=darwin GOARCH=${TRAVIS_CPU_ARCH} go build -o bin/${PRODUCT}-${TRAVIS_TAG}_osx
-  - docker build -t copybird/${PRODUCT}:latest -t copybird/${PRODUCT}:${TRAVIS_TAG} .
+  - docker build -t copybird/${PRODUCT}:latest .
 
 before_deploy:
+  - docker tag copybird/${PRODUCT}:latest copybird/${PRODUCT}:${TRAVIS_TAG} .
   # - tar czvf build/${PRODUCT}-${TRAVIS_TAG}.linux-${TRAVIS_CPU_ARCH}.tar.gz bin/${PRODUCT}
   # - tar czvf build/${PRODUCT}-${TRAVIS_TAG}.osx-${TRAVIS_CPU_ARCH}.tar.gz bin/${PRODUCT}_osx
 
@@ -49,7 +50,7 @@ deploy:
     on:
       tags: true
   - provider: script
-    script: bash docker_push.sh
+    script: bash docker_push.sh ${TRAVIS_TAG}
     skip_cleanup: true
     on:
       tags: true
