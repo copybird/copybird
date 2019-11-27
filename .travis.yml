@@ -17,6 +17,10 @@ go:
   - 1.12.x
 dist: xenial
 
+before_install:
+  - go get golang.org/x/tools/cmd/cover
+  - go get github.com/mattn/goveralls
+
 install:
   # Core testing install
   - docker-compose build
@@ -25,26 +29,25 @@ install:
 script:
   - go test -v -covermode=count -coverprofile=coverage.out ./...
   - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
-  - go build -o bin/$PRODUCT
-
-before_install:
-  - go get golang.org/x/tools/cmd/cover
-  - go get github.com/mattn/goveralls
 
 before_deploy:
-  - tar czvf build/$PRODUCT-$TRAVIS_TAG.$TRAVIS_OS_NAME-$TRAVIS_CPU_ARCH.tar.gz bin/$PRODUCT
-  - docker build -t copybird/$PRODUCT:latest -t copybird/$PRODUCT:$TRAVIS_TAG .
+  - GOOS=linux GOARCH=${TRAVIS_CPU_ARCH} go build -o bin/${PRODUCT}
+  - GOOS=darwin GOARCH=${TRAVIS_CPU_ARCH} go build -o bin/${PRODUCT}_osx
+  - tar czvf build/${PRODUCT}-${TRAVIS_TAG}.linux-${TRAVIS_CPU_ARCH}.tar.gz bin/${PRODUCT}
+  - tar czvf build/${PRODUCT}-${TRAVIS_TAG}.osx-${TRAVIS_CPU_ARCH}.tar.gz bin/${PRODUCT}_osx
+  - docker build -t copybird/${PRODUCT}:latest -t copybird/${PRODUCT}:${TRAVIS_TAG} .
 
 deploy:
   - provider: releases
-    api_key: $GITHUB_OAUTH_TOKEN
+    api_key: ${GITHUB_OAUTH_TOKEN}
     file:
-      - build/$PRODUCT-$TRAVIS_TAG.linux-$TRAVIS_CPU_ARCH.tar.gz
-      # - build/$PRODUCT-$TRAVIS_TAG.osx-$TRAVIS_CPU_ARCH.tar.gz
+      - build/${PRODUCT}-${TRAVIS_TAG}.linux-${TRAVIS_CPU_ARCH}.tar.gz
+      - build/${PRODUCT}-${TRAVIS_TAG}.osx-${TRAVIS_CPU_ARCH}.tar.gz
     skip_cleanup: true
     on:
       tags: true
   - provider: script
     script: bash docker_push.sh
+    skip_cleanup: true
     on:
       tags: true
