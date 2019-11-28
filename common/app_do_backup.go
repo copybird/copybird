@@ -65,7 +65,7 @@ func (a *App) DoBackup() error {
 			return err
 		}
 	} else {
-		mInput, err = loadModuleFromEnv(core.ModuleGroupBackup, core.ModuleTypeOutput, envOutput)
+		mOutput, err = loadModuleFromEnv(core.ModuleGroupBackup, core.ModuleTypeOutput, envOutput)
 		if err != nil {
 			return fmt.Errorf("can't get output module config: %s", err)
 		}
