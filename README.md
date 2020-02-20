@@ -169,5 +169,5 @@ Project started by <a href="https://github.com/miolini">Artem Andreenko</a>, <a 
     <a href="https://maddevs.io"><img height="100px" src ="docs/md-logo.png" /></a>
 </div>
 
-P.S. Love distributed and mesh? <a href="https://github.com/meshbird/mesbbird">Meshbird</a>.
+P.S. Love distributed and mesh? <a href="https://github.com/meshbird/meshbird">Meshbird</a>.
 
