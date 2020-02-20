@@ -162,6 +162,7 @@ Pull requests are more than welcomed. For major changes, please open an issue fi
 
 Before submission of pull request make sure you pulled recent updates, included tests for your code that covers at least the core functionality and you submitted a desciptive issue that will be fixed with your pull request. Do not forget to mention the issue in the pull request. 
 
+Project started by <a href="https://github.com/miolini">Artem Andreenko</a>, <a href="https://github.com/gen1us2k">Andrew Minkin</a>, and <a href="https://maddevs.io">Mad Devs.</a>
 
 <div align="center">
     <h3>Built with Mad Devs support for the community</h3>
